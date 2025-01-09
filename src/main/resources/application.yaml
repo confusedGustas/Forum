@@ -1,0 +1,15 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  liquibase:
+    change-log: db/changelog/db-changelog-master.xml
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+  security:
+    user:
+      name: ${SPRING_USER}
+      password: ${SPRING_PASSWORD}
