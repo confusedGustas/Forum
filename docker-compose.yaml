@@ -17,7 +17,9 @@ services:
       - keycloak_postgres
     networks:
       - keycloak-network
-    command: ["start-dev"]
+    command: ["start-dev", "--import-realm"]
+    volumes:
+      - ./scripts:/opt/keycloak/data/import
 
   keycloak_postgres:
     image: postgres:latest
