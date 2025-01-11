@@ -16,12 +16,20 @@
 
     <properties>
         <java.version>17</java.version>
+        <swagger.version>2.2.22</swagger.version>
+        <springdoc.version>2.4.0</springdoc.version>
+        <jpa.version>3.4.1</jpa.version>
+        <dotenv>5.2.2</dotenv>
+        <liquibase.version>4.30.0</liquibase.version>
+        <maven.compiler.version>3.13.0</maven.compiler.version>
+        <spring.maven.plugin>3.4.1</spring.maven.plugin>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>${jpa.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -54,12 +62,30 @@
         <dependency>
             <groupId>io.github.cdimascio</groupId>
             <artifactId>java-dotenv</artifactId>
-            <version>5.2.2</version>
+            <version>${dotenv}</version>
         </dependency>
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
-            <version>4.30.0</version>
+            <version>${liquibase.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-core</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
     </dependencies>
 
@@ -68,7 +94,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
+                <version>${maven.compiler.version}</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <path>
@@ -81,7 +107,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>${spring.maven.plugin}</version>
                 <configuration>
                     <excludes>
                         <exclude>

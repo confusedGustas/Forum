@@ -3,9 +3,13 @@ spring:
     import: optional:file:.env[.properties]
   liquibase:
     change-log: db/changelog/db-changelog-master.xml
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${SPRING_POSTGRES_DB}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     open-in-view: false
   security:
     user:
-      name: ${SPRING_USER}
+      name: ${SPRING_USERNAME}
       password: ${SPRING_PASSWORD}
