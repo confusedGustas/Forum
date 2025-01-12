@@ -23,6 +23,7 @@
         <liquibase.version>4.30.0</liquibase.version>
         <maven.compiler.version>3.13.0</maven.compiler.version>
         <spring.maven.plugin>3.4.1</spring.maven.plugin>
+        <lombok.version>1.18.36</lombok.version>
     </properties>
 
     <dependencies>
@@ -47,6 +48,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -87,6 +89,10 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>${springdoc.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -96,10 +102,13 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven.compiler.version}</version>
                 <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -119,5 +128,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

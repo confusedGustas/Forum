@@ -13,3 +13,14 @@ spring:
     user:
       name: ${SPRING_USERNAME}
       password: ${SPRING_PASSWORD}
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8181/realms/forum
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
+jwt:
+  auth:
+    converter:
+      resource-id: client
+      principle-attribute: preferred_username
