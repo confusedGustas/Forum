@@ -6,17 +6,20 @@ interface KeycloakContextType {
     keycloak: Keycloak | null;
     authenticated: boolean;
     userDetails: Record<string, any> | null;
+    accessToken: string | null;
 }
 
 export const KeycloakContext = createContext<KeycloakContextType>({
     keycloak: null,
     authenticated: false,
     userDetails: null,
+    accessToken: null,
 });
 
 export const KeycloakProvider = ({ children }: { children: ReactNode }) => {
     const [authenticated, setAuthenticated] = useState(false);
     const [userDetails, setUserDetails] = useState<Record<string, any> | null>(null);
+    const [accessToken, setAccessToken] = useState<string | null>(null);
 
     useEffect(() => {
         const initKeycloak = async () => {
@@ -29,6 +32,8 @@ export const KeycloakProvider = ({ children }: { children: ReactNode }) => {
                 setAuthenticated(auth);
 
                 if (auth) {
+                    setAccessToken(keycloak.token || null);
+
                     try {
                         const profile = await keycloak.loadUserProfile();
                         setUserDetails(profile);
@@ -45,7 +50,7 @@ export const KeycloakProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     return (
-        <KeycloakContext.Provider value={{ keycloak, authenticated, userDetails }}>
+        <KeycloakContext.Provider value={{ keycloak, authenticated, userDetails, accessToken }}>
             {children}
         </KeycloakContext.Provider>
     );

@@ -1,21 +1,19 @@
 import React, { useContext } from "react";
 import { KeycloakContext } from "../context/KeycloakContext";
-import { logout } from "../utils/keycloakUtils";
 
-const UserDetails = () => {
-    const { userDetails, authenticated } = useContext(KeycloakContext);
+const AccessTokenDisplay = () => {
+    const { accessToken } = useContext(KeycloakContext);
 
-    if (!authenticated) {
-        return null;
+    if (!accessToken) {
+        return <div>Not authenticated</div>;
     }
 
     return (
         <div>
-            <h2>User Details</h2>
-            <pre>{JSON.stringify(userDetails, null, 2)}</pre>
-            <button onClick={logout}>Logout</button>
+            <h3>Access Token:</h3>
+            <textarea readOnly rows={10} cols={50} value={accessToken} />
         </div>
     );
 };
 
-export default UserDetails;
+export default AccessTokenDisplay;

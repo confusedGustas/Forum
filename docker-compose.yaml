@@ -1,6 +1,7 @@
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
+    restart: unless-stopped
     ports:
       - "8181:8080"
     environment:
@@ -11,18 +12,21 @@ services:
       KC_DB: ${KC_DB}
       KC_DB_USERNAME: ${KC_DB_USERNAME}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KC_HEALTH_ENABLED: true
+      KC_METRICS_ENABLED: true
     env_file:
       - .env
     depends_on:
       - keycloak_postgres
     networks:
-      - keycloak-network
-    command: ["start-dev", "--import-realm"]
+      - network
+    command: start-dev --import-realm
     volumes:
-      - ./keycloak:/opt/keycloak/data/import
+      - ./keycloak:/opt/keycloak/data/import:ro
 
   keycloak_postgres:
     image: postgres:latest
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${KC_POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -32,10 +36,11 @@ services:
     ports:
       - "2345:5432"
     networks:
-      - keycloak-network
+      - network
 
   spring_postgres:
     image: postgres:latest
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${SPRING_POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -45,10 +50,11 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - keycloak-network
+      - network
 
   pgadmin:
     image: dpage/pgadmin4:latest
+    restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
@@ -58,9 +64,37 @@ services:
     ports:
       - "8282:80"
     networks:
-      - keycloak-network
+      - network
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    command: --web.enable-lifecycle --config.file=/etc/prometheus/prometheus.yaml
+    volumes:
+      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+    ports:
+      - "9090:9090"
+    networks:
+      - network
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - "9191:3000"
+    volumes:
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    environment:
+      GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: true
+      GF_AUTH_ANONYMOUS_ENABLED: true
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_SIGNOUT_MENU: true
+      GF_AUTH_DISABLE_LOGIN_FORM: true
+    networks:
+      - network
 
 networks:
-  keycloak-network:
-    name: keycloak-network
+  network:
+    name: network
     driver: bridge

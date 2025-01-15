@@ -24,3 +24,13 @@ jwt:
     converter:
       resource-id: client
       principle-attribute: preferred_username
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  prometheus:
+    metrics:
+      export:
+        enabled: true
