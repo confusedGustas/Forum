@@ -1,5 +1,3 @@
-# 📌 Project README
-
 ## 🚀 Under Development
 
 *This README will be updated accordingly.*
@@ -21,7 +19,7 @@
 ## 🔗 Services & Access Information
 
 | 🛠 Service              | 🌍 URL / Port                                  | 👤 Username       | 🔑 Password  |
-| ----------------------- | ---------------------------------------------- | ----------------- | ------------ |
+| ----------------------- |------------------------------------------------| ----------------- | ------------ |
 | **Spring Boot**         | `http://localhost:8080`                        | `admin`           | `admin`      |
 | **Keycloak**            | [http://localhost:8181](http://localhost:8181) | `admin`           | `admin`      |
 | **pgAdmin**             | [http://localhost:8282](http://localhost:8282) | `admin@gmail.com` | `admin`      |
@@ -29,7 +27,7 @@
 | **Grafana**             | [http://localhost:9191](http://localhost:9191) | -                 | -            |
 | **PostgreSQL**          | `localhost:5432`                               | `admin`           | `admin`      |
 | **Keycloak PostgreSQL** | `localhost:2345`                               | `admin`           | `admin`      |
-| **MinIO Console**       | `Run "docker logs minio" for the WebUI link`   | `admin`           | `adminadmin` |
+| **MinIO Console**       | `Run "docker logs minio", find WebUI link`     | `admin`           | `adminadmin` |
 | **MinIO API**           | `http://localhost:9000`                        | `admin`           | `adminadmin` |
 
 ---
@@ -37,29 +35,29 @@
 ## 📝 Environment Variables
 
 - The environment variables are stored in the `.env` file:
-  ```sh
-  KC_ADMIN_USERNAME=admin
-  KC_ADMIN_PASSWORD=admin
+```sh
+KC_ADMIN_USERNAME=admin
+KC_ADMIN_PASSWORD=admin
 
-  SPRING_DATASOURCE_USERNAME=admin
-  SPRING_DATASOURCE_PASSWORD=admin
-  SPRING_USERNAME=admin
-  SPRING_PASSWORD=admin
+SPRING_DATASOURCE_USERNAME=admin
+SPRING_DATASOURCE_PASSWORD=admin
+SPRING_USERNAME=admin
+SPRING_PASSWORD=admin
 
-  PGADMIN_DEFAULT_EMAIL=admin@gmail.com
-  PGADMIN_DEFAULT_PASSWORD=admin
+PGADMIN_DEFAULT_EMAIL=admin@gmail.com
+PGADMIN_DEFAULT_PASSWORD=admin
 
-  POSTGRES_USERNAME=admin
-  POSTGRES_PASSWORD=admin
+POSTGRES_USERNAME=admin
+POSTGRES_PASSWORD=admin
 
-  KC_POSTGRES_USERNAME=admin
-  KC_POSTGRES_PASSWORD=admin
+KC_POSTGRES_USERNAME=admin
+KC_POSTGRES_PASSWORD=admin
 
-  MINIO_USERNAME=admin
-  MINIO_PASSWORD=adminadmin
-  MINIO_BUCKET=forum-bucket
-  MINIO_SERVER_URL=http://localhost:9000
-  ```
+MINIO_USERNAME=admin
+MINIO_PASSWORD=adminadmin
+MINIO_BUCKET=forum-bucket
+MINIO_SERVER_URL=http://localhost:9000
+```
 
 ---
 
