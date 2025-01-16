@@ -1,13 +1,11 @@
 package org.site.forum.domain.topic.service;
 
-import lombok.AllArgsConstructor;
-import org.site.forum.domain.topic.repository.TopicRepository;
+import org.site.forum.domain.topic.dto.TopicDto;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
-public class TopicService {
+public interface TopicService {
 
-    private final TopicRepository topicRepository;
+    TopicDto createTopic(TopicDto topicDto);
 
 }
