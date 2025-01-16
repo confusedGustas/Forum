@@ -4,7 +4,7 @@ spring:
   liquibase:
     change-log: db/changelog/db-changelog-master.xml
   datasource:
-    url: jdbc:postgresql://localhost:5432/${SPRING_POSTGRES_DB}
+    url: jdbc:postgresql://localhost:5432/forum
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
@@ -18,6 +18,11 @@ spring:
         jwt:
           issuer-uri: http://localhost:8181/realms/forum
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 jwt:
   auth:
@@ -34,3 +39,9 @@ management:
     metrics:
       export:
         enabled: true
+
+minio:
+  url: ${MINIO_SERVER_URL}
+  access-key: ${MINIO_USERNAME}
+  secret-key: ${MINIO_PASSWORD}
+  bucket: ${MINIO_BUCKET}
