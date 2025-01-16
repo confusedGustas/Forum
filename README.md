@@ -18,17 +18,17 @@
 
 ## 🔗 Services & Access Information
 
-| 🛠 Service              | 🌍 URL / Port                                  | 👤 Username       | 🔑 Password  |
-| ----------------------- |------------------------------------------------| ----------------- | ------------ |
-| **Spring Boot**         | `http://localhost:8080`                        | `admin`           | `admin`      |
-| **Keycloak**            | [http://localhost:8181](http://localhost:8181) | `admin`           | `admin`      |
-| **pgAdmin**             | [http://localhost:8282](http://localhost:8282) | `admin@gmail.com` | `admin`      |
-| **Prometheus**          | [http://localhost:9090](http://localhost:9090) | -                 | -            |
-| **Grafana**             | [http://localhost:9191](http://localhost:9191) | -                 | -            |
-| **PostgreSQL**          | `localhost:5432`                               | `admin`           | `admin`      |
-| **Keycloak PostgreSQL** | `localhost:2345`                               | `admin`           | `admin`      |
-| **MinIO Console**       | `Run "docker logs minio", find WebUI link`     | `admin`           | `adminadmin` |
-| **MinIO API**           | `http://localhost:9000`                        | `admin`           | `adminadmin` |
+| 🛠 Service            | 🌍 URL / Port                             | 👤 Username     | 🔑 Password  |
+| --------------------- |-------------------------------------------| --------------- | ------------ |
+| **Spring Boot**       | `http://localhost:8080`                   | `admin`         | `admin`      |
+| **Keycloak**          | [http://localhost:8181](http://localhost:8181) | `admin`         | `admin`      |
+| **pgAdmin**           | [http://localhost:8282](http://localhost:8282) | `admin@gmail.com` | `admin`      |
+| **Prometheus**        | [http://localhost:9090](http://localhost:9090) | -               | -            |
+| **Grafana**           | [http://localhost:9191](http://localhost:9191) | -               | -            |
+| **PostgreSQL**        | `localhost:5432`                          | `admin`         | `admin`      |
+| **Keycloak PostgreSQL** | `localhost:2345`                          | `admin`         | `admin`      |
+| **MinIO Console**     | `Run "docker logs minio", find WebUI link` | `admin`         | `adminadmin` |
+| **MinIO API**         | `http://localhost:9000`                   | `admin`         | `adminadmin` |
 
 ---
 
