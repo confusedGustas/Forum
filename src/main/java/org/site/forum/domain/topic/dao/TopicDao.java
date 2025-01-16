@@ -1,0 +1,10 @@
+package org.site.forum.domain.topic.dao;
+
+import org.site.forum.domain.topic.entity.Topic;
+
+public interface TopicDao {
+
+    Topic saveTopic(Topic topic);
+
+    Topic getTopic(Long id);
+}

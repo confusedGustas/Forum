@@ -8,7 +8,7 @@ import org.site.forum.domain.User;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TopicDto {
+public class TopicResponseDto {
 
     private String title;
 
