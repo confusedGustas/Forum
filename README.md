@@ -9,7 +9,7 @@
 1. [🔗 Services & Access Information](#-services--access-information)
 2. [📝 Environment Variables](#-environment-variables)
 3. [💻 Requirements](#-requirements)
-4. [▶️ Running the Services](#-running-the-services)
+4. [🚀 Running the Services](#-running-the-services)
 5. [🛠 Setting Up PostgreSQL in pgAdmin](#-setting-up-postgresql-in-pgadmin)
 6. [📊 Monitoring Services](#-monitoring-services)
 7. [👥 Project Contributors](#-project-contributors)
@@ -29,8 +29,6 @@
 | **Keycloak<br>PostgreSQL** | `localhost:2345`                               | `admin`           | `admin`      |
 | **MinIO UI**               | `Run "docker logs minio", find the WebUI link` | `admin`           | `adminadmin` |
 | **MinIO API**              | `http://localhost:9000`                        | `admin`           | `adminadmin` |
-
-
 
 ---
 
@@ -74,7 +72,7 @@ Before running the project, ensure you have the following installed:
   - [OrbStack (Apple only, recommended)](https://orbstack.dev/download)
 ---
 
-## ▶️ Running the Services
+## 🚀 Running the Services
 
 ### 🚢 Start All Services
 
