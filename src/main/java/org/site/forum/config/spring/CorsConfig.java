@@ -1,4 +1,4 @@
-package org.site.forum.config;
+package org.site.forum.config.spring;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

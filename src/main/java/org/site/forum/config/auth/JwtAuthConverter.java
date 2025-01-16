@@ -1,4 +1,4 @@
-package org.site.forum.config;
+package org.site.forum.config.auth;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;

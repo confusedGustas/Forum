@@ -69,17 +69,9 @@
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
-          "realm": [
-            "offline_access",
-            "uma_authorization"
-          ],
           "client": {
             "client": [
               "client_user"
-            ],
-            "account": [
-              "view-profile",
-              "manage-account"
             ]
           }
         },
@@ -99,24 +91,6 @@
             ]
           }
         },
-        "clientRole": false,
-        "containerId": "ad04f9df-47a8-46de-80cd-b214a5690244",
-        "attributes": {}
-      },
-      {
-        "id": "70e049ea-fa0a-4fa5-a6dd-c927f3889c0d",
-        "name": "offline_access",
-        "description": "${role_offline-access}",
-        "composite": false,
-        "clientRole": false,
-        "containerId": "ad04f9df-47a8-46de-80cd-b214a5690244",
-        "attributes": {}
-      },
-      {
-        "id": "19052ad0-156f-4eb5-9dac-73ce60ae400d",
-        "name": "uma_authorization",
-        "description": "${role_uma_authorization}",
-        "composite": false,
         "clientRole": false,
         "containerId": "ad04f9df-47a8-46de-80cd-b214a5690244",
         "attributes": {}
@@ -512,14 +486,6 @@
   "webAuthnPolicyPasswordlessAvoidSameAuthenticatorRegister": false,
   "webAuthnPolicyPasswordlessAcceptableAaguids": [],
   "webAuthnPolicyPasswordlessExtraOrigins": [],
-  "scopeMappings": [
-    {
-      "clientScope": "offline_access",
-      "roles": [
-        "offline_access"
-      ]
-    }
-  ],
   "clientScopeMappings": {
     "account": [
       {
@@ -1098,6 +1064,63 @@
       ]
     },
     {
+      "id": "9c88564e-81d1-41d8-9210-aad19d4de2ca",
+      "name": "service_account",
+      "description": "Specific scope for a client enabled for service accounts",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "false",
+        "display.on.consent.screen": "false"
+      },
+      "protocolMappers": [
+        {
+          "id": "00cae06a-5085-4f33-8714-f5b5652915e7",
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "id.token.claim": "true",
+            "introspection.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "56699a31-07c4-4bbf-b5a0-6a0496c1fb87",
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "client_id",
+            "id.token.claim": "true",
+            "introspection.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "client_id",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "41842c05-bf77-4247-b1fd-41284d88d123",
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "id.token.claim": "true",
+            "introspection.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    },
+    {
       "id": "47059477-851a-43fd-9855-8cc261cc6a87",
       "name": "role_list",
       "description": "SAML role list",
@@ -1614,14 +1637,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-usermodel-property-mapper",
             "saml-role-list-mapper",
-            "oidc-address-mapper",
             "saml-user-attribute-mapper",
+            "oidc-usermodel-attribute-mapper",
+            "saml-user-property-mapper",
             "oidc-sha256-pairwise-sub-mapper",
             "oidc-full-name-mapper",
-            "saml-user-property-mapper",
-            "oidc-usermodel-attribute-mapper"
+            "oidc-address-mapper",
+            "oidc-usermodel-property-mapper"
           ]
         }
       },
@@ -1645,14 +1668,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-address-mapper",
-            "saml-user-attribute-mapper",
             "saml-role-list-mapper",
-            "oidc-full-name-mapper",
-            "oidc-usermodel-property-mapper",
+            "saml-user-attribute-mapper",
+            "saml-user-property-mapper",
+            "oidc-address-mapper",
             "oidc-sha256-pairwise-sub-mapper",
-            "oidc-usermodel-attribute-mapper",
-            "saml-user-property-mapper"
+            "oidc-usermodel-property-mapper",
+            "oidc-full-name-mapper",
+            "oidc-usermodel-attribute-mapper"
           ]
         }
       },
@@ -2452,22 +2475,23 @@
   "firstBrokerLoginFlow": "first broker login",
   "attributes": {
     "cibaBackchannelTokenDeliveryMode": "poll",
+    "cibaExpiresIn": "120",
     "cibaAuthRequestedUserHint": "login_hint",
+    "oauth2DeviceCodeLifespan": "600",
     "clientOfflineSessionMaxLifespan": "0",
     "oauth2DevicePollingInterval": "5",
     "clientSessionIdleTimeout": "0",
-    "clientOfflineSessionIdleTimeout": "0",
-    "cibaInterval": "5",
-    "realmReusableOtpCode": "false",
-    "cibaExpiresIn": "120",
-    "oauth2DeviceCodeLifespan": "600",
     "parRequestUriLifespan": "60",
     "clientSessionMaxLifespan": "0",
-    "organizationsEnabled": "false"
+    "clientOfflineSessionIdleTimeout": "0",
+    "cibaInterval": "5",
+    "realmReusableOtpCode": "false"
   },
-  "keycloakVersion": "26.0.7",
+  "keycloakVersion": "26.1.0",
   "userManagedAccessAllowed": false,
   "organizationsEnabled": false,
+  "verifiableCredentialsEnabled": false,
+  "adminPermissionsEnabled": false,
   "clientProfiles": {
     "profiles": []
   },
