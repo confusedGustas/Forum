@@ -6,7 +6,7 @@
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="2" author="Ugnius">
-        <createTable tableName="topic">
+        <createTable tableName="topics">
             <column name="id" type="bigserial">
                 <constraints primaryKey="true"/>
             </column>

@@ -3,10 +3,10 @@ package org.site.forum.domain.topic.dao;
 import lombok.AllArgsConstructor;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.topic.repository.TopicRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 @AllArgsConstructor
-@Service
+@Repository
 public class TopicDaoImpl implements TopicDao {
 
     private final TopicRepository topicRepository;
