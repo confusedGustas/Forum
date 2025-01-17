@@ -20,4 +20,5 @@ public class AuthenticationService {
 
         return userMapper.toUser(jwt);
     }
+
 }
