@@ -96,6 +96,11 @@
             <artifactId>minio</artifactId>
             <version>${minio.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-core</artifactId>
+            <version>26.1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

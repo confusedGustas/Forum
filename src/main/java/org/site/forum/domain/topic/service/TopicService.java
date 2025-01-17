@@ -4,6 +4,8 @@ import org.site.forum.domain.topic.dto.TopicRequestDto;
 import org.site.forum.domain.topic.dto.TopicResponseDto;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+
 @Service
 public interface TopicService {
 

@@ -6,6 +6,15 @@
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="1" author="Ugnius">
+        <createTable tableName="users">
+            <column name="id" type="bigserial">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="uuid" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
         <createTable tableName="topic">
             <column name="id" type="bigserial">
                 <constraints primaryKey="true"/>
@@ -16,8 +25,10 @@
             <column name="content" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column name="author_id" type="uuid">
-                <constraints nullable="false"/>
+            <column name="author_id" type="bigint">
+                <constraints nullable="false"
+                             foreignKeyName="fk_topic_user"
+                             references="users(id)"/>
             </column>
         </createTable>
     </changeSet>

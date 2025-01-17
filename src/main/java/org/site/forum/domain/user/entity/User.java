@@ -1,33 +1,33 @@
-package org.site.forum.domain.topic.entity;
+package org.site.forum.domain.user.entity;
+
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.site.forum.domain.user.entity.User;
+
+import java.util.UUID;
 
 @Entity
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Topic {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private UUID uuid;
 
-    private String content;
-
-    @ManyToOne
-    private User author;
+    public User(UUID sub) {
+        this.uuid = sub;
+    }
 }

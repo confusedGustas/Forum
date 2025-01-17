@@ -1,7 +1,11 @@
 package org.site.forum.domain.topic.dto;
 
-import lombok.*;
-import org.site.forum.domain.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.site.forum.domain.user.entity.User;
 
 @Getter
 @Setter

@@ -15,8 +15,7 @@ public class TopicController {
     private final TopicService topicService;
 
     @PostMapping
-    public ResponseEntity<TopicResponseDto> createTopic(TopicRequestDto topicRequestDto) {
-        System.out.println(topicRequestDto.getTitle());
+    public ResponseEntity<TopicResponseDto> createTopic(@RequestBody TopicRequestDto topicRequestDto) {
         return ResponseEntity.ok(topicService.createTopic(topicRequestDto));
     }
 
