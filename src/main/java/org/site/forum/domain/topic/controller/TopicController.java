@@ -1,5 +1,6 @@
 package org.site.forum.domain.topic.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.site.forum.domain.topic.dto.TopicRequestDto;
 import org.site.forum.domain.topic.dto.TopicResponseDto;
@@ -15,7 +16,7 @@ public class TopicController {
     private final TopicService topicService;
 
     @PostMapping
-    public ResponseEntity<TopicResponseDto> createTopic(@RequestBody TopicRequestDto topicRequestDto) {
+    public ResponseEntity<TopicResponseDto> createTopic(@Valid @RequestBody TopicRequestDto topicRequestDto) {
         return ResponseEntity.ok(topicService.createTopic(topicRequestDto));
     }
 

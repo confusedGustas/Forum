@@ -5,16 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="1" author="Ugnius">
-        <createTable tableName="users">
-            <column name="id" type="bigserial">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="uuid" type="uuid">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
+    <changeSet id="2" author="Ugnius">
         <createTable tableName="topic">
             <column name="id" type="bigserial">
                 <constraints primaryKey="true"/>
