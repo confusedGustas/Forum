@@ -6,11 +6,8 @@
 
     <changeSet id="1" author="Ugnius">
         <createTable tableName="users">
-            <column name="id" type="bigserial">
-                <constraints primaryKey="true"/>
-            </column>
             <column name="uuid" type="uuid">
-                <constraints nullable="false"/>
+                <constraints primaryKey="true"/>
             </column>
         </createTable>
     </changeSet>

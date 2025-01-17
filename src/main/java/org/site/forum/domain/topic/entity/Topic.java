@@ -32,4 +32,5 @@ public class Topic {
 
     @ManyToOne
     private User author;
+
 }

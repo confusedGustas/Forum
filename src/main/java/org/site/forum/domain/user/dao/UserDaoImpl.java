@@ -20,7 +20,7 @@ public class UserDaoImpl implements UserDao {
 
     private void checkIfUserExistsByUuid(User user) {
         if (userRepository.existsByUuid(user.getUuid())) {
-            throw new IllegalArgumentException("User with the specified username already exists");
+            throw new IllegalArgumentException("User with the specified UUID already exists");
         }
     }
 

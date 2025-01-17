@@ -16,10 +16,10 @@
             <column name="content" type="text">
                 <constraints nullable="false"/>
             </column>
-            <column name="author_id" type="bigint">
+            <column name="author_uuid" type="uuid">
                 <constraints nullable="false"
                              foreignKeyName="fk_topic_user"
-                             references="users(id)"/>
+                             references="users(uuid)"/>
             </column>
         </createTable>
     </changeSet>

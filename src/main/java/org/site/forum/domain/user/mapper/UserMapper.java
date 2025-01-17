@@ -12,4 +12,5 @@ public class UserMapper {
     public User toUser(Jwt jwt) {
         return new User(UUID.fromString(jwt.getClaimAsString("sub")));
     }
+
 }
