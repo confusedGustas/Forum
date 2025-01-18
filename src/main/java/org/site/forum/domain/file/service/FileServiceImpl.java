@@ -45,8 +45,10 @@ public class FileServiceImpl implements FileService {
     @SneakyThrows
     public void deleteFile(UUID fileId) {
         File file = fileDao.getFileById(fileId);
-        Topic topic = topicDao.getTopic(file.getTopic().getId());
 
+        if (file == null) throw new IllegalArgumentException("File not found");
+
+        Topic topic = topicDao.getTopic(file.getTopic().getId());
         checkAuthorization(topic);
         removeFileFromMinio(file.getMinioObjectName());
         fileDao.deleteFile(fileId);

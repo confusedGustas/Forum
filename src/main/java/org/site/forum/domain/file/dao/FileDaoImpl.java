@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.site.forum.domain.file.entity.File;
 import org.site.forum.domain.file.repository.FileRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +16,10 @@ public class FileDaoImpl implements FileDao {
 
     @Override
     public void saveFile(File file) {
+        if (file.getMinioObjectName() == null || file.getContentType() == null || file.getTopic() == null) {
+            throw new IllegalArgumentException("File properties cannot be null");
+        }
+
         fileRepository.save(file);
     }
 
