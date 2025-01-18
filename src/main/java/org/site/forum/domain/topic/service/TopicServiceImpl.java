@@ -30,11 +30,7 @@ public class TopicServiceImpl implements TopicService {
     private final FileDao fileDao;
 
     @Override
-    public TopicResponseDto createTopic(TopicRequestDto topicRequestDto, List<MultipartFile> files) {
-        if (files.size() > 5) {
-            throw new IllegalArgumentException("You can upload up to 5 files");
-        }
-
+    public TopicResponseDto saveTopic(TopicRequestDto topicRequestDto, List<MultipartFile> files) {
         User user = getAuthenticatedAndPersistedUser();
         Topic topic = topicDao.saveTopic(topicMapper.topicBuilder(topicRequestDto, user));
 

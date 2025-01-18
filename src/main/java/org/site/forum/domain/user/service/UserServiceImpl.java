@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
+
     public void saveUser(User user) {
         userDao.saveUser(user);
     }

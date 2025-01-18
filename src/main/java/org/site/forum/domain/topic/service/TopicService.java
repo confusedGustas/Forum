@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface TopicService {
 
-    TopicResponseDto createTopic(TopicRequestDto topicRequestDto, List<MultipartFile> files);
+    TopicResponseDto saveTopic(TopicRequestDto topicRequestDto, List<MultipartFile> files);
     TopicResponseDto getTopic(UUID id);
 
 }

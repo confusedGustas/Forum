@@ -30,7 +30,7 @@ public class TopicController {
     public ResponseEntity<TopicResponseDto> createTopic(
             @Valid @ModelAttribute("topicRequestDto") TopicRequestDto topicRequestDto,
             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
-        return ResponseEntity.ok(topicService.createTopic(topicRequestDto, files));
+        return ResponseEntity.ok(topicService.saveTopic(topicRequestDto, files));
     }
 
     @GetMapping("/{id}")

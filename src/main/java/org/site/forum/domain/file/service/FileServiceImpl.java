@@ -74,7 +74,7 @@ public class FileServiceImpl implements FileService {
          fileDao.saveFile(fileMapper.toEntity(file, topic, generatedFileName));
     }
 
-    public static String generateFileName(String extension) {
+    private String generateFileName(String extension) {
         return "file_" + UUID.randomUUID().toString() + "_" + System.currentTimeMillis() + "." + extension;
     }
 
