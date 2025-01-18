@@ -1,4 +1,4 @@
-package org.site.forum.domain.topic.entity;
+package org.site.forum.domain.file.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.site.forum.domain.user.entity.User;
+import org.site.forum.domain.topic.entity.Topic;
 import java.util.UUID;
 
 @Entity
@@ -20,17 +20,17 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "topics")
-public class Topic {
+@Table(name = "files")
+public class File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String title;
-    private String content;
+    private String minioObjectName;
+    private String contentType;
 
     @ManyToOne
-    private User author;
+    private Topic topic;
 
 }

@@ -4,9 +4,10 @@ import lombok.AllArgsConstructor;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.topic.repository.TopicRepository;
 import org.springframework.stereotype.Service;
+import java.util.UUID;
 
-@AllArgsConstructor
 @Service
+@AllArgsConstructor
 public class TopicDaoImpl implements TopicDao {
 
     private final TopicRepository topicRepository;
@@ -17,8 +18,9 @@ public class TopicDaoImpl implements TopicDao {
     }
 
     @Override
-    public Topic getTopic(Long id) {
+    public Topic getTopic(UUID id) {
         return topicRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("Topic with the specified id does not exist"));
     }
+
 }

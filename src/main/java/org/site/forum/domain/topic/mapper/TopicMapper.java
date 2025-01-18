@@ -1,20 +1,28 @@
 package org.site.forum.domain.topic.mapper;
 
-import org.site.forum.domain.topic.dto.TopicRequestDto;
-import org.site.forum.domain.topic.dto.TopicResponseDto;
+import lombok.AllArgsConstructor;
+import org.site.forum.domain.file.entity.File;
+import org.site.forum.domain.file.mapper.FileMapper;
+import org.site.forum.domain.topic.dto.request.TopicRequestDto;
+import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.stereotype.Component;
+import java.util.List;
 
 @Component
+@AllArgsConstructor
 public class TopicMapper {
 
-    public TopicResponseDto toDto(Topic topic) {
+    private final FileMapper fileMapper;
 
+    public TopicResponseDto toDto(Topic topic, List<File> files) {
         return TopicResponseDto.builder()
+                .id(topic.getId())
                 .title(topic.getTitle())
                 .content(topic.getContent())
                 .author(topic.getAuthor())
+                .files(fileMapper.toDto(files))
                 .build();
     }
 
@@ -25,4 +33,5 @@ public class TopicMapper {
                 .author(user)
                 .build();
     }
+
 }

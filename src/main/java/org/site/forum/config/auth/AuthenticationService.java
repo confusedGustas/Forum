@@ -3,7 +3,6 @@ package org.site.forum.config.auth;
 import lombok.AllArgsConstructor;
 import org.site.forum.domain.user.entity.User;
 import org.site.forum.domain.user.mapper.UserMapper;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -15,9 +14,7 @@ public class AuthenticationService {
     private final UserMapper userMapper;
 
     public User getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-
-        return userMapper.toUser(jwt);
+        return userMapper.toUser((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
     }
+
 }

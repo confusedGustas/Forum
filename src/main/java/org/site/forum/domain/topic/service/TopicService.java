@@ -1,14 +1,14 @@
 package org.site.forum.domain.topic.service;
 
-import org.site.forum.domain.topic.dto.TopicRequestDto;
-import org.site.forum.domain.topic.dto.TopicResponseDto;
-import org.springframework.stereotype.Service;
+import org.site.forum.domain.topic.dto.request.TopicRequestDto;
+import org.site.forum.domain.topic.dto.response.TopicResponseDto;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
+import java.util.UUID;
 
-import java.security.Principal;
-
-@Service
 public interface TopicService {
 
-    TopicResponseDto createTopic(TopicRequestDto topicRequestDto);
-    TopicResponseDto getTopic(Long id);
+    TopicResponseDto createTopic(TopicRequestDto topicRequestDto, List<MultipartFile> files);
+    TopicResponseDto getTopic(UUID id);
+
 }

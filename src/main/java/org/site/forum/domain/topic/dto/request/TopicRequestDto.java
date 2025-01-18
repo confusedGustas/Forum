@@ -1,4 +1,4 @@
-package org.site.forum.domain.topic.dto;
+package org.site.forum.domain.topic.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,4 +25,5 @@ public class TopicRequestDto {
     @NotBlank(message = "Content is mandatory")
     @Size(min = 10, message = "Content must have at least 10 characters")
     private String content;
+
 }
