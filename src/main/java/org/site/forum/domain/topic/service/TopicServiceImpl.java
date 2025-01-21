@@ -39,8 +39,14 @@ public class TopicServiceImpl implements TopicService {
         return topicMapper.toDto(topic, fileDao.findFilesByTopicId(topic.getId()));
     }
 
+    @Override
+    public TopicResponseDto getTopic(UUID id) {
+        return topicMapper.toDto(topicDao.getTopic(id), fileDao.findFilesByTopicId(id));
+    }
+
     private User getAuthenticatedAndPersistedUser() {
         User user = authenticationService.getAuthenticatedUser();
+        checkUser(user);
 
         if (userDao.getUserById(user.getId()).isEmpty()) {
             userService.saveUser(user);
@@ -49,9 +55,10 @@ public class TopicServiceImpl implements TopicService {
         return user;
     }
 
-    @Override
-    public TopicResponseDto getTopic(UUID id) {
-        return topicMapper.toDto(topicDao.getTopic(id), fileDao.findFilesByTopicId(id));
+    private void checkUser(User user){
+        if(user == null){
+            throw new IllegalArgumentException("User not found");
+        }
     }
 
 }

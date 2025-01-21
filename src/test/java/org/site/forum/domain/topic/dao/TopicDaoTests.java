@@ -37,7 +37,7 @@ public class TopicDaoTests {
     @BeforeEach
     public void setUp() {
         user = User.builder()
-                .uuid(UUID.fromString(UUID_CONSTANT))
+                .id(UUID.fromString(UUID_CONSTANT))
                 .build();
 
         userDao.saveUser(user);
@@ -86,7 +86,7 @@ public class TopicDaoTests {
 
     @Test
     public void testGetTopicWhenTopicNotFound() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> topicDao.getTopic(1L));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> topicDao.getTopic(UUID.fromString(UUID_CONSTANT)));
         assertEquals("Topic with the specified id does not exist", exception.getMessage());
     }
 

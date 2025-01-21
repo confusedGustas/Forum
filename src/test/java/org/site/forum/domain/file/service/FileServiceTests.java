@@ -44,14 +44,19 @@ class FileServiceTests {
 
     @Mock
     private MinioClient minioClient;
+
     @Mock
     private AuthenticationService authenticationService;
+
     @Mock
     private FileMapper fileMapper;
+
     @Mock
     private FileDao fileDao;
+
     @Mock
     private TopicDao topicDao;
+
     @Mock
     private MultipartFile multipartFile;
 
