@@ -44,7 +44,7 @@ public class TopicDaoTests {
     }
 
     @Test
-    public void testSaveTopic() {
+    void testSaveTopic() {
         topic = Topic.builder()
                 .title(TOPIC_TITLE)
                 .content(TOPIC_CONTENT)
@@ -63,7 +63,7 @@ public class TopicDaoTests {
     }
 
     @Test
-    public void testGetTopic() {
+    void testGetTopic() {
         topic = Topic.builder()
                 .title(TOPIC_TITLE)
                 .content(TOPIC_CONTENT)
@@ -85,7 +85,7 @@ public class TopicDaoTests {
     }
 
     @Test
-    public void testGetTopicWhenTopicNotFound() {
+    void testGetTopicWhenTopicNotFound() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> topicDao.getTopic(UUID.fromString(UUID_CONSTANT)));
         assertEquals("Topic with the specified id does not exist", exception.getMessage());
     }

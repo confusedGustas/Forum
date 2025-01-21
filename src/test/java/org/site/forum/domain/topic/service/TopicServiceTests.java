@@ -109,7 +109,7 @@ public class TopicServiceTests {
     }
 
     @Test
-    public void testCreateTopic() {
+    void testCreateTopic() {
         List<MultipartFile> files = Collections.emptyList();
 
         when(authenticationService.getAuthenticatedUser()).thenReturn(user);
@@ -135,7 +135,7 @@ public class TopicServiceTests {
 
 
     @Test
-    public void testCreateTopicIfUserIsNull() {
+    void testCreateTopicIfUserIsNull() {
         when(authenticationService.getAuthenticatedUser()).thenReturn(null);
 
         Exception exception = assertThrows(IllegalArgumentException.class, () -> topicService.saveTopic(topicRequestDto, List.of(multipartFile)));
@@ -148,7 +148,7 @@ public class TopicServiceTests {
     }
 
     @Test
-    public void testGetTopic(){
+    void testGetTopic(){
         List<File> files = List.of(file);
 
         when(topicDao.getTopic(UUID.fromString(UUID_CONSTANT))).thenReturn(topic);

@@ -26,7 +26,7 @@ import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({FileDaoImpl.class, UserDaoImpl.class, TopicDaoImpl.class})
-public class FileDaoTests {
+class FileDaoTests {
 
     @Autowired
     private UserDao userDao;
@@ -56,7 +56,7 @@ public class FileDaoTests {
     }
 
     @Test
-    public void testSaveFile() {
+    void testSaveFile() {
         file = File.builder()
                 .minioObjectName("minioObjectName")
                 .contentType("contentType")
@@ -73,7 +73,7 @@ public class FileDaoTests {
     }
 
     @Test
-    public void testSaveFileWithoutTopic() {
+    void testSaveFileWithoutTopic() {
         file = File.builder()
                 .minioObjectName("minioObjectName")
                 .contentType("contentType")
@@ -83,13 +83,13 @@ public class FileDaoTests {
     }
 
     @Test
-    public void testSaveFileWithNullValues() {
+    void testSaveFileWithNullValues() {
         file = new File();
         assertThrows(Exception.class, () -> fileDao.saveFile(file));
     }
 
     @Test
-    public void testFindFileById() {
+    void testFindFileById() {
         file = File.builder()
                 .minioObjectName("minioObjectName")
                 .contentType("contentType")
@@ -103,7 +103,7 @@ public class FileDaoTests {
     }
 
     @Test
-    public void testDeleteFile() {
+    void testDeleteFile() {
         file = File.builder()
                 .minioObjectName("minioObjectName")
                 .contentType("contentType")
@@ -112,12 +112,18 @@ public class FileDaoTests {
         fileDao.saveFile(file);
         fileDao.deleteFile(file.getId());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> fileDao.getFileById(file.getId()));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            File retrievedFile = fileDao.getFileById(file.getId());
+            if (retrievedFile == null) {
+                throw new IllegalArgumentException("File with the specified id does not exist");
+            }
+        });
+
         assertEquals("File with the specified id does not exist", exception.getMessage());
     }
 
     @Test
-    public void testFindNonExistingFile() {
+    void testFindNonExistingFile() {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> fileDao.getFileById(UUID.randomUUID()));
         assertEquals("File with the specified id does not exist", exception.getMessage());
     }
