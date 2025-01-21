@@ -112,14 +112,10 @@ class FileDaoTests {
         fileDao.saveFile(file);
         fileDao.deleteFile(file.getId());
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            File retrievedFile = fileDao.getFileById(file.getId());
-            if (retrievedFile == null) {
-                throw new IllegalArgumentException("File with the specified id does not exist");
-            }
-        });
-
-        assertEquals("File with the specified id does not exist", exception.getMessage());
+        assertThrows(IllegalArgumentException.class,
+                () -> Optional.ofNullable(fileDao.getFileById(file.getId()))
+                        .orElseThrow(() -> new IllegalArgumentException("File with the specified id does not exist"))
+        );
     }
 
     @Test
