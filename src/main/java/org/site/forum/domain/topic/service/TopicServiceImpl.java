@@ -6,6 +6,7 @@ import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dto.TopicRequestDto;
 import org.site.forum.domain.topic.dto.TopicResponseDto;
 import org.site.forum.domain.topic.mapper.TopicMapper;
+import org.site.forum.domain.user.entity.User;
 import org.site.forum.domain.user.service.UserService;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,8 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public TopicResponseDto createTopic(TopicRequestDto topicRequestDto) {
         var user = authenticationService.getAuthenticatedUser();
+        checkUser(user);
+
         userService.saveUser(user);
 
         var topic = topicMapper.topicBuilder(topicRequestDto, user);
@@ -31,6 +34,12 @@ public class TopicServiceImpl implements TopicService {
     @Override
     public TopicResponseDto getTopic(Long id) {
         return topicMapper.toDto(topicDao.getTopic(id));
+    }
+
+    private void checkUser(User user) {
+        if(user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
     }
 
 }

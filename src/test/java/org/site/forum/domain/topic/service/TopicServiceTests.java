@@ -19,6 +19,9 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.TOPIC_CONTENT;
@@ -89,6 +92,19 @@ public class TopicServiceTests {
         verify(topicMapper).topicBuilder(topicRequestDto, user);
         verify(topicDao).saveTopic(topic);
         verify(topicMapper).toDto(topic);
+    }
+
+    @Test
+    public void testCreateTopicIfUserIsNull() {
+        when(authenticationService.getAuthenticatedUser()).thenReturn(null);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> topicService.createTopic(topicRequestDto));
+        assertEquals("User not found", exception.getMessage());
+
+        verify(authenticationService).getAuthenticatedUser();
+        verify(userService, never()).saveUser(any());
+        verify(topicMapper, never()).topicBuilder(any(), any());
+        verify(topicDao, never()).saveTopic(any());
     }
 
     @Test

@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.site.forum.constants.TestConstants.TOPIC_CONTENT;
 import static org.site.forum.constants.TestConstants.TOPIC_TITLE;
 import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
@@ -81,6 +82,12 @@ public class TopicDaoTests {
         assertEquals(savedTopic.getTitle(), foundTopic.getTitle());
         assertEquals(savedTopic.getContent(), foundTopic.getContent());
         assertEquals(savedTopic.getAuthor(), foundTopic.getAuthor());
+    }
+
+    @Test
+    public void testGetTopicWhenTopicNotFound() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> topicDao.getTopic(1L));
+        assertEquals("Topic with the specified id does not exist", exception.getMessage());
     }
 
 }
