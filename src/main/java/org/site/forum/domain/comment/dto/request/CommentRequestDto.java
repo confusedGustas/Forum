@@ -1,4 +1,4 @@
-package org.site.forum.domain.dto.request;
+package org.site.forum.domain.comment.dto.request;
 
 import jakarta.annotation.Nullable;
 import lombok.Getter;

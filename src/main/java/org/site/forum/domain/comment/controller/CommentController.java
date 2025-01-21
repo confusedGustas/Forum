@@ -2,8 +2,8 @@ package org.site.forum.domain.comment.controller;
 
 import lombok.AllArgsConstructor;
 import org.site.forum.domain.comment.service.CommentService;
-import org.site.forum.domain.dto.request.CommentRequestDto;
-import org.site.forum.domain.dto.response.CommentResponseDto;
+import org.site.forum.domain.comment.dto.request.CommentRequestDto;
+import org.site.forum.domain.comment.dto.response.CommentResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

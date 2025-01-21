@@ -15,7 +15,7 @@
             <column name="created_at" type="DATETIME">
                     <constraints nullable="false"/>
             </column>
-            <column name="is_enabled" type="BOOLEAN" defaultValueBoolean="true">
+            <column name="is_enabled" type="BOOL" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
             <column name="user_id" type="UUID">

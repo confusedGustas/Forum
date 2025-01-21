@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.mapper.CommentMapper;
-import org.site.forum.domain.dto.request.CommentRequestDto;
-import org.site.forum.domain.dto.response.CommentResponseDto;
+import org.site.forum.domain.comment.dto.request.CommentRequestDto;
+import org.site.forum.domain.comment.dto.response.CommentResponseDto;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.springframework.stereotype.Service;
 

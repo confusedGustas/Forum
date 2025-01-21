@@ -1,7 +1,7 @@
 package org.site.forum.domain.comment.service;
 
-import org.site.forum.domain.dto.request.CommentRequestDto;
-import org.site.forum.domain.dto.response.CommentResponseDto;
+import org.site.forum.domain.comment.dto.request.CommentRequestDto;
+import org.site.forum.domain.comment.dto.response.CommentResponseDto;
 
 public interface CommentService {
 

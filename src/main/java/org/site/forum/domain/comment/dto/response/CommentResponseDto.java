@@ -1,4 +1,4 @@
-package org.site.forum.domain.dto.response;
+package org.site.forum.domain.comment.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
