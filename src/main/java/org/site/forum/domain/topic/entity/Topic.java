@@ -28,6 +28,7 @@ public class Topic {
     private UUID id;
 
     private String title;
+
     private String content;
 
     @ManyToOne

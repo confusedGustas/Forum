@@ -1,9 +1,10 @@
+
 spring:
   config:
     import: optional:file:.env[.properties]
   liquibase:
     change-log: db/changelog/db-changelog-master.xml
-    drop-first: true
+
   datasource:
     url: jdbc:postgresql://localhost:5432/forum
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -46,3 +47,7 @@ minio:
   access-key: ${MINIO_USERNAME}
   secret-key: ${MINIO_PASSWORD}
   bucket: ${MINIO_BUCKET}
+
+server:
+  servlet:
+    context-path: /api/v1

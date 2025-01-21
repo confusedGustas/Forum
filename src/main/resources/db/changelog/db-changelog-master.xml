@@ -8,4 +8,6 @@
     <include file="changes/create-users-table.xml" relativeToChangelogFile="true"/>
     <include file="changes/create-topics-table.xml" relativeToChangelogFile="true"/>
     <include file="changes/create-files-table.xml" relativeToChangelogFile="true"/>
+    <include file="changes/create-comments-table.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
-@RequestMapping("/api/images")
+@RequestMapping("/images")
 @RestController
 @AllArgsConstructor
 public class FileController {

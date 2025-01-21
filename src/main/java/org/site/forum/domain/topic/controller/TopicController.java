@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/api/topics")
+@RequestMapping("/topics")
 @RestController
 @AllArgsConstructor
 public class TopicController {
