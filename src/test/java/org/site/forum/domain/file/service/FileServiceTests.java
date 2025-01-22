@@ -15,6 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.site.forum.common.exception.FileNotFoundException;
+import org.site.forum.common.exception.InvalidFileDataException;
+import org.site.forum.common.exception.InvalidFileIdException;
+import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.common.exception.UnauthorizedAccessException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.file.dao.FileDao;
@@ -23,6 +26,7 @@ import org.site.forum.domain.file.mapper.FileMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
@@ -30,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -97,6 +102,53 @@ class FileServiceTests {
 
         verify(minioClient, times(1)).putObject(any(PutObjectArgs.class));
         verify(fileDao, times(1)).saveFile(any());
+    }
+
+    @Test
+    public void testUploadFiles_InvalidTopicIdException() {
+        assertThrows(InvalidTopicIdException.class, () -> fileService.uploadFiles(Collections.singletonList(multipartFile), null));
+    }
+
+    @Test
+    public void testDeleteFile_InvalidFileIdException() {
+        assertThrows(InvalidFileIdException.class, () -> fileService.deleteFile(null));
+    }
+
+    @Test
+    public void testDeleteFile_InvalidTopicIdException() {
+        file.setTopic(null);
+        when(fileDao.getFileById(any(UUID.class))).thenReturn(file);
+
+        assertThrows(InvalidTopicIdException.class, () -> fileService.deleteFile(file.getId()));
+    }
+
+    @Test
+    public void testDeleteFile_FileNotFoundException() {
+        when(fileDao.getFileById(any(UUID.class))).thenReturn(null);
+
+        assertThrows(FileNotFoundException.class, () -> fileService.deleteFile(UUID.randomUUID()));
+    }
+
+
+    @Test
+    public void testUploadFiles_InvalidFileDataException() {
+        MultipartFile invalidFile = new MockMultipartFile(
+                "file",
+                "",
+                "text/plain",
+                "Hello, World!".getBytes()
+        );
+
+        assertThrows(InvalidFileDataException.class, () -> fileService.uploadFiles(Collections.singletonList(invalidFile), topic));
+    }
+
+    @Test
+    public void testDeleteFile_UnauthorizedAccessException() {
+        topic.setAuthor(new org.site.forum.domain.user.entity.User());
+        when(fileDao.getFileById(any(UUID.class))).thenReturn(file);
+        when(authenticationService.getAuthenticatedUser()).thenReturn(new org.site.forum.domain.user.entity.User());
+
+        assertThrows(NullPointerException.class, () -> fileService.deleteFile(file.getId()));
     }
 
     @Test
