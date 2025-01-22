@@ -14,6 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class ParentCommentResponseDto {
+
     private UUID id;
 
 }

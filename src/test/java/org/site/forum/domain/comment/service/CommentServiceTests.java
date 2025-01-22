@@ -10,6 +10,7 @@ import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
 import org.site.forum.domain.comment.dto.response.CommentResponseDto;
+import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.comment.mapper.CommentMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
@@ -51,6 +52,7 @@ public class CommentServiceTests {
     private Comment comment;
     private CommentRequestDto commentRequestDto;
     private CommentResponseDto commentResponseDto;
+    private ParentCommentResponseDto parentCommentResponseDto;
 
     @BeforeEach
     public void setUp() {
@@ -88,6 +90,10 @@ public class CommentServiceTests {
                 .topic(topic)
                 .parentComment(null)
                 .build();
+
+        parentCommentResponseDto = ParentCommentResponseDto.builder()
+                .id(UUID.randomUUID())
+                .build();
     }
 
     @Test
@@ -116,7 +122,7 @@ public class CommentServiceTests {
     public void testSaveReply() {
         UUID parentCommentId = UUID.randomUUID();
         commentRequestDto.setParentCommentId(parentCommentId);
-        commentResponseDto.setParentComment(comment);
+        commentResponseDto.setParentComment(parentCommentResponseDto);
 
         var reply = Comment.builder()
                 .text(CONTENT)
@@ -138,7 +144,7 @@ public class CommentServiceTests {
 
         assertNotNull(result);
         assertEquals(commentResponseDto, result);
-        assertEquals(comment, commentResponseDto.getParentComment());
+        assertEquals(parentCommentResponseDto, commentResponseDto.getParentComment());
 
         verify(authenticationService).getAuthenticatedAndPersistedUser();
         verify(topicDao).getTopic(commentRequestDto.getTopicId());

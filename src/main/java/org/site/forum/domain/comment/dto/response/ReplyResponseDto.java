@@ -16,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class ReplyResponseDto {
+
     private UUID id;
     private String text;
     private LocalDateTime createdAt;
