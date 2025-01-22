@@ -2,6 +2,7 @@ package org.site.forum.domain.comment.mapper;
 
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
 import org.site.forum.domain.comment.dto.response.CommentResponseDto;
+import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.dto.response.ReplyResponseDto;
 import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.topic.entity.Topic;
@@ -23,22 +24,9 @@ public class CommentMapper {
                 .author(comment.getUser())
                 .topic(comment.getTopic())
                 .parentComment(comment.getParentComment() != null ?
-                        Comment.builder()
-                                .id(comment.getParentComment().getId())
-                                .build() : null)
+                        toParentCommentResponseDto(comment.getParentComment()) : null)
                 .replies(comment.getReplies() != null ? comment.getReplies().stream()
-                        .map(reply -> ReplyResponseDto.builder()
-                                .id(reply.getId())
-                                .text(reply.getText())
-                                .createdAt(reply.getCreatedAt())
-                                .isEnabled(reply.isEnabled())
-                                .userId(reply.getUser().getId())
-                                .topicId(reply.getTopic().getId())
-                                .parentCommentId(reply.getParentComment().getId())
-                                .replies(reply.getReplies().stream()
-                                        .map(this::toReplyResponseDto)
-                                        .collect(Collectors.toList()))
-                                .build())
+                        .map(this::toReplyResponseDto)
                         .collect(Collectors.toList()) : Collections.emptyList())
                 .build();
     }
@@ -54,7 +42,7 @@ public class CommentMapper {
                 .build();
     }
 
-    public ReplyResponseDto toReplyResponseDto(Comment comment){
+    private ReplyResponseDto toReplyResponseDto(Comment comment){
         return ReplyResponseDto.builder()
                 .id(comment.getId())
                 .text(comment.getText())
@@ -66,6 +54,12 @@ public class CommentMapper {
                 .replies(comment.getReplies().stream()
                         .map(this::toReplyResponseDto)
                         .collect(Collectors.toList()))
+                .build();
+    }
+
+    private ParentCommentResponseDto toParentCommentResponseDto(Comment comment){
+        return ParentCommentResponseDto.builder()
+                .id(comment.getId())
                 .build();
     }
 

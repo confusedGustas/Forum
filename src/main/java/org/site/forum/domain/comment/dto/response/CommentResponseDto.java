@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
 
@@ -30,7 +29,7 @@ public class CommentResponseDto {
     private boolean isEnabled;
     private User author;
     private Topic topic;
-    private Comment parentComment;
+    private ParentCommentResponseDto parentComment;
     private List<ReplyResponseDto> replies;
 
 }
