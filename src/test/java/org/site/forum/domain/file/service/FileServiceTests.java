@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.site.forum.common.exception.FileNotFoundException;
+import org.site.forum.common.exception.UnauthorizedAccessException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.file.dao.FileDao;
 import org.site.forum.domain.file.entity.File;
@@ -117,7 +119,7 @@ class FileServiceTests {
         when(topicDao.getTopic(file.getTopic().getId())).thenReturn(topic);
         when(authenticationService.getAuthenticatedUser()).thenReturn(anotherUser);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> fileService.deleteFile(file.getId()));
+        Exception exception = assertThrows(UnauthorizedAccessException.class, () -> fileService.deleteFile(file.getId()));
         assertEquals("You can delete only your files", exception.getMessage());
 
         verify(fileDao, never()).deleteFile(any());
@@ -128,7 +130,7 @@ class FileServiceTests {
         UUID nonExistingFileId = UUID.randomUUID();
         when(fileDao.getFileById(nonExistingFileId)).thenReturn(null);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> fileService.deleteFile(nonExistingFileId));
+        Exception exception = assertThrows(FileNotFoundException.class, () -> fileService.deleteFile(nonExistingFileId));
         assertEquals("File not found", exception.getMessage());
 
         verify(minioClient, never()).removeObject(any(RemoveObjectArgs.class));

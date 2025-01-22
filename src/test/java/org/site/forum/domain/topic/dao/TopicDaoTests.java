@@ -2,6 +2,7 @@ package org.site.forum.domain.topic.dao;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.dao.UserDaoImpl;
@@ -86,7 +87,7 @@ public class TopicDaoTests {
 
     @Test
     void testGetTopicWhenTopicNotFound() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> topicDao.getTopic(UUID.fromString(UUID_CONSTANT)));
+        Exception exception = assertThrows(InvalidTopicIdException.class, () -> topicDao.getTopic(UUID.fromString(UUID_CONSTANT)));
         assertEquals("Topic with the specified id does not exist", exception.getMessage());
     }
 

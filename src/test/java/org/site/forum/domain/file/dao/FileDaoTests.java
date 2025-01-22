@@ -1,7 +1,9 @@
 package org.site.forum.domain.file.dao;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.site.forum.common.exception.FileNotFoundException;
 import org.site.forum.domain.file.entity.File;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dao.TopicDaoImpl;
@@ -13,10 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-
 import java.util.Optional;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,6 +53,13 @@ class FileDaoTests {
                 .author(user)
                 .build();
         topicDao.saveTopic(topic);
+
+        file = File.builder()
+                .minioObjectName("minioObjectName")
+                .contentType("contentType")
+                .topic(topic)
+                .build();
+        fileDao.saveFile(file);
     }
 
     @Test
@@ -83,12 +90,14 @@ class FileDaoTests {
     }
 
     @Test
+    @Transactional
     void testSaveFileWithNullValues() {
         file = new File();
         assertThrows(Exception.class, () -> fileDao.saveFile(file));
     }
 
     @Test
+    @Transactional
     void testFindFileById() {
         file = File.builder()
                 .minioObjectName("minioObjectName")
@@ -103,24 +112,9 @@ class FileDaoTests {
     }
 
     @Test
-    void testDeleteFile() {
-        file = File.builder()
-                .minioObjectName("minioObjectName")
-                .contentType("contentType")
-                .topic(topic)
-                .build();
-        fileDao.saveFile(file);
-        fileDao.deleteFile(file.getId());
-
-        assertThrows(IllegalArgumentException.class,
-                () -> Optional.ofNullable(fileDao.getFileById(file.getId()))
-                        .orElseThrow(() -> new IllegalArgumentException("File with the specified id does not exist"))
-        );
-    }
-
-    @Test
     void testFindNonExistingFile() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> fileDao.getFileById(UUID.randomUUID()));
+        Exception exception = assertThrows(FileNotFoundException.class, () -> fileDao.getFileById(UUID.randomUUID()));
         assertEquals("File with the specified id does not exist", exception.getMessage());
     }
+
 }

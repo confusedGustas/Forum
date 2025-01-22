@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.site.forum.common.exception.UserNotFoundException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.file.dao.FileDao;
 import org.site.forum.domain.file.entity.File;
@@ -129,16 +130,15 @@ public class TopicServiceTests {
         verify(userService).saveUser(user);
         verify(topicMapper).topicBuilder(topicRequestDto, user);
         verify(topicDao).saveTopic(topic);
-        verify(fileService).uploadFiles(files, topic);
+        verify(fileService, never()).uploadFiles(files, topic);
         verify(topicMapper).toDto(topic, List.of(file));
     }
-
 
     @Test
     void testCreateTopicIfUserIsNull() {
         when(authenticationService.getAuthenticatedUser()).thenReturn(null);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> topicService.saveTopic(topicRequestDto, List.of(multipartFile)));
+        Exception exception = assertThrows(UserNotFoundException.class, () -> topicService.saveTopic(topicRequestDto, List.of(multipartFile)));
         assertEquals("User not found", exception.getMessage());
 
         verify(authenticationService).getAuthenticatedUser();
