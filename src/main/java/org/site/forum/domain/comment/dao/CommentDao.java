@@ -6,6 +6,6 @@ import java.util.UUID;
 
 public interface CommentDao {
 
-    void saveComment(Comment comment);
+    Comment saveComment(Comment comment);
     Comment getComment(UUID parentCommentId);
 }

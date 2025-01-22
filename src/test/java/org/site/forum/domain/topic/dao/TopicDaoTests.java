@@ -16,8 +16,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.site.forum.constants.TestConstants.TOPIC_CONTENT;
-import static org.site.forum.constants.TestConstants.TOPIC_TITLE;
+import static org.site.forum.constants.TestConstants.CONTENT;
+import static org.site.forum.constants.TestConstants.TITLE;
 import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 
 @DataJpaTest
@@ -46,12 +46,12 @@ public class TopicDaoTests {
     @Test
     public void testSaveTopic() {
         topic = Topic.builder()
-                .title(TOPIC_TITLE)
-                .content(TOPIC_CONTENT)
+                .title(TITLE)
+                .content(CONTENT)
                 .author(user)
                 .build();
 
-        Topic savedTopic = topicDao.saveTopic(topic);
+        var savedTopic = topicDao.saveTopic(topic);
 
         assertNotNull(savedTopic.getId());
         assertNotNull(savedTopic.getTitle());
@@ -65,14 +65,14 @@ public class TopicDaoTests {
     @Test
     public void testGetTopic() {
         topic = Topic.builder()
-                .title(TOPIC_TITLE)
-                .content(TOPIC_CONTENT)
+                .title(TITLE)
+                .content(CONTENT)
                 .author(user)
                 .build();
 
-        Topic savedTopic = topicDao.saveTopic(topic);
+        var savedTopic = topicDao.saveTopic(topic);
 
-        Topic foundTopic = topicDao.getTopic(savedTopic.getId());
+        var foundTopic = topicDao.getTopic(savedTopic.getId());
 
         assertNotNull(foundTopic.getId());
         assertNotNull(foundTopic.getTitle());

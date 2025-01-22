@@ -9,6 +9,8 @@ import org.site.forum.domain.comment.dto.response.CommentResponseDto;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class CommentServiceImpl implements CommentService {
@@ -29,6 +31,13 @@ public class CommentServiceImpl implements CommentService {
         var comment = commentMapper.toEntity(commentRequestDto, user, topic, parentComment);
 
         commentDao.saveComment(comment);
+
+        return commentMapper.toDto(comment);
+    }
+
+    @Override
+    public CommentResponseDto getComment(UUID parentCommentId) {
+        var comment = commentDao.getComment(parentCommentId);
 
         return commentMapper.toDto(comment);
     }
