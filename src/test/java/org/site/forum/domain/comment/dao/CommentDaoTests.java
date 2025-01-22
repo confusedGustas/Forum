@@ -1,9 +1,7 @@
-package org.site.forum.domain.comment;
+package org.site.forum.domain.comment.dao;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.site.forum.domain.comment.dao.CommentDao;
-import org.site.forum.domain.comment.dao.CommentDaoImpl;
 import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.topic.dao.TopicDaoImpl;
 import org.site.forum.domain.topic.entity.Topic;
