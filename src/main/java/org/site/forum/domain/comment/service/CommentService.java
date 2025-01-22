@@ -9,5 +9,6 @@ public interface CommentService {
 
     CommentResponseDto saveComment(CommentRequestDto commentRequestDto);
     CommentResponseDto getComment(UUID parentCommentId);
+    void deleteComment(UUID commentId);
 
 }

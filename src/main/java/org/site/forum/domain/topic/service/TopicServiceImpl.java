@@ -1,5 +1,6 @@
 package org.site.forum.domain.topic.service;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.file.dao.FileDao;
@@ -39,6 +40,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    @Transactional
     public TopicResponseDto getTopic(UUID id) {
         return topicMapper.toDto(topicDao.getTopic(id), fileDao.findFilesByTopicId(id));
     }

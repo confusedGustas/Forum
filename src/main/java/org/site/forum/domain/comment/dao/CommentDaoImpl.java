@@ -12,6 +12,7 @@ import java.util.UUID;
 public class CommentDaoImpl implements CommentDao {
 
     private final CommentRepository commentRepository;
+    private static final String COMMENT_DOES_NOT_EXIST = "Comment with the specified id does not exist";
 
     @Override
     public Comment saveComment(Comment comment) {
@@ -21,6 +22,13 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public Comment getComment(UUID parentCommentId) {
         return commentRepository.findById(parentCommentId).orElseThrow(() ->
-                new IllegalArgumentException("Comment with the specified id does not exist"));
+                new IllegalArgumentException(COMMENT_DOES_NOT_EXIST));
     }
+
+    @Override
+    public void deleteComment(UUID commentId) {
+        commentRepository.delete(commentRepository.findById(commentId).orElseThrow(() ->
+                new IllegalArgumentException(COMMENT_DOES_NOT_EXIST)));
+    }
+
 }
