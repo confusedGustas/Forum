@@ -15,21 +15,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
+import static org.site.forum.constants.TestConstants.CREATED_AT;
 import static org.site.forum.constants.TestConstants.TITLE;
 import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(CommentController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension .class)
 public class CommentControllerTests {
 
@@ -41,7 +41,6 @@ public class CommentControllerTests {
 
     private CommentRequestDto commentRequestDto;
     private CommentResponseDto commentResponseDto;
-    private final LocalDateTime createdAt = LocalDateTime.now();
 
     @BeforeEach
     public void setUp() {
@@ -65,7 +64,7 @@ public class CommentControllerTests {
         commentResponseDto = CommentResponseDto.builder()
                 .id(UUID.randomUUID())
                 .text(CONTENT)
-                .createdAt(createdAt)
+                .createdAt(CREATED_AT)
                 .isEnabled(true)
                 .author(user)
                 .topic(topic)
@@ -80,7 +79,7 @@ public class CommentControllerTests {
 
         when(commentService.saveComment(any(CommentRequestDto.class))).thenReturn(commentResponseDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/comments")
+        mockMvc.perform(post("/comments")
                         .contentType("application/json")
                         .content(request))
                 .andExpect(status().isCreated())
@@ -91,7 +90,6 @@ public class CommentControllerTests {
                 .andExpect(jsonPath("$.author.id").value(commentResponseDto.getAuthor().getId().toString()))
                 .andExpect(jsonPath("$.topic.id").value(commentResponseDto.getTopic().getId().toString()))
                 .andExpect(jsonPath("$.parentComment").value(commentResponseDto.getParentComment()));
-
     }
 
 }

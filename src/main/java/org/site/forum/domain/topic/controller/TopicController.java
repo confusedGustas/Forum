@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.site.forum.domain.topic.dto.request.TopicRequestDto;
 import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.service.TopicService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class TopicController {
     public ResponseEntity<TopicResponseDto> createTopic(
             @Valid @ModelAttribute("topicRequestDto") TopicRequestDto topicRequestDto,
             @RequestParam(value = "files", required = false) List<MultipartFile> files) {
-        return ResponseEntity.ok(topicService.saveTopic(topicRequestDto, files));
+        return ResponseEntity.status(HttpStatus.CREATED).body(topicService.saveTopic(topicRequestDto, files));
     }
 
     @GetMapping("/{id}")

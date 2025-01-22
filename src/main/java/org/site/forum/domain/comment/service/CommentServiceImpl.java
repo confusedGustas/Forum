@@ -28,9 +28,7 @@ public class CommentServiceImpl implements CommentService {
         var parentComment = commentRequestDto.getParentCommentId() != null ?
                 commentDao.getComment(commentRequestDto.getParentCommentId()) : null;
 
-        var comment = commentMapper.toEntity(commentRequestDto, user, topic, parentComment);
-
-        commentDao.saveComment(comment);
+        var comment = commentDao.saveComment(commentMapper.toEntity(commentRequestDto, user, topic, parentComment));
 
         return commentMapper.toDto(comment);
     }

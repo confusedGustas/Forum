@@ -13,7 +13,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.site.forum.constants.TestConstants.CONTENT;
+import static org.site.forum.constants.TestConstants.CREATED_AT;
 import static org.site.forum.constants.TestConstants.TITLE;
 import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 
@@ -38,7 +38,6 @@ public class CommentDaoTests {
     private Comment comment;
     private Topic topic;
     private User user;
-    private final LocalDateTime createdAt = LocalDateTime.now();
 
     @BeforeEach
     public void setUp() {
@@ -59,7 +58,7 @@ public class CommentDaoTests {
     public void testSaveComment() {
         comment = Comment.builder()
                 .text(CONTENT)
-                .createdAt(createdAt)
+                .createdAt(CREATED_AT)
                 .isEnabled(true)
                 .user(user)
                 .topic(topic)
@@ -86,7 +85,7 @@ public class CommentDaoTests {
     public void testGetComment(){
         comment = Comment.builder()
                 .text(CONTENT)
-                .createdAt(createdAt)
+                .createdAt(CREATED_AT)
                 .isEnabled(true)
                 .user(user)
                 .topic(topic)

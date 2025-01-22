@@ -16,7 +16,6 @@ import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
+import static org.site.forum.constants.TestConstants.CREATED_AT;
 import static org.site.forum.constants.TestConstants.TITLE;
 import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 
@@ -51,7 +51,6 @@ public class CommentServiceTests {
     private Comment comment;
     private CommentRequestDto commentRequestDto;
     private CommentResponseDto commentResponseDto;
-    private final LocalDateTime createdAt = LocalDateTime.now();
 
     @BeforeEach
     public void setUp() {
@@ -67,7 +66,7 @@ public class CommentServiceTests {
 
         comment = Comment.builder()
                 .text(CONTENT)
-                .createdAt(createdAt)
+                .createdAt(CREATED_AT)
                 .isEnabled(true)
                 .user(user)
                 .topic(topic)
@@ -83,7 +82,7 @@ public class CommentServiceTests {
         commentResponseDto = CommentResponseDto.builder()
                 .id(UUID.randomUUID())
                 .text(CONTENT)
-                .createdAt(createdAt)
+                .createdAt(CREATED_AT)
                 .isEnabled(true)
                 .author(user)
                 .topic(topic)
@@ -120,7 +119,7 @@ public class CommentServiceTests {
 
         var reply = Comment.builder()
                 .text(CONTENT)
-                .createdAt(createdAt)
+                .createdAt(CREATED_AT)
                 .isEnabled(true)
                 .user(user)
                 .topic(topic)
