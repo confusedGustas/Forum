@@ -95,6 +95,7 @@ public class CommentServiceTests {
         when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
         when(topicDao.getTopic(commentRequestDto.getTopicId())).thenReturn(topic);
         when(commentMapper.toEntity(commentRequestDto, user, topic, null)).thenReturn(comment);
+        when(commentDao.saveComment(comment)).thenReturn(comment);
         when(commentMapper.toDto(comment)).thenReturn(commentResponseDto);
 
         CommentResponseDto result = commentService.saveComment(commentRequestDto);
@@ -130,6 +131,7 @@ public class CommentServiceTests {
         when(topicDao.getTopic(commentRequestDto.getTopicId())).thenReturn(topic);
         when(commentDao.getComment(commentRequestDto.getParentCommentId())).thenReturn(comment);
         when(commentMapper.toEntity(commentRequestDto, user, topic, comment)).thenReturn(reply);
+        when(commentDao.saveComment(reply)).thenReturn(reply);
         when(commentMapper.toDto(reply)).thenReturn(commentResponseDto);
 
         CommentResponseDto result = commentService.saveComment(commentRequestDto);
