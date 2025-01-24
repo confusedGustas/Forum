@@ -6,9 +6,12 @@ import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
 import org.site.forum.domain.comment.dto.response.CommentResponseDto;
+import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.comment.mapper.CommentMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -37,7 +40,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentResponseDto getComment(UUID parentCommentId) {
+    public CommentResponseDto getCommentByParent(UUID parentCommentId) {
         var comment = commentDao.getComment(parentCommentId);
 
         return commentMapper.toDto(comment);
@@ -49,6 +52,20 @@ public class CommentServiceImpl implements CommentService {
         checkAuthorization(comment);
 
         commentDao.deleteComment(commentId);
+    }
+
+    @Override
+    public Page<ParentCommentResponseDto> getAllParentCommentsByTopic(UUID topicId, PageRequest pageRequest) {
+        var comments = commentDao.getAllParentCommentsByTopic(topicId, pageRequest);
+
+        return comments.map(commentMapper::toParentCommentDto);
+    }
+
+    @Override
+    public Page<CommentResponseDto> getAllRepliesByParent(UUID parentCommentId, PageRequest pageRequest) {
+        var replies = commentDao.getAllRepliesByParent(parentCommentId, pageRequest);
+
+        return replies.map(commentMapper::toDto);
     }
 
     private void checkAuthorization(Comment comment) {

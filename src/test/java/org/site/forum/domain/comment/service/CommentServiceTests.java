@@ -10,7 +10,6 @@ import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
 import org.site.forum.domain.comment.dto.response.CommentResponseDto;
-import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.comment.mapper.CommentMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
@@ -52,7 +51,6 @@ public class CommentServiceTests {
     private Comment comment;
     private CommentRequestDto commentRequestDto;
     private CommentResponseDto commentResponseDto;
-    private ParentCommentResponseDto parentCommentResponseDto;
 
     @BeforeEach
     public void setUp() {
@@ -91,9 +89,6 @@ public class CommentServiceTests {
                 .parentComment(null)
                 .build();
 
-        parentCommentResponseDto = ParentCommentResponseDto.builder()
-                .id(UUID.randomUUID())
-                .build();
     }
 
     @Test
@@ -122,7 +117,7 @@ public class CommentServiceTests {
     public void testSaveReply() {
         UUID parentCommentId = UUID.randomUUID();
         commentRequestDto.setParentCommentId(parentCommentId);
-        commentResponseDto.setParentComment(parentCommentResponseDto);
+        commentResponseDto.setParentComment(parentCommentId);
 
         var reply = Comment.builder()
                 .text(CONTENT)
@@ -144,7 +139,7 @@ public class CommentServiceTests {
 
         assertNotNull(result);
         assertEquals(commentResponseDto, result);
-        assertEquals(parentCommentResponseDto, commentResponseDto.getParentComment());
+        assertEquals(parentCommentId, commentResponseDto.getParentComment());
 
         verify(authenticationService).getAuthenticatedAndPersistedUser();
         verify(topicDao).getTopic(commentRequestDto.getTopicId());
@@ -155,11 +150,11 @@ public class CommentServiceTests {
     }
 
     @Test
-    public void testGetComment() {
+    public void testGetCommentByParent() {
         when(commentDao.getComment(UUID.fromString(UUID_CONSTANT))).thenReturn(comment);
         when(commentMapper.toDto(comment)).thenReturn(commentResponseDto);
 
-        CommentResponseDto result = commentService.getComment(UUID.fromString(UUID_CONSTANT));
+        CommentResponseDto result = commentService.getCommentByParent(UUID.fromString(UUID_CONSTANT));
 
         assertNotNull(result);
         assertEquals(commentResponseDto, result);

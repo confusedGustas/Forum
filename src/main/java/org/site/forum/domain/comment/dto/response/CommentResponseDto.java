@@ -29,7 +29,7 @@ public class CommentResponseDto {
     private boolean isEnabled;
     private User author;
     private Topic topic;
-    private ParentCommentResponseDto parentComment;
+    private UUID parentComment;
     private List<ReplyResponseDto> replies;
 
 }
