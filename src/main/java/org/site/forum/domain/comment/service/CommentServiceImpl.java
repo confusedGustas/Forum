@@ -26,6 +26,9 @@ public class CommentServiceImpl implements CommentService {
     private final AuthenticationService authenticationService;
     private final CommentMapper commentMapper;
 
+    private static final String DELETED_COMMENT_TEXT = "[Deleted comment]";
+    public static final String NOT_AUTHORIZED_TO_DELETE = "You are not authorized to delete this comment";
+
     @Override
     public CommentResponseDto saveComment(CommentRequestDto commentRequestDto) {
         var user = authenticationService.getAuthenticatedAndPersistedUser();
@@ -36,22 +39,25 @@ public class CommentServiceImpl implements CommentService {
 
         var comment = commentDao.saveComment(commentMapper.toEntity(commentRequestDto, user, topic, parentComment));
 
-        return commentMapper.toDto(comment);
+        return commentMapper.toCommentResponseDto(comment);
     }
 
     @Override
     public CommentResponseDto getCommentByParent(UUID parentCommentId) {
         var comment = commentDao.getComment(parentCommentId);
 
-        return commentMapper.toDto(comment);
+        return commentMapper.toCommentResponseDto(comment);
     }
 
     @Override
-    public void deleteComment(UUID commentId) {
+    public CommentResponseDto deleteComment(UUID commentId) {
         var comment = commentDao.getComment(commentId);
         checkAuthorization(comment);
 
-        commentDao.deleteComment(commentId);
+        comment.setText(DELETED_COMMENT_TEXT);
+        comment.setEnabled(false);
+
+        return commentMapper.toCommentResponseDto(commentDao.saveComment(comment));
     }
 
     @Override
@@ -65,12 +71,12 @@ public class CommentServiceImpl implements CommentService {
     public Page<CommentResponseDto> getAllRepliesByParent(UUID parentCommentId, PageRequest pageRequest) {
         var replies = commentDao.getAllRepliesByParent(parentCommentId, pageRequest);
 
-        return replies.map(commentMapper::toDto);
+        return replies.map(commentMapper::toCommentResponseDto);
     }
 
     private void checkAuthorization(Comment comment) {
         if (!comment.getUser().getId().equals(authenticationService.getAuthenticatedAndPersistedUser().getId())) {
-            throw new IllegalArgumentException("You are not authorized to delete this comment");
+            throw new IllegalArgumentException(NOT_AUTHORIZED_TO_DELETE);
         }
     }
 

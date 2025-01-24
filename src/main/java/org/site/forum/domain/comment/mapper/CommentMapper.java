@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Component
 public class CommentMapper {
 
-    public CommentResponseDto toDto(Comment comment) {
+    public CommentResponseDto toCommentResponseDto(Comment comment) {
         return CommentResponseDto.builder()
                 .id(comment.getId())
                 .text(comment.getText())

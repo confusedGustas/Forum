@@ -12,7 +12,7 @@ public interface CommentService {
 
     CommentResponseDto saveComment(CommentRequestDto commentRequestDto);
     CommentResponseDto getCommentByParent(UUID parentCommentId);
-    void deleteComment(UUID commentId);
+    CommentResponseDto deleteComment(UUID commentId);
     Page<ParentCommentResponseDto> getAllParentCommentsByTopic(UUID topicId, PageRequest pageRequest);
     Page<CommentResponseDto> getAllRepliesByParent(UUID parentCommentId, PageRequest pageRequest);
 

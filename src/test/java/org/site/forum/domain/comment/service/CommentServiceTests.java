@@ -97,7 +97,7 @@ public class CommentServiceTests {
         when(topicDao.getTopic(commentRequestDto.getTopicId())).thenReturn(topic);
         when(commentMapper.toEntity(commentRequestDto, user, topic, null)).thenReturn(comment);
         when(commentDao.saveComment(comment)).thenReturn(comment);
-        when(commentMapper.toDto(comment)).thenReturn(commentResponseDto);
+        when(commentMapper.toCommentResponseDto(comment)).thenReturn(commentResponseDto);
 
         CommentResponseDto result = commentService.saveComment(commentRequestDto);
 
@@ -109,7 +109,7 @@ public class CommentServiceTests {
         verify(topicDao).getTopic(commentRequestDto.getTopicId());
         verify(commentMapper).toEntity(commentRequestDto, user, topic, null);
         verify(commentDao).saveComment(comment);
-        verify(commentMapper).toDto(comment);
+        verify(commentMapper).toCommentResponseDto(comment);
 
     }
 
@@ -133,7 +133,7 @@ public class CommentServiceTests {
         when(commentDao.getComment(commentRequestDto.getParentCommentId())).thenReturn(comment);
         when(commentMapper.toEntity(commentRequestDto, user, topic, comment)).thenReturn(reply);
         when(commentDao.saveComment(reply)).thenReturn(reply);
-        when(commentMapper.toDto(reply)).thenReturn(commentResponseDto);
+        when(commentMapper.toCommentResponseDto(reply)).thenReturn(commentResponseDto);
 
         CommentResponseDto result = commentService.saveComment(commentRequestDto);
 
@@ -146,13 +146,13 @@ public class CommentServiceTests {
         verify(commentDao).getComment(commentRequestDto.getParentCommentId());
         verify(commentMapper).toEntity(commentRequestDto, user, topic, comment);
         verify(commentDao).saveComment(reply);
-        verify(commentMapper).toDto(reply);
+        verify(commentMapper).toCommentResponseDto(reply);
     }
 
     @Test
     public void testGetCommentByParent() {
         when(commentDao.getComment(UUID.fromString(UUID_CONSTANT))).thenReturn(comment);
-        when(commentMapper.toDto(comment)).thenReturn(commentResponseDto);
+        when(commentMapper.toCommentResponseDto(comment)).thenReturn(commentResponseDto);
 
         CommentResponseDto result = commentService.getCommentByParent(UUID.fromString(UUID_CONSTANT));
 
@@ -160,7 +160,7 @@ public class CommentServiceTests {
         assertEquals(commentResponseDto, result);
 
         verify(commentDao).getComment(UUID.fromString(UUID_CONSTANT));
-        verify(commentMapper).toDto(comment);
+        verify(commentMapper).toCommentResponseDto(comment);
     }
 
 }

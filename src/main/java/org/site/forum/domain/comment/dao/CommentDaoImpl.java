@@ -19,7 +19,6 @@ public class CommentDaoImpl implements CommentDao {
 
     private static final String COMMENT_DOES_NOT_EXIST = "Comment with the specified id does not exist";
     private static final String TOPIC_DOES_NOT_EXIST = "Topic with the specified id does not exist";
-    private static final String PARENT_COMMENT_DOES_NOT_EXISTS = "Parent comment with the specified id does not exist";
 
     @Override
     public Comment saveComment(Comment comment) {
@@ -30,12 +29,6 @@ public class CommentDaoImpl implements CommentDao {
     public Comment getComment(UUID parentCommentId) {
         return commentRepository.findById(parentCommentId).orElseThrow(() ->
                 new IllegalArgumentException(COMMENT_DOES_NOT_EXIST));
-    }
-
-    @Override
-    public void deleteComment(UUID commentId) {
-        commentRepository.delete(commentRepository.findById(commentId).orElseThrow(() ->
-                new IllegalArgumentException(COMMENT_DOES_NOT_EXIST)));
     }
 
     @Override
@@ -60,7 +53,7 @@ public class CommentDaoImpl implements CommentDao {
 
     private void checkIfParentCommentExists(UUID parentCommentId) {
         if (commentRepository.findById(parentCommentId).isEmpty()) {
-            throw new IllegalArgumentException(PARENT_COMMENT_DOES_NOT_EXISTS);
+            throw new IllegalArgumentException(COMMENT_DOES_NOT_EXIST);
         }
     }
 
