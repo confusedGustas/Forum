@@ -1,9 +1,10 @@
-package org.site.forum.domain.topic.entity;
+package org.site.forum.domain.rating.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -11,8 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -21,22 +22,21 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "topics")
-public class Topic {
+@Table(name = "ratings")
+public class Rating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String title;
-    private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
-    private Boolean isEnabled;
-    private Integer rating;
+    @ManyToOne
+    @JoinColumn(name = "topic_id")
+    private Topic topic;
 
     @ManyToOne
-    private User author;
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    private int ratingValue;
 
 }

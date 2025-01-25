@@ -26,9 +26,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
                                 "/actuator/**",
-                                "/api/topics/*",
-                                "/api/images/url/*",
-                                "/api/images/download/*").permitAll()
+                                "/api/v1/topics/*",
+                                "/api/v1/search/topics").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter)))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

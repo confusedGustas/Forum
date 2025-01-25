@@ -13,6 +13,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserDaoImpl implements UserDao {
 
+    private static final String USER_ID_CANNOT_BE_NULL = "User ID cannot be null";
+    private static final String USER_ALREADY_EXISTS = "User with the specified UUID already exists";
+
     private final UserRepository userRepository;
 
     @Override
@@ -24,7 +27,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Optional<User> getUserById(UUID id) {
         if (id == null) {
-            throw new InvalidUserIdException("User ID cannot be null");
+            throw new InvalidUserIdException(USER_ID_CANNOT_BE_NULL);
         }
 
         return userRepository.findById(id);
@@ -32,7 +35,8 @@ public class UserDaoImpl implements UserDao {
 
     private void checkIfUserExistsByUuid(User user) {
         if (userRepository.existsById(user.getId())) {
-            throw new UserAlreadyExistsException("User with the specified UUID already exists");
+            throw new UserAlreadyExistsException(USER_ALREADY_EXISTS);
         }
     }
+
 }

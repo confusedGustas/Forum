@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
 
-    <changeSet id="2" author="Gustas">
+    <changeSet id="1" author="Gustas">
         <createTable tableName="topics">
             <column name="id" type="UUID">
                 <constraints primaryKey="true" nullable="false"/>
@@ -16,6 +16,16 @@
                 <constraints nullable="false" foreignKeyName="fk_topic_user" referencedTableName="users" referencedColumnNames="id"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="Gustas">
+        <addColumn tableName="topics">
+            <column name="created_at" type="TIMESTAMP"/>
+            <column name="updated_at" type="TIMESTAMP"/>
+            <column name="deleted_at" type="TIMESTAMP"/>
+            <column name="is_enabled" type="BOOLEAN"/>
+            <column name="rating" type="INTEGER"/>
+        </addColumn>
     </changeSet>
 
 </databaseChangeLog>

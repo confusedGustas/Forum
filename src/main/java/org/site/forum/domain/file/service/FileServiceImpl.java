@@ -27,6 +27,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
 
+    private static final String TOPIC_CANNOT_BE_NULL = "Topic cannot be null";
+    private static final String FILE_NAME_CANNOT_BE_NULL_OR_EMPTY = "File name cannot be null or empty";
+    private static final String FILE_ID_CANNOT_BE_NULL = "File ID cannot be null";
+    private static final String FILE_NOT_FOUND = "File not found";
+    private static final String TOPIC_NOT_FOUND = "Topic not found";
+    private static final String INVALID_TOPIC_OR_USER_AUTHENTICATION = "Invalid topic or user authentication";
+    private static final String CANNOT_DELETE_OTHERS_FILES = "You can delete only your files";
+    private static final String MINIO_OBJECT_NAME_CANNOT_BE_NULL_OR_EMPTY = "Minio object name cannot be null or empty";
+    private static final String FILE_CANNOT_BE_NULL_OR_EMPTY = "File cannot be null or empty";
+    private static final String GENERATED_FILE_NAME_CANNOT_BE_NULL_OR_EMPTY = "Generated file name cannot be null or empty";
+    private static final String FILE_TOPIC_OR_GENERATED_NAME_CANNOT_BE_NULL_OR_EMPTY = "File, topic, or generated file name cannot be null or empty";
+    private static final String ORIGINAL_FILE_NAME_CANNOT_BE_NULL_OR_EMPTY = "Original file name cannot be null or empty";
+
     private final MinioClient minioClient;
     private final AuthenticationService authenticationService;
     private final FileMapper fileMapper;
@@ -40,12 +53,12 @@ public class FileServiceImpl implements FileService {
     @SneakyThrows
     public void uploadFiles(List<MultipartFile> files, Topic topic) {
         if (topic == null) {
-            throw new InvalidTopicIdException("Topic cannot be null");
+            throw new InvalidTopicIdException(TOPIC_CANNOT_BE_NULL);
         }
 
         for (MultipartFile file : files) {
             if (!StringUtils.hasText(file.getOriginalFilename())) {
-                throw new InvalidFileDataException("File name cannot be null or empty");
+                throw new InvalidFileDataException(FILE_NAME_CANNOT_BE_NULL_OR_EMPTY);
             }
 
             String generatedFileName = generateFileName(file.getOriginalFilename());
@@ -58,17 +71,17 @@ public class FileServiceImpl implements FileService {
     @SneakyThrows
     public void deleteFile(UUID fileId) {
         if (fileId == null) {
-            throw new InvalidFileIdException("File ID cannot be null");
+            throw new InvalidFileIdException(FILE_ID_CANNOT_BE_NULL);
         }
 
         File file = fileDao.getFileById(fileId);
         if (file == null) {
-            throw new FileNotFoundException("File not found");
+            throw new FileNotFoundException(FILE_NOT_FOUND);
         }
 
         Topic topic = file.getTopic();
         if (topic == null) {
-            throw new InvalidTopicIdException("Topic not found");
+            throw new InvalidTopicIdException(TOPIC_NOT_FOUND);
         }
 
         checkAuthorization(topic);
@@ -78,17 +91,17 @@ public class FileServiceImpl implements FileService {
 
     private void checkAuthorization(Topic topic) {
         if (topic.getAuthor() == null || authenticationService.getAuthenticatedUser() == null) {
-            throw new UnauthorizedAccessException("Invalid topic or user authentication");
+            throw new UnauthorizedAccessException(INVALID_TOPIC_OR_USER_AUTHENTICATION);
         }
         if (!topic.getAuthor().getId().equals(authenticationService.getAuthenticatedUser().getId())) {
-            throw new UnauthorizedAccessException("You can delete only your files");
+            throw new UnauthorizedAccessException(CANNOT_DELETE_OTHERS_FILES);
         }
     }
 
     @SneakyThrows
     private void removeFileFromMinio(String minioObjectName) {
         if (!StringUtils.hasText(minioObjectName)) {
-            throw new InvalidFileDataException("Minio object name cannot be null or empty");
+            throw new InvalidFileDataException(MINIO_OBJECT_NAME_CANNOT_BE_NULL_OR_EMPTY);
         }
         minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucket).object(minioObjectName).build());
     }
@@ -96,10 +109,10 @@ public class FileServiceImpl implements FileService {
     @SneakyThrows
     private void uploadFile(MultipartFile file, String generatedFileName) {
         if (file == null || file.isEmpty()) {
-            throw new InvalidFileDataException("File cannot be null or empty");
+            throw new InvalidFileDataException(FILE_CANNOT_BE_NULL_OR_EMPTY);
         }
         if (!StringUtils.hasText(generatedFileName)) {
-            throw new InvalidFileDataException("Generated file name cannot be null or empty");
+            throw new InvalidFileDataException(GENERATED_FILE_NAME_CANNOT_BE_NULL_OR_EMPTY);
         }
 
         minioClient.putObject(PutObjectArgs.builder()
@@ -112,7 +125,7 @@ public class FileServiceImpl implements FileService {
 
     private void saveFile(MultipartFile file, Topic topic, String generatedFileName) {
         if (file == null || topic == null || !StringUtils.hasText(generatedFileName)) {
-            throw new InvalidFileDataException("File, topic, or generated file name cannot be null or empty");
+            throw new InvalidFileDataException(FILE_TOPIC_OR_GENERATED_NAME_CANNOT_BE_NULL_OR_EMPTY);
         }
         File fileEntity = fileMapper.toEntity(file, topic, generatedFileName);
         fileDao.saveFile(fileEntity);
@@ -120,9 +133,10 @@ public class FileServiceImpl implements FileService {
 
     private String generateFileName(String originalFilename) {
         if (!StringUtils.hasText(originalFilename)) {
-            throw new InvalidFileDataException("Original file name cannot be null or empty");
+            throw new InvalidFileDataException(ORIGINAL_FILE_NAME_CANNOT_BE_NULL_OR_EMPTY);
         }
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         return "file_" + UUID.randomUUID().toString() + "_" + System.currentTimeMillis() + extension;
     }
+
 }

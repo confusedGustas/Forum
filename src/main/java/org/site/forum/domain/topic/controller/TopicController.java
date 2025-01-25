@@ -7,6 +7,7 @@ import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.service.TopicService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
-@RequestMapping("/api/topics")
+@RequestMapping("/api/v1/topics")
 @RestController
 @AllArgsConstructor
 public class TopicController {
@@ -36,6 +37,13 @@ public class TopicController {
     @GetMapping("/{id}")
     public ResponseEntity<TopicResponseDto> getTopic(@PathVariable UUID id) {
         return ResponseEntity.ok(topicService.getTopic(id));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('client_user')")
+    public ResponseEntity<Void> deleteTopic(@PathVariable UUID id) {
+        topicService.deleteTopic(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -10,12 +10,20 @@ import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.topic.repository.TopicRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class TopicDaoImpl implements TopicDao {
+
+    private static final String TOPIC_WITH_ID_NOT_FOUND = "Topic with the specified id does not exist";
+    private static final String TOPIC_CANNOT_BE_NULL = "Topic cannot be null";
+    private static final String TOPIC_TITLE_CANNOT_BE_EMPTY_OR_NULL = "Topic title cannot be empty or null";
+    private static final String TOPIC_CONTENT_CANNOT_BE_EMPTY_OR_NULL = "Topic content cannot be empty or null";
+    private static final String TOPIC_AUTHOR_CANNOT_BE_NULL = "Topic author cannot be null";
+    private static final String DELETED_TOPIC_TITLE = "This topic has been deleted";
+    private static final String DELETED_TOPIC_CONTENT = "This topic has been deleted";
 
     private final TopicRepository topicRepository;
 
@@ -28,24 +36,36 @@ public class TopicDaoImpl implements TopicDao {
     @Override
     public Topic getTopic(UUID id) {
         return topicRepository.findById(id).orElseThrow(() ->
-                new InvalidTopicIdException("Topic with the specified id does not exist"));
+                new InvalidTopicIdException(TOPIC_WITH_ID_NOT_FOUND));
+    }
+
+    @Override
+    public void deleteTopic(UUID id) {
+        Topic topic = getTopic(id);
+
+        topic.setTitle(DELETED_TOPIC_TITLE);
+        topic.setContent(DELETED_TOPIC_CONTENT);
+        topic.setDeletedAt(LocalDateTime.now());
+
+        topicRepository.save(topic);
     }
 
     private void validateTopic(Topic topic) {
         if (topic == null) {
-            throw new InvalidTopicException("Topic cannot be null");
+            throw new InvalidTopicException(TOPIC_CANNOT_BE_NULL);
         }
 
         if (!StringUtils.hasText(topic.getTitle())) {
-            throw new InvalidTopicTitleException("Topic title cannot be empty or null");
+            throw new InvalidTopicTitleException(TOPIC_TITLE_CANNOT_BE_EMPTY_OR_NULL);
         }
 
         if (!StringUtils.hasText(topic.getContent())) {
-            throw new InvalidTopicContentException("Topic content cannot be empty or null");
+            throw new InvalidTopicContentException(TOPIC_CONTENT_CANNOT_BE_EMPTY_OR_NULL);
         }
 
         if (topic.getAuthor() == null) {
-            throw new InvalidTopicAuthorException("Topic author cannot be null");
+            throw new InvalidTopicAuthorException(TOPIC_AUTHOR_CANNOT_BE_NULL);
         }
     }
+
 }

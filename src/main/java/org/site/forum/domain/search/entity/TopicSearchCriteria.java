@@ -14,6 +14,8 @@ public class TopicSearchCriteria {
     private String search;
     private Integer offset;
     private Integer limit;
+    private String sortBy;
+    private String sortDirection;
 
     public boolean hasSearch() {
         return search != null && !search.isBlank();

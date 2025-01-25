@@ -10,5 +10,6 @@ public interface TopicService {
 
     TopicResponseDto saveTopic(TopicRequestDto topicRequestDto, List<MultipartFile> files);
     TopicResponseDto getTopic(UUID id);
+    void deleteTopic(UUID id);
 
 }

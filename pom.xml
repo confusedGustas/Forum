@@ -23,6 +23,7 @@
         <spring.maven.plugin>3.4.1</spring.maven.plugin>
         <lombok.version>1.18.36</lombok.version>
         <minio.version>8.5.15</minio.version>
+        <keycloak.version>26.1.0</keycloak.version>
     </properties>
 
     <dependencies>
@@ -99,7 +100,7 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
-            <version>26.1.0</version>
+            <version>${keycloak.version}</version>
         </dependency>
     </dependencies>
 
