@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.site.forum.common.exception.InvalidCommentRequestException;
+import org.site.forum.common.exception.UnauthorizedAccessException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
@@ -25,6 +27,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
@@ -163,6 +166,25 @@ class CommentServiceTests {
     }
 
     @Test
+    void testSaveCommentWhenTextIsNull() {
+        commentRequestDto.setText(null);
+
+        Exception exception = assertThrows(InvalidCommentRequestException.class,
+                () -> commentService.saveComment(commentRequestDto));
+        assertEquals("Comment text cannot be empty or null", exception.getMessage());
+    }
+
+    @Test
+    void testSaveCommentWhenTextIsEmpty() {
+        commentRequestDto.setText("");
+
+        Exception exception = assertThrows(InvalidCommentRequestException.class,
+                () -> commentService.saveComment(commentRequestDto));
+        assertEquals("Comment text cannot be empty or null", exception.getMessage());
+    }
+
+
+    @Test
     void testGetCommentByParent() {
         when(commentDao.getComment(UUID.fromString(UUID_CONSTANT))).thenReturn(comment);
         when(commentMapper.toReplyResponseDto(comment)).thenReturn(replyResponseDto);
@@ -195,6 +217,15 @@ class CommentServiceTests {
     }
 
     @Test
+    void testGetAllParentCommentsByTopicWhenTopicIdIsNull() {
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        Exception exception = assertThrows(InvalidCommentRequestException.class,
+                () -> commentService.getAllParentCommentsByTopic(null, pageable));
+        assertEquals("Topic ID cannot be null", exception.getMessage());
+    }
+
+    @Test
     void testGetAllRepliesByParent() {
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Comment> replies = new PageImpl<>(Collections.singletonList(comment));
@@ -221,7 +252,7 @@ class CommentServiceTests {
 
         try {
             commentService.deleteComment(UUID.fromString(UUID_CONSTANT));
-        } catch (IllegalArgumentException e) {
+        } catch (UnauthorizedAccessException e) {
             assertEquals(CommentServiceImpl.NOT_AUTHORIZED_TO_DELETE, e.getMessage());
         }
 

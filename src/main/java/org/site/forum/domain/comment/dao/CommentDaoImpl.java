@@ -16,11 +16,11 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CommentDaoImpl implements CommentDao {
 
-    private final CommentRepository commentRepository;
-    private final TopicDaoImpl topicDao;
-
     private static final String COMMENT_DOES_NOT_EXIST = "Comment with the specified id does not exist";
     private static final String TOPIC_DOES_NOT_EXIST = "Topic with the specified id does not exist";
+
+    private final CommentRepository commentRepository;
+    private final TopicDaoImpl topicDao;
 
     @Override
     public Comment saveComment(Comment comment) {

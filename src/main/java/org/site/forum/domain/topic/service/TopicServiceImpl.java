@@ -3,6 +3,7 @@ package org.site.forum.domain.topic.service;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.site.forum.common.exception.InvalidFileException;
+import org.site.forum.common.exception.InvalidTopicException;
 import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.common.exception.InvalidTopicRequestException;
 import org.site.forum.common.exception.UserNotFoundException;
@@ -14,9 +15,7 @@ import org.site.forum.domain.topic.dto.request.TopicRequestDto;
 import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.topic.mapper.TopicMapper;
-import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.entity.User;
-import org.site.forum.domain.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,25 +29,28 @@ public class TopicServiceImpl implements TopicService {
 
     private static final String TOPIC_ID_CANNOT_BE_NULL = "Topic ID cannot be null";
     private static final String TOPIC_NOT_FOUND = "Topic not found";
-    private static final String USER_NOT_FOUND = "User not found";
     private static final String TOPIC_REQUEST_DATA_CANNOT_BE_NULL = "Topic request data cannot be null";
     private static final String TOPIC_TITLE_CANNOT_BE_EMPTY_OR_NULL = "Topic title cannot be empty or null";
     private static final String TOPIC_CONTENT_CANNOT_BE_EMPTY_OR_NULL = "Topic content cannot be empty or null";
     private static final String FILE_CANNOT_BE_NULL_OR_EMPTY = "File cannot be null or empty";
+    private static final String USER_NOT_FOUND = "User not found";
 
     private final TopicDao topicDao;
     private final TopicMapper topicMapper;
     private final AuthenticationService authenticationService;
     private final FileService fileService;
     private final FileDao fileDao;
-    private final UserDao userDao;
-    private final UserService userService;
 
     @Override
     public TopicResponseDto saveTopic(TopicRequestDto topicRequestDto, List<MultipartFile> files) {
         validateTopicRequestDto(topicRequestDto);
 
-        User user = getAuthenticatedAndPersistedUser();
+        User user = authenticationService.getAuthenticatedAndPersistedUser();
+
+        if(user == null) {
+            throw new UserNotFoundException(USER_NOT_FOUND);
+        }
+
         Topic topic = topicDao.saveTopic(topicMapper.toEntity(topicRequestDto, user));
 
         if (files != null && !files.isEmpty()) {
@@ -76,27 +78,10 @@ public class TopicServiceImpl implements TopicService {
         }
 
         if (topicDao.getTopic(id) == null) {
-            throw new InvalidTopicIdException(TOPIC_NOT_FOUND);
+            throw new InvalidTopicException(TOPIC_NOT_FOUND);
         }
 
         topicDao.deleteTopic(id);
-    }
-
-    private User getAuthenticatedAndPersistedUser() {
-        User user = authenticationService.getAuthenticatedUser();
-        checkUser(user);
-
-        if (userDao.getUserById(user.getId()).isEmpty()) {
-            userService.saveUser(user);
-        }
-
-        return user;
-    }
-
-    private void checkUser(User user) {
-        if (user == null) {
-            throw new UserNotFoundException(USER_NOT_FOUND);
-        }
     }
 
     private void validateTopicRequestDto(TopicRequestDto topicRequestDto) {
