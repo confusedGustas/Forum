@@ -8,6 +8,7 @@ import org.site.forum.domain.file.entity.File;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dao.TopicDaoImpl;
 import org.site.forum.domain.topic.entity.Topic;
+import org.site.forum.domain.topic.integrity.DataIntegrityServiceImpl;
 import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.dao.UserDaoImpl;
 import org.site.forum.domain.user.entity.User;
@@ -25,7 +26,7 @@ import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import({FileDaoImpl.class, UserDaoImpl.class, TopicDaoImpl.class})
+@Import({FileDaoImpl.class, UserDaoImpl.class, TopicDaoImpl.class, DataIntegrityServiceImpl.class})
 class FileDaoTests {
 
     @Autowired

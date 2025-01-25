@@ -8,6 +8,7 @@ import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dao.TopicDaoImpl;
 import org.site.forum.domain.topic.entity.Topic;
+import org.site.forum.domain.topic.integrity.DataIntegrityServiceImpl;
 import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.dao.UserDaoImpl;
 import org.site.forum.domain.user.entity.User;
@@ -30,7 +31,7 @@ import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import({CommentDaoImpl.class, UserDaoImpl.class, TopicDaoImpl.class})
+@Import({CommentDaoImpl.class, UserDaoImpl.class, TopicDaoImpl.class, DataIntegrityServiceImpl.class})
 class CommentDaoTests {
 
     @Autowired
