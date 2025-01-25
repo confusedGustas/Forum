@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="4" author="Ugnius">
+        <createTable tableName="comments">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="text" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME">
+                    <constraints nullable="false"/>
+            </column>
+            <column name="is_enabled" type="BOOL" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false" foreignKeyName="fk_comment_user" referencedTableName="users" referencedColumnNames="id"/>
+            </column>
+            <column name="topic_id" type="UUID">
+                <constraints nullable="false" foreignKeyName="fk_comment_topic" referencedTableName="topics" referencedColumnNames="id"/>
+            </column>
+            <column name="parent_comment_id" type="UUID">
+                <constraints nullable="true" foreignKeyName="fk_comment_parentComment" referencedTableName="comments" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

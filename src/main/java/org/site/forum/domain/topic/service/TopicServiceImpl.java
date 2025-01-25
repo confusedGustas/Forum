@@ -1,5 +1,6 @@
 package org.site.forum.domain.topic.service;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.site.forum.common.exception.InvalidFileException;
 import org.site.forum.common.exception.InvalidTopicIdException;
@@ -19,6 +20,7 @@ import org.site.forum.domain.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -37,9 +39,7 @@ public class TopicServiceImpl implements TopicService {
     private final TopicDao topicDao;
     private final TopicMapper topicMapper;
     private final AuthenticationService authenticationService;
-    private final UserService userService;
     private final FileService fileService;
-    private final UserDao userDao;
     private final FileDao fileDao;
 
     @Override
@@ -58,6 +58,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    @Transactional
     public TopicResponseDto getTopic(UUID id) {
         if (id == null) {
             throw new InvalidTopicIdException(TOPIC_ID_CANNOT_BE_NULL);
@@ -117,5 +118,3 @@ public class TopicServiceImpl implements TopicService {
             }
         }
     }
-
-}

@@ -36,7 +36,7 @@ public class TopicMapper {
                 .build();
     }
 
-    public Topic topicBuilder(TopicRequestDto topicRequestDto, User user) {
+    public Topic toEntity(TopicRequestDto topicRequestDto, User user) {
         return Topic.builder()
                 .title(topicRequestDto.getTitle())
                 .content(topicRequestDto.getContent())
