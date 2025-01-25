@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class SearchServiceTest {
+class SearchServiceTest {
 
     @Mock
     private TopicRepository topicRepository;
@@ -63,6 +63,10 @@ public class SearchServiceTest {
 
     @Test
     void searchTopics_WithValidCriteria_ReturnsPaginatedResponse() {
+        criteria.setSearch(null);
+        criteria.setSortDirection("ASC");
+        criteria.setSortBy("rating");
+
         when(topicSpecification.withCriteria(any(TopicSearchCriteria.class)))
                 .thenReturn((Specification<Topic>) (root, query, criteriaBuilder) -> null);
         when(topicRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(topicPage);
@@ -76,6 +80,9 @@ public class SearchServiceTest {
     @Test
     void searchTopics_WithEmptySearch_ReturnsAllTopics() {
         criteria.setSearch(null);
+        criteria.setSortDirection("ASC");
+        criteria.setSortBy("rating");
+
         when(topicSpecification.withCriteria(any(TopicSearchCriteria.class)))
                 .thenReturn((Specification<Topic>) (root, query, criteriaBuilder) -> null);
         when(topicRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(topicPage);

@@ -11,7 +11,6 @@ import org.site.forum.common.exception.GlobalExceptionHandler;
 import org.site.forum.domain.file.service.FileService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
 import java.util.UUID;
 
 import static org.mockito.Mockito.doNothing;
@@ -42,7 +41,7 @@ class FileControllerTest {
         UUID fileId = UUID.randomUUID();
         doNothing().when(fileService).deleteFile(fileId);
 
-        mockMvc.perform(delete("/api/images/delete/{fileId}", fileId))
+        mockMvc.perform(delete("/images/delete/{fileId}", fileId))
                 .andExpect(status().isOk());
     }
 
@@ -51,7 +50,7 @@ class FileControllerTest {
         UUID fileId = UUID.randomUUID();
         doThrow(new FileNotFoundException("File not found")).when(fileService).deleteFile(fileId);
 
-        mockMvc.perform(delete("/api/images/delete/{fileId}", fileId))
+        mockMvc.perform(delete("/images/delete/{fileId}", fileId))
                 .andExpect(status().isNotFound());
     }
 
