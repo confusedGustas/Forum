@@ -79,9 +79,9 @@ class SearchServiceTest {
 
     @Test
     void searchTopics_WithEmptySearch_ReturnsAllTopics() {
-        criteria.setSearch(null);
-        criteria.setSortDirection("ASC");
-        criteria.setSortBy("rating");
+        criteria.setSearch("");
+        criteria.setSortDirection("DESC");
+        criteria.setSortBy("date");
 
         when(topicSpecification.withCriteria(any(TopicSearchCriteria.class)))
                 .thenReturn((Specification<Topic>) (root, query, criteriaBuilder) -> null);
