@@ -192,7 +192,41 @@ public class CommentServiceTests {
 
         verify(commentDao).getAllParentCommentsByTopic(UUID.fromString(UUID_CONSTANT), pageable);
         verify(commentMapper).toParentCommentDto(comment);
+    }
 
+    @Test
+    public void testGetAllRepliesByParent() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<Comment> replies = new PageImpl<>(Collections.singletonList(comment));
+
+        when(commentDao.getAllRepliesByParent(UUID.fromString(UUID_CONSTANT), pageable)).thenReturn(replies);
+        when(commentMapper.toReplyResponseDto(comment)).thenReturn(replyResponseDto);
+
+        Page<ReplyResponseDto> result = commentService.getAllRepliesByParent(UUID.fromString(UUID_CONSTANT), pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(replyResponseDto, result.getContent().get(0));
+
+        verify(commentDao).getAllRepliesByParent(UUID.fromString(UUID_CONSTANT), pageable);
+        verify(commentMapper).toReplyResponseDto(comment);
+    }
+
+    @Test
+    public void testDeleteCommentWhenUserIsNotAuthorized() {
+        var anotherUser = User.builder().id(UUID.randomUUID()).build();
+
+        when(commentDao.getComment(UUID.fromString(UUID_CONSTANT))).thenReturn(comment);
+        when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(anotherUser);
+
+        try {
+            commentService.deleteComment(UUID.fromString(UUID_CONSTANT));
+        } catch (IllegalArgumentException e) {
+            assertEquals(CommentServiceImpl.NOT_AUTHORIZED_TO_DELETE, e.getMessage());
+        }
+
+        verify(commentDao).getComment(UUID.fromString(UUID_CONSTANT));
+        verify(authenticationService).getAuthenticatedAndPersistedUser();
     }
 
 }

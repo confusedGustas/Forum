@@ -13,9 +13,14 @@ import org.site.forum.domain.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -24,6 +29,7 @@ import static org.site.forum.constants.TestConstants.CONTENT;
 import static org.site.forum.constants.TestConstants.CREATED_AT;
 import static org.site.forum.constants.TestConstants.TITLE;
 import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -79,7 +85,7 @@ public class CommentControllerTests {
         when(commentService.saveComment(any(CommentRequestDto.class))).thenReturn(parentCommentResponseDto);
 
         mockMvc.perform(post("/comments")
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(request))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(parentCommentResponseDto.getId().toString()))
@@ -88,6 +94,51 @@ public class CommentControllerTests {
                 .andExpect(jsonPath("$.enabled").value(parentCommentResponseDto.isEnabled()))
                 .andExpect(jsonPath("$.author.id").value(parentCommentResponseDto.getAuthor().getId().toString()))
                 .andExpect(jsonPath("$.topic.id").value(parentCommentResponseDto.getTopic().getId().toString()));
+    }
+
+    @Test
+    public void testSaveCommentWithInvalidText() throws Exception {
+        commentRequestDto.setText("");
+        ObjectMapper objectMapper = new ObjectMapper();
+        String request = objectMapper.writeValueAsString(commentRequestDto);
+
+        mockMvc.perform(post("/comments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(request))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void testGetAllCommentsByTopic() throws Exception {
+        UUID topicId = UUID.randomUUID();
+        int page = 0;
+        int pageSize = 10;
+
+        ParentCommentResponseDto comment1 = new ParentCommentResponseDto();
+
+        ParentCommentResponseDto comment2 = new ParentCommentResponseDto();
+
+        Page<ParentCommentResponseDto> mockPage = new PageImpl<>(Arrays.asList(comment1, comment2));
+
+        when(commentService.getAllParentCommentsByTopic(topicId, PageRequest.of(page, pageSize))).thenReturn(mockPage);
+
+        mockMvc.perform(get("/comments/topics/{topicId}", topicId)
+                        .param("page", String.valueOf(page))
+                        .param("pageSize", String.valueOf(pageSize))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id").value(comment1.getId().toString()))
+                .andExpect(jsonPath("$.content[1].id").value(comment2.getId().toString()));
+    }
+
+    @Test
+    public void testGetAllCommentsByTopicWithInvalidPage() throws Exception {
+        mockMvc.perform(get("/comments/topics/{topicId}", UUID.randomUUID())
+                        .param("page", "-1")
+                        .param("pageSize", "10")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
 }
