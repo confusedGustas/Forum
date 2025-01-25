@@ -3,6 +3,7 @@ package org.site.forum.domain.comment.dao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.site.forum.domain.comment.entity.Comment;
+import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dao.TopicDaoImpl;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.dao.UserDao;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.UUID;
 
@@ -35,6 +37,9 @@ public class CommentDaoTests {
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private TopicDao topicDao;
+
     private Comment comment;
     private Topic topic;
     private User user;
@@ -45,17 +50,16 @@ public class CommentDaoTests {
                 .id(UUID.fromString(UUID_CONSTANT))
                 .build();
 
+        user = userDao.saveUser(user);
+
         topic = Topic.builder()
                 .title(TITLE)
                 .content(CONTENT)
                 .author(user)
                 .build();
 
-        userDao.saveUser(user);
-    }
+        topic = topicDao.saveTopic(topic);
 
-    @Test
-    public void testSaveComment() {
         comment = Comment.builder()
                 .text(CONTENT)
                 .createdAt(CREATED_AT)
@@ -65,6 +69,10 @@ public class CommentDaoTests {
                 .parentComment(null)
                 .build();
 
+    }
+
+    @Test
+    public void testSaveComment() {
         var savedComment = commentDao.saveComment(comment);
 
         assertNotNull(savedComment.getId());
@@ -83,15 +91,6 @@ public class CommentDaoTests {
 
     @Test
     public void testGetComment(){
-        comment = Comment.builder()
-                .text(CONTENT)
-                .createdAt(CREATED_AT)
-                .isEnabled(true)
-                .user(user)
-                .topic(topic)
-                .parentComment(null)
-                .build();
-
         var savedComment = commentDao.saveComment(comment);
 
         var foundComment = commentDao.getComment(savedComment.getId());
@@ -116,6 +115,52 @@ public class CommentDaoTests {
     public void testGetCommentWhenCommentNotFound(){
         Exception exception = assertThrows(IllegalArgumentException.class, () -> commentDao.getComment(UUID.fromString(UUID_CONSTANT)));
         assertEquals("Comment with the specified id does not exist", exception.getMessage());
+    }
+
+    @Test
+    public void testGetAllParentCommentsByTopic(){
+        var savedComment = commentDao.saveComment(comment);
+
+        var comments = commentDao.getAllParentCommentsByTopic(topic.getId(), PageRequest.of(0, 10));
+
+        assertEquals(1, comments.getTotalElements());
+        assertEquals(savedComment.getId(), comments.getContent().get(0).getId());
+        assertEquals(savedComment.getText(), comments.getContent().get(0).getText());
+        assertEquals(savedComment.getCreatedAt(), comments.getContent().get(0).getCreatedAt());
+        assertEquals(savedComment.isEnabled(), comments.getContent().get(0).isEnabled());
+        assertEquals(savedComment.getTopic(), comments.getContent().get(0).getTopic());
+        assertEquals(savedComment.getUser(), comments.getContent().get(0).getUser());
+        assertEquals(savedComment.getTopic(), comments.getContent().get(0).getTopic());
+        assertEquals(savedComment.getParentComment(), comments.getContent().get(0).getParentComment());
+    }
+
+    @Test
+    public void testGetAllRepliesByParent(){
+        var savedParentComment = commentDao.saveComment(comment);
+
+        var reply = Comment.builder()
+                .text(CONTENT)
+                .createdAt(CREATED_AT)
+                .isEnabled(true)
+                .user(user)
+                .topic(topic)
+                .parentComment(comment)
+                .build();
+
+        var savedReply = commentDao.saveComment(reply);
+
+        var replies = commentDao.getAllRepliesByParent(savedParentComment.getId(), PageRequest.of(0, 10));
+
+        assertEquals(1, replies.getTotalElements());
+        assertEquals(savedReply.getId(), replies.getContent().get(0).getId());
+        assertEquals(savedReply.getText(), replies.getContent().get(0).getText());
+        assertEquals(savedReply.getCreatedAt(), replies.getContent().get(0).getCreatedAt());
+        assertEquals(savedReply.isEnabled(), replies.getContent().get(0).isEnabled());
+        assertEquals(savedReply.getTopic(), replies.getContent().get(0).getTopic());
+        assertEquals(savedReply.getUser(), replies.getContent().get(0).getUser());
+        assertEquals(savedReply.getTopic(), replies.getContent().get(0).getTopic());
+        assertEquals(savedReply.getParentComment(), replies.getContent().get(0).getParentComment());
+
     }
 
 }

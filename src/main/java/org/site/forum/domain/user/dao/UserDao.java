@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public interface UserDao {
 
-    void saveUser(User user);
+    User saveUser(User user);
     Optional<User> getUserById(UUID id);
 
 }

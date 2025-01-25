@@ -1,6 +1,5 @@
 package org.site.forum.domain.comment.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -46,11 +45,11 @@ public class Comment {
     @ManyToOne
     private Topic topic;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
 
-    @OneToMany(mappedBy = "parentComment", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parentComment")
     private List<Comment> replies;
 
 }

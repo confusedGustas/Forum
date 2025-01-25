@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.site.forum.domain.user.entity.User;
+
 import java.util.UUID;
 
 @Entity

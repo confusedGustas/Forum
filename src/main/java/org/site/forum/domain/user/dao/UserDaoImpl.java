@@ -15,10 +15,10 @@ public class UserDaoImpl implements UserDao {
     private final UserRepository userRepository;
 
     @Override
-    public void saveUser(User user) {
+    public User saveUser(User user) {
         checkIfUserExistsByUuid(user);
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     @Override
