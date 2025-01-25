@@ -24,7 +24,7 @@ import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({TopicDaoImpl.class, UserDaoImpl.class})
-public class TopicDaoTests {
+class TopicDaoTests {
 
     @Autowired
     private TopicDao topicDao;
@@ -36,7 +36,7 @@ public class TopicDaoTests {
     private User user;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         user = User.builder()
                 .id(UUID.fromString(UUID_CONSTANT))
                 .build();

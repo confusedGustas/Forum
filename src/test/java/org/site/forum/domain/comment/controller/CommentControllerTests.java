@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(CommentController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@ExtendWith(MockitoExtension .class)
+@ExtendWith(MockitoExtension.class)
 public class CommentControllerTests {
 
     @Autowired
@@ -45,7 +45,7 @@ public class CommentControllerTests {
     private ParentCommentResponseDto parentCommentResponseDto;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         User user = User.builder()
                 .id(UUID.randomUUID())
                 .build();
@@ -74,7 +74,7 @@ public class CommentControllerTests {
     }
 
     @Test
-    public void testSaveComment() throws Exception {
+    void testSaveComment() throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         String request = objectMapper.writeValueAsString(commentRequestDto);
 
@@ -93,7 +93,7 @@ public class CommentControllerTests {
     }
 
     @Test
-    public void testSaveCommentWithInvalidText() throws Exception {
+    void testSaveCommentWithInvalidText() throws Exception {
         commentRequestDto.setText("");
         ObjectMapper objectMapper = new ObjectMapper();
         String request = objectMapper.writeValueAsString(commentRequestDto);
@@ -105,7 +105,7 @@ public class CommentControllerTests {
     }
 
 //    @Test
-//    public void testGetAllCommentsByTopic() throws Exception {
+//   void testGetAllCommentsByTopic() throws Exception {
 //        UUID topicId = UUID.randomUUID();
 //        int page = 0;
 //        int pageSize = 10;
@@ -129,7 +129,7 @@ public class CommentControllerTests {
 //    } //TODO fix this test
 
     @Test
-    public void testGetAllCommentsByTopicWithInvalidPage() throws Exception {
+    void testGetAllCommentsByTopicWithInvalidPage() throws Exception {
         mockMvc.perform(get("/comments/topics/{topicId}", UUID.randomUUID())
                         .param("page", "-1")
                         .param("pageSize", "10")

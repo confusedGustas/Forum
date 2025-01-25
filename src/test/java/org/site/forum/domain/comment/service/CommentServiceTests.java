@@ -33,7 +33,7 @@ import static org.site.forum.constants.TestConstants.TITLE;
 import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 
 @ExtendWith(MockitoExtension.class)
-public class CommentServiceTests {
+class CommentServiceTests {
 
     @Mock
     private AuthenticationService authenticationService;
@@ -58,7 +58,7 @@ public class CommentServiceTests {
     private ParentCommentResponseDto parentCommentResponseDto;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         user = User.builder()
                 .id(UUID.randomUUID())
                 .build();
@@ -107,7 +107,7 @@ public class CommentServiceTests {
     }
 
     @Test
-    public void testSaveRootComment() {
+    void testSaveRootComment() {
         when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
         when(topicDao.getTopic(commentRequestDto.getTopicId())).thenReturn(topic);
         when(commentMapper.toEntity(commentRequestDto, user, topic, null)).thenReturn(comment);
@@ -127,7 +127,7 @@ public class CommentServiceTests {
     }
 
     @Test
-    public void testSaveReply() {
+    void testSaveReply() {
         UUID parentCommentId = UUID.randomUUID();
         commentRequestDto.setParentCommentId(parentCommentId);
         replyResponseDto.setParentCommentId(parentCommentId);
@@ -163,7 +163,7 @@ public class CommentServiceTests {
     }
 
     @Test
-    public void testGetCommentByParent() {
+    void testGetCommentByParent() {
         when(commentDao.getComment(UUID.fromString(UUID_CONSTANT))).thenReturn(comment);
         when(commentMapper.toReplyResponseDto(comment)).thenReturn(replyResponseDto);
 
@@ -177,7 +177,7 @@ public class CommentServiceTests {
     }
 
     @Test
-    public void testGetAllParentCommentsByTopic() {
+    void testGetAllParentCommentsByTopic() {
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Comment> comments = new PageImpl<>(Collections.singletonList(comment));
 
@@ -195,7 +195,7 @@ public class CommentServiceTests {
     }
 
     @Test
-    public void testGetAllRepliesByParent() {
+    void testGetAllRepliesByParent() {
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Comment> replies = new PageImpl<>(Collections.singletonList(comment));
 
@@ -213,7 +213,7 @@ public class CommentServiceTests {
     }
 
     @Test
-    public void testDeleteCommentWhenUserIsNotAuthorized() {
+    void testDeleteCommentWhenUserIsNotAuthorized() {
         var anotherUser = User.builder().id(UUID.randomUUID()).build();
 
         when(commentDao.getComment(UUID.fromString(UUID_CONSTANT))).thenReturn(comment);

@@ -105,17 +105,17 @@ class FileServiceTests {
     }
 
     @Test
-    public void testUploadFiles_InvalidTopicIdException() {
+    void testUploadFiles_InvalidTopicIdException() {
         assertThrows(InvalidTopicIdException.class, () -> fileService.uploadFiles(Collections.singletonList(multipartFile), null));
     }
 
     @Test
-    public void testDeleteFile_InvalidFileIdException() {
+    void testDeleteFile_InvalidFileIdException() {
         assertThrows(InvalidFileIdException.class, () -> fileService.deleteFile(null));
     }
 
     @Test
-    public void testDeleteFile_InvalidTopicIdException() {
+    void testDeleteFile_InvalidTopicIdException() {
         file.setTopic(null);
         when(fileDao.getFileById(any(UUID.class))).thenReturn(file);
 
@@ -123,7 +123,7 @@ class FileServiceTests {
     }
 
     @Test
-    public void testDeleteFile_FileNotFoundException() {
+    void testDeleteFile_FileNotFoundException() {
         when(fileDao.getFileById(any(UUID.class))).thenReturn(null);
 
         assertThrows(FileNotFoundException.class, () -> fileService.deleteFile(UUID.randomUUID()));
@@ -131,7 +131,7 @@ class FileServiceTests {
 
 
     @Test
-    public void testUploadFiles_InvalidFileDataException() {
+    void testUploadFiles_InvalidFileDataException() {
         MultipartFile invalidFile = new MockMultipartFile(
                 "file",
                 "",
@@ -143,7 +143,7 @@ class FileServiceTests {
     }
 
     @Test
-    public void testDeleteFile_UnauthorizedAccessException() {
+    void testDeleteFile_UnauthorizedAccessException() {
         topic.setAuthor(new org.site.forum.domain.user.entity.User());
         when(fileDao.getFileById(any(UUID.class))).thenReturn(file);
         when(authenticationService.getAuthenticatedUser()).thenReturn(new org.site.forum.domain.user.entity.User());

@@ -1,6 +1,8 @@
 package org.site.forum.domain.comment.dao;
 
 import lombok.AllArgsConstructor;
+import org.site.forum.common.exception.InvalidCommentException;
+import org.site.forum.common.exception.InvalidTopicException;
 import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.comment.repository.CommentRepository;
 import org.site.forum.domain.topic.dao.TopicDaoImpl;
@@ -28,7 +30,7 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public Comment getComment(UUID parentCommentId) {
         return commentRepository.findById(parentCommentId).orElseThrow(() ->
-                new IllegalArgumentException(COMMENT_DOES_NOT_EXIST));
+                new InvalidCommentException(COMMENT_DOES_NOT_EXIST));
     }
 
     @Override
@@ -47,13 +49,13 @@ public class CommentDaoImpl implements CommentDao {
 
     private void checkIfTopicExists(UUID topicId) {
         if(topicDao.getTopic(topicId) == null) {
-            throw new IllegalArgumentException(TOPIC_DOES_NOT_EXIST);
+            throw new InvalidTopicException(TOPIC_DOES_NOT_EXIST);
         }
     }
 
     private void checkIfParentCommentExists(UUID parentCommentId) {
         if (commentRepository.findById(parentCommentId).isEmpty()) {
-            throw new IllegalArgumentException(COMMENT_DOES_NOT_EXIST);
+            throw new InvalidCommentException(COMMENT_DOES_NOT_EXIST);
         }
     }
 

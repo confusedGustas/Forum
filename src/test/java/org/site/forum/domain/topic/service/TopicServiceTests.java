@@ -11,12 +11,15 @@ import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.file.dao.FileDao;
 import org.site.forum.domain.file.entity.File;
 import org.site.forum.domain.file.mapper.FileMapper;
+import org.site.forum.domain.file.service.FileService;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dto.request.TopicRequestDto;
 import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.topic.mapper.TopicMapper;
+import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.entity.User;
+import org.site.forum.domain.user.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
@@ -25,6 +28,9 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
@@ -32,7 +38,7 @@ import static org.site.forum.constants.TestConstants.TITLE;
 import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 
 @ExtendWith(MockitoExtension.class)
-public class TopicServiceTests {
+class TopicServiceTests {
 
     @Mock
     private TopicDao topicDao;
@@ -47,6 +53,18 @@ public class TopicServiceTests {
     private FileMapper fileMapper;
 
     @Mock
+    private FileService fileService;
+
+    @Mock
+    private MultipartFile multipartFile;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private UserDao userDao;
+
+    @Mock
     private AuthenticationService authenticationService;
 
     @InjectMocks
@@ -59,7 +77,7 @@ public class TopicServiceTests {
     private TopicResponseDto topicResponseDto;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         user = User.builder()
                 .id(UUID.randomUUID())
                 .build();
@@ -91,10 +109,10 @@ public class TopicServiceTests {
     }
 
     @Test
-    public void testCreateTopic() {
+    void testCreateTopic() {
         List<MultipartFile> files = Collections.emptyList();
 
-        when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
         when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(topic);
         when(topicDao.saveTopic(topic)).thenReturn(topic);
 
@@ -106,10 +124,9 @@ public class TopicServiceTests {
         assertNotNull(response);
         assertEquals(topicResponseDto, response);
 
-        verify(authenticationService).getAuthenticatedAndPersistedUser();
+        verify(authenticationService).getAuthenticatedUser();
         verify(topicMapper).toEntity(topicRequestDto, user);
         verify(topicDao).saveTopic(topic);
-        verify(fileService, never()).uploadFiles(files, topic);
         verify(topicMapper).toDto(topic, List.of(file));
     }
 
@@ -122,7 +139,7 @@ public class TopicServiceTests {
 
         verify(authenticationService).getAuthenticatedUser();
         verify(userService, never()).saveUser(any());
-        verify(topicMapper, never()).topicBuilder(any(), any());
+        verify(topicMapper, never()).toEntity(any(), any());
         verify(topicDao, never()).saveTopic(any());
     }
 

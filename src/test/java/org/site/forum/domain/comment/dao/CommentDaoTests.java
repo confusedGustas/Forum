@@ -2,6 +2,8 @@ package org.site.forum.domain.comment.dao;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.site.forum.common.exception.InvalidCommentException;
+import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dao.TopicDaoImpl;
@@ -29,7 +31,7 @@ import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({CommentDaoImpl.class, UserDaoImpl.class, TopicDaoImpl.class})
-public class CommentDaoTests {
+class CommentDaoTests {
 
     @Autowired
     private CommentDao commentDao;
@@ -45,7 +47,7 @@ public class CommentDaoTests {
     private User user;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         user = User.builder()
                 .id(UUID.fromString(UUID_CONSTANT))
                 .build();
@@ -72,7 +74,7 @@ public class CommentDaoTests {
     }
 
     @Test
-    public void testSaveComment() {
+    void testSaveComment() {
         var savedComment = commentDao.saveComment(comment);
 
         assertNotNull(savedComment.getId());
@@ -90,7 +92,7 @@ public class CommentDaoTests {
     }
 
     @Test
-    public void testGetComment(){
+    void testGetComment(){
         var savedComment = commentDao.saveComment(comment);
 
         var foundComment = commentDao.getComment(savedComment.getId());
@@ -112,13 +114,13 @@ public class CommentDaoTests {
     }
 
     @Test
-    public void testGetCommentWhenCommentNotFound(){
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> commentDao.getComment(UUID.fromString(UUID_CONSTANT)));
+    void testGetCommentWhenCommentNotFound(){
+        Exception exception = assertThrows(InvalidCommentException.class, () -> commentDao.getComment(UUID.fromString(UUID_CONSTANT)));
         assertEquals("Comment with the specified id does not exist", exception.getMessage());
     }
 
     @Test
-    public void testGetAllParentCommentsByTopic(){
+    void testGetAllParentCommentsByTopic(){
         var savedComment = commentDao.saveComment(comment);
 
         var comments = commentDao.getAllParentCommentsByTopic(topic.getId(), PageRequest.of(0, 10));
@@ -135,7 +137,7 @@ public class CommentDaoTests {
     }
 
     @Test
-    public void testGetAllRepliesByParent(){
+    void testGetAllRepliesByParent(){
         var savedParentComment = commentDao.saveComment(comment);
 
         var reply = Comment.builder()
@@ -164,14 +166,14 @@ public class CommentDaoTests {
     }
 
     @Test
-    public void testGetAllParentCommentsByTopicWhenTopicDoesNotExist(){
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> commentDao.getAllParentCommentsByTopic(UUID.fromString(UUID_CONSTANT), PageRequest.of(0, 10)));
+    void testGetAllParentCommentsByTopicWhenTopicDoesNotExist(){
+        Exception exception = assertThrows(InvalidTopicIdException.class, () -> commentDao.getAllParentCommentsByTopic(UUID.fromString(UUID_CONSTANT), PageRequest.of(0, 10)));
         assertEquals("Topic with the specified id does not exist", exception.getMessage());
     }
 
     @Test
-    public void testGetAllRepliesByParentWhenParentCommentDoesNotExist(){
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> commentDao.getAllRepliesByParent(UUID.fromString(UUID_CONSTANT), PageRequest.of(0, 10)));
+    void testGetAllRepliesByParentWhenParentCommentDoesNotExist(){
+        Exception exception = assertThrows(InvalidCommentException.class, () -> commentDao.getAllRepliesByParent(UUID.fromString(UUID_CONSTANT), PageRequest.of(0, 10)));
         assertEquals("Comment with the specified id does not exist", exception.getMessage());
     }
 

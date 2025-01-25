@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TopicController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
-public class TopicControllerTests {
+class TopicControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -39,7 +39,7 @@ public class TopicControllerTests {
     private TopicResponseDto topicResponseDto;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         User user = User.builder()
                 .id(UUID.randomUUID())
                 .build();
@@ -53,7 +53,7 @@ public class TopicControllerTests {
     }
 
     @Test
-    public void testCreateTopic() throws Exception {
+    void testCreateTopic() throws Exception {
         when(topicService.saveTopic(any(TopicRequestDto.class), eq(null))).thenReturn(topicResponseDto);
 
         mockMvc.perform(multipart("/topics")

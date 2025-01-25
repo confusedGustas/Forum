@@ -41,13 +41,15 @@ public class TopicServiceImpl implements TopicService {
     private final AuthenticationService authenticationService;
     private final FileService fileService;
     private final FileDao fileDao;
+    private final UserDao userDao;
+    private final UserService userService;
 
     @Override
     public TopicResponseDto saveTopic(TopicRequestDto topicRequestDto, List<MultipartFile> files) {
         validateTopicRequestDto(topicRequestDto);
 
         User user = getAuthenticatedAndPersistedUser();
-        Topic topic = topicDao.saveTopic(topicMapper.topicBuilder(topicRequestDto, user));
+        Topic topic = topicDao.saveTopic(topicMapper.toEntity(topicRequestDto, user));
 
         if (files != null && !files.isEmpty()) {
             validateFiles(files);
@@ -118,3 +120,4 @@ public class TopicServiceImpl implements TopicService {
             }
         }
     }
+}

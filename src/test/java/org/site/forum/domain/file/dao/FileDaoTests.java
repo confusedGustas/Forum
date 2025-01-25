@@ -41,7 +41,7 @@ class FileDaoTests {
     private Topic topic;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         User user = User.builder()
                 .id(UUID.fromString(UUID_CONSTANT))
                 .build();
