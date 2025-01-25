@@ -2,6 +2,7 @@ package org.site.forum.domain.comment.service;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.site.forum.common.exception.UnauthorizedAccessException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
@@ -76,7 +77,7 @@ public class CommentServiceImpl implements CommentService {
 
     private void checkAuthorization(Comment comment) {
         if (!comment.getUser().getId().equals(authenticationService.getAuthenticatedAndPersistedUser().getId())) {
-            throw new IllegalArgumentException(NOT_AUTHORIZED_TO_DELETE);
+            throw new UnauthorizedAccessException(NOT_AUTHORIZED_TO_DELETE);
         }
     }
 
