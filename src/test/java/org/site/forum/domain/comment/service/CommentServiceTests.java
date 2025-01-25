@@ -9,18 +9,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
-import org.site.forum.domain.comment.dto.response.CommentResponseDto;
+import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
+import org.site.forum.domain.comment.dto.response.ReplyResponseDto;
 import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.comment.mapper.CommentMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
@@ -50,7 +54,8 @@ public class CommentServiceTests {
     private Topic topic;
     private Comment comment;
     private CommentRequestDto commentRequestDto;
-    private CommentResponseDto commentResponseDto;
+    private ReplyResponseDto replyResponseDto;
+    private ParentCommentResponseDto parentCommentResponseDto;
 
     @BeforeEach
     public void setUp() {
@@ -79,14 +84,24 @@ public class CommentServiceTests {
                 .parentCommentId(null)
                 .build();
 
-        commentResponseDto = CommentResponseDto.builder()
+        parentCommentResponseDto = ParentCommentResponseDto.builder()
                 .id(UUID.randomUUID())
                 .text(CONTENT)
                 .createdAt(CREATED_AT)
                 .isEnabled(true)
                 .author(user)
                 .topic(topic)
-                .parentComment(null)
+                .build();
+
+        replyResponseDto = ReplyResponseDto.builder()
+                .id(UUID.randomUUID())
+                .text(CONTENT)
+                .createdAt(CREATED_AT)
+                .isEnabled(true)
+                .userId(user.getId())
+                .topicId(topic.getId())
+                .parentCommentId(parentCommentResponseDto.getId())
+                .replies(Collections.emptyList())
                 .build();
 
     }
@@ -97,27 +112,25 @@ public class CommentServiceTests {
         when(topicDao.getTopic(commentRequestDto.getTopicId())).thenReturn(topic);
         when(commentMapper.toEntity(commentRequestDto, user, topic, null)).thenReturn(comment);
         when(commentDao.saveComment(comment)).thenReturn(comment);
-        when(commentMapper.toCommentResponseDto(comment)).thenReturn(commentResponseDto);
+        when(commentMapper.toParentCommentDto(comment)).thenReturn(parentCommentResponseDto);
 
-        CommentResponseDto result = commentService.saveComment(commentRequestDto);
+        ParentCommentResponseDto result = commentService.saveComment(commentRequestDto);
 
         assertNotNull(result);
-        assertNull(result.getParentComment());
-        assertEquals(commentResponseDto, result);
+        assertEquals(parentCommentResponseDto, result);
 
         verify(authenticationService).getAuthenticatedAndPersistedUser();
         verify(topicDao).getTopic(commentRequestDto.getTopicId());
         verify(commentMapper).toEntity(commentRequestDto, user, topic, null);
         verify(commentDao).saveComment(comment);
-        verify(commentMapper).toCommentResponseDto(comment);
-
+        verify(commentMapper).toParentCommentDto(comment);
     }
 
     @Test
     public void testSaveReply() {
         UUID parentCommentId = UUID.randomUUID();
         commentRequestDto.setParentCommentId(parentCommentId);
-        commentResponseDto.setParentComment(parentCommentId);
+        replyResponseDto.setParentCommentId(parentCommentId);
 
         var reply = Comment.builder()
                 .text(CONTENT)
@@ -133,34 +146,53 @@ public class CommentServiceTests {
         when(commentDao.getComment(commentRequestDto.getParentCommentId())).thenReturn(comment);
         when(commentMapper.toEntity(commentRequestDto, user, topic, comment)).thenReturn(reply);
         when(commentDao.saveComment(reply)).thenReturn(reply);
-        when(commentMapper.toCommentResponseDto(reply)).thenReturn(commentResponseDto);
+        when(commentMapper.toParentCommentDto(reply)).thenReturn(parentCommentResponseDto);
 
-        CommentResponseDto result = commentService.saveComment(commentRequestDto);
+        ParentCommentResponseDto result = commentService.saveComment(commentRequestDto);
 
         assertNotNull(result);
-        assertEquals(commentResponseDto, result);
-        assertEquals(parentCommentId, commentResponseDto.getParentComment());
+        assertEquals(parentCommentResponseDto, result);
+        assertEquals(parentCommentId, replyResponseDto.getParentCommentId());
 
         verify(authenticationService).getAuthenticatedAndPersistedUser();
         verify(topicDao).getTopic(commentRequestDto.getTopicId());
         verify(commentDao).getComment(commentRequestDto.getParentCommentId());
         verify(commentMapper).toEntity(commentRequestDto, user, topic, comment);
         verify(commentDao).saveComment(reply);
-        verify(commentMapper).toCommentResponseDto(reply);
+        verify(commentMapper).toParentCommentDto(reply);
     }
 
     @Test
     public void testGetCommentByParent() {
         when(commentDao.getComment(UUID.fromString(UUID_CONSTANT))).thenReturn(comment);
-        when(commentMapper.toCommentResponseDto(comment)).thenReturn(commentResponseDto);
+        when(commentMapper.toReplyResponseDto(comment)).thenReturn(replyResponseDto);
 
-        CommentResponseDto result = commentService.getCommentByParent(UUID.fromString(UUID_CONSTANT));
+        ReplyResponseDto result = commentService.getCommentByParent(UUID.fromString(UUID_CONSTANT));
 
         assertNotNull(result);
-        assertEquals(commentResponseDto, result);
+        assertEquals(replyResponseDto, result);
 
         verify(commentDao).getComment(UUID.fromString(UUID_CONSTANT));
-        verify(commentMapper).toCommentResponseDto(comment);
+        verify(commentMapper).toReplyResponseDto(comment);
+    }
+
+    @Test
+    public void testGetAllParentCommentsByTopic() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        Page<Comment> comments = new PageImpl<>(Collections.singletonList(comment));
+
+        when(commentDao.getAllParentCommentsByTopic(UUID.fromString(UUID_CONSTANT), pageable)).thenReturn(comments);
+        when(commentMapper.toParentCommentDto(comment)).thenReturn(parentCommentResponseDto);
+
+        Page<ParentCommentResponseDto> result = commentService.getAllParentCommentsByTopic(UUID.fromString(UUID_CONSTANT), pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(parentCommentResponseDto, result.getContent().get(0));
+
+        verify(commentDao).getAllParentCommentsByTopic(UUID.fromString(UUID_CONSTANT), pageable);
+        verify(commentMapper).toParentCommentDto(comment);
+
     }
 
 }

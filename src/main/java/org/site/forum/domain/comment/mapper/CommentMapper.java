@@ -3,7 +3,6 @@ package org.site.forum.domain.comment.mapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
-import org.site.forum.domain.comment.dto.response.CommentResponseDto;
 import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.dto.response.ReplyResponseDto;
 import org.site.forum.domain.comment.entity.Comment;
@@ -19,18 +18,6 @@ import java.util.stream.Collectors;
 @Component
 public class CommentMapper {
 
-    public CommentResponseDto toCommentResponseDto(Comment comment) {
-        return CommentResponseDto.builder()
-                .id(comment.getId())
-                .text(comment.getText())
-                .createdAt(comment.getCreatedAt())
-                .author(comment.getUser())
-                .topic(comment.getTopic())
-                .parentComment(getParentComment(comment))
-                .replies(getReplies(comment))
-                .build();
-    }
-
     public ParentCommentResponseDto toParentCommentDto(Comment comment) {
         return ParentCommentResponseDto.builder()
                 .id(comment.getId())
@@ -39,6 +26,18 @@ public class CommentMapper {
                 .isEnabled(comment.isEnabled())
                 .author(comment.getUser())
                 .topic(comment.getTopic())
+                .build();
+    }
+
+    public ReplyResponseDto toReplyResponseDto(Comment comment) {
+        return ReplyResponseDto.builder()
+                .id(comment.getId())
+                .text(comment.getText())
+                .createdAt(comment.getCreatedAt())
+                .userId(comment.getUser().getId())
+                .topicId(comment.getTopic().getId())
+                .parentCommentId(getParentComment(comment))
+                .replies(getReplies(comment))
                 .build();
     }
 
@@ -63,21 +62,6 @@ public class CommentMapper {
     @Nullable
     private UUID getParentComment(Comment comment) {
         return comment.getParentComment() != null ? comment.getParentComment().getId() : null;
-    }
-
-    private ReplyResponseDto toReplyResponseDto(Comment comment){
-        return ReplyResponseDto.builder()
-                .id(comment.getId())
-                .text(comment.getText())
-                .createdAt(comment.getCreatedAt())
-                .isEnabled(comment.isEnabled())
-                .userId(comment.getUser().getId())
-                .topicId(comment.getTopic().getId())
-                .parentCommentId(comment.getParentComment().getId())
-                .replies(comment.getReplies().stream()
-                        .map(this::toReplyResponseDto)
-                        .collect(Collectors.toList()))
-                .build();
     }
 
 }

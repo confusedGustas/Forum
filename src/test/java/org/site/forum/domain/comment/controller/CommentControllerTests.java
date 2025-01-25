@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
-import org.site.forum.domain.comment.dto.response.CommentResponseDto;
+import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.service.CommentService;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
@@ -40,7 +40,7 @@ public class CommentControllerTests {
     private CommentService commentService;
 
     private CommentRequestDto commentRequestDto;
-    private CommentResponseDto commentResponseDto;
+    private ParentCommentResponseDto parentCommentResponseDto;
 
     @BeforeEach
     public void setUp() {
@@ -61,14 +61,13 @@ public class CommentControllerTests {
                 .parentCommentId(null)
                 .build();
 
-        commentResponseDto = CommentResponseDto.builder()
+        parentCommentResponseDto = ParentCommentResponseDto.builder()
                 .id(UUID.randomUUID())
                 .text(CONTENT)
                 .createdAt(CREATED_AT)
                 .isEnabled(true)
                 .author(user)
                 .topic(topic)
-                .parentComment(null)
                 .build();
     }
 
@@ -77,19 +76,18 @@ public class CommentControllerTests {
         ObjectMapper objectMapper = new ObjectMapper();
         String request = objectMapper.writeValueAsString(commentRequestDto);
 
-        when(commentService.saveComment(any(CommentRequestDto.class))).thenReturn(commentResponseDto);
+        when(commentService.saveComment(any(CommentRequestDto.class))).thenReturn(parentCommentResponseDto);
 
         mockMvc.perform(post("/comments")
                         .contentType("application/json")
                         .content(request))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(commentResponseDto.getId().toString()))
-                .andExpect(jsonPath("$.text").value(commentResponseDto.getText()))
-                .andExpect(jsonPath("$.createdAt").value(commentResponseDto.getCreatedAt().toString()))
-                .andExpect(jsonPath("$.enabled").value(commentResponseDto.isEnabled()))
-                .andExpect(jsonPath("$.author.id").value(commentResponseDto.getAuthor().getId().toString()))
-                .andExpect(jsonPath("$.topic.id").value(commentResponseDto.getTopic().getId().toString()))
-                .andExpect(jsonPath("$.parentComment").value(commentResponseDto.getParentComment()));
+                .andExpect(jsonPath("$.id").value(parentCommentResponseDto.getId().toString()))
+                .andExpect(jsonPath("$.text").value(parentCommentResponseDto.getText()))
+                .andExpect(jsonPath("$.createdAt").value(parentCommentResponseDto.getCreatedAt().toString()))
+                .andExpect(jsonPath("$.enabled").value(parentCommentResponseDto.isEnabled()))
+                .andExpect(jsonPath("$.author.id").value(parentCommentResponseDto.getAuthor().getId().toString()))
+                .andExpect(jsonPath("$.topic.id").value(parentCommentResponseDto.getTopic().getId().toString()));
     }
 
 }

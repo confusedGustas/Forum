@@ -3,8 +3,8 @@ package org.site.forum.domain.comment.controller;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
-import org.site.forum.domain.comment.dto.response.CommentResponseDto;
 import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
+import org.site.forum.domain.comment.dto.response.ReplyResponseDto;
 import org.site.forum.domain.comment.service.CommentService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,17 +31,17 @@ public class CommentController {
     private static final int MAX_PAGE_SIZE = 50;
 
     @PostMapping
-    public ResponseEntity<CommentResponseDto> saveComment(@Valid @RequestBody CommentRequestDto commentRequestDto) {
+    public ResponseEntity<ParentCommentResponseDto> saveComment(@Valid @RequestBody CommentRequestDto commentRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.saveComment(commentRequestDto));
     }
 
     @GetMapping("/{commentId}")
-    public ResponseEntity<CommentResponseDto> getComment(@PathVariable UUID commentId) {
+    public ResponseEntity<ReplyResponseDto> getComment(@PathVariable UUID commentId) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.getCommentByParent(commentId));
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<CommentResponseDto> deleteComment(@PathVariable UUID commentId) {
+    public ResponseEntity<ParentCommentResponseDto> deleteComment(@PathVariable UUID commentId) {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.deleteComment(commentId));
     }
 
@@ -55,7 +55,7 @@ public class CommentController {
     }
 
     @GetMapping("/{commentId}/replies")
-    public ResponseEntity<Page<CommentResponseDto>> getAllRepliesByParent(@PathVariable UUID commentId,
+    public ResponseEntity<Page<ReplyResponseDto>> getAllRepliesByParent(@PathVariable UUID commentId,
                                                                           @RequestParam int page,
                                                                           @RequestParam int pageSize) {
         if(isPageInvalid(page, pageSize)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

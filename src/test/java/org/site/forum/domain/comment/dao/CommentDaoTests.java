@@ -163,4 +163,17 @@ public class CommentDaoTests {
 
     }
 
+    @Test
+    public void testGetAllParentCommentsByTopicWhenTopicDoesNotExist(){
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> commentDao.getAllParentCommentsByTopic(UUID.fromString(UUID_CONSTANT), PageRequest.of(0, 10)));
+        assertEquals("Topic with the specified id does not exist", exception.getMessage());
+    }
+
+    @Test
+    public void testGetAllRepliesByParentWhenParentCommentDoesNotExist(){
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> commentDao.getAllRepliesByParent(UUID.fromString(UUID_CONSTANT), PageRequest.of(0, 10)));
+        assertEquals("Comment with the specified id does not exist", exception.getMessage());
+    }
+
+
 }
