@@ -11,7 +11,7 @@ import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dto.request.TopicRequestDto;
 import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.entity.Topic;
-import org.site.forum.domain.topic.integrity.DataIntegrityService;
+import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.site.forum.domain.topic.mapper.TopicMapper;
 import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.entity.User;
@@ -35,12 +35,12 @@ public class TopicServiceImpl implements TopicService {
     private final FileDao fileDao;
     private final UserDao userDao;
     private final UserService userService;
-    private final DataIntegrityService dataIntegrityService;
+    private final TopicDataIntegrity topicDataIntegrity;
 
     @Override
     public TopicResponseDto saveTopic(TopicRequestDto topicRequestDto, List<MultipartFile> files) {
-        dataIntegrityService.validateTopicRequestDto(topicRequestDto);
-        dataIntegrityService.validateFiles(files);
+        topicDataIntegrity.validateTopicRequestDto(topicRequestDto);
+        topicDataIntegrity.validateFiles(files);
 
         User user = getAuthenticatedAndPersistedUser();
         Topic topic = topicDao.saveTopic(topicMapper.toEntity(topicRequestDto, user));
@@ -55,13 +55,13 @@ public class TopicServiceImpl implements TopicService {
     @Override
     @Transactional
     public TopicResponseDto getTopic(UUID id) {
-        dataIntegrityService.validateTopicId(id);
+        topicDataIntegrity.validateTopicId(id);
         return topicMapper.toDto(topicDao.getTopic(id), fileDao.findFilesByTopicId(id));
     }
 
     @Override
     public void deleteTopic(UUID id) {
-        dataIntegrityService.validateTopicId(id);
+        topicDataIntegrity.validateTopicId(id);
         if (topicDao.getTopic(id) == null) throw new InvalidTopicIdException(TOPIC_NOT_FOUND);
         topicDao.deleteTopic(id);
     }

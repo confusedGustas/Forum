@@ -3,7 +3,7 @@ package org.site.forum.domain.topic.dao;
 import lombok.AllArgsConstructor;
 import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.domain.topic.entity.Topic;
-import org.site.forum.domain.topic.integrity.DataIntegrityService;
+import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.site.forum.domain.topic.repository.TopicRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -18,11 +18,11 @@ public class TopicDaoImpl implements TopicDao {
     private static final String DELETED_TOPIC_CONTENT = "This topic has been deleted";
 
     private final TopicRepository topicRepository;
-    private final DataIntegrityService dataIntegrityService;
+    private final TopicDataIntegrity topicDataIntegrity;
 
     @Override
     public Topic saveTopic(Topic topic) {
-        dataIntegrityService.validateTopicEntity(topic);
+        topicDataIntegrity.validateTopicEntity(topic);
         return topicRepository.save(topic);
     }
 

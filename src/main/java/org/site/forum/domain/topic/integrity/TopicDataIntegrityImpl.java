@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class DataIntegrityServiceImpl implements DataIntegrityService {
+public class TopicDataIntegrityImpl implements TopicDataIntegrity {
 
     private static final String TOPIC_CANNOT_BE_NULL = "Topic cannot be null";
     private static final String TOPIC_TITLE_EMPTY = "Topic title cannot be empty or null";

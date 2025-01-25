@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
-public interface DataIntegrityService {
+public interface TopicDataIntegrity {
 
     void validateTopicEntity(Topic topic);
     void validateTopicRequestDto(TopicRequestDto dto);
