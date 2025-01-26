@@ -14,9 +14,11 @@ import org.site.forum.domain.comment.dto.request.CommentRequestDto;
 import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.dto.response.ReplyResponseDto;
 import org.site.forum.domain.comment.entity.Comment;
+import org.site.forum.domain.comment.integrity.CommentDataIntegrity;
 import org.site.forum.domain.comment.mapper.CommentMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.entity.Topic;
+import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,6 +30,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
@@ -49,6 +53,12 @@ class CommentServiceTests {
 
     @Mock
     private CommentMapper commentMapper;
+
+    @Mock
+    private CommentDataIntegrity commentDataIntegrity;
+
+    @Mock
+    private TopicDataIntegrity topicDataIntegrity;
 
     @InjectMocks
     private CommentServiceImpl commentService;
@@ -169,6 +179,9 @@ class CommentServiceTests {
     void testSaveCommentWhenTextIsNull() {
         commentRequestDto.setText(null);
 
+        doThrow(new InvalidCommentRequestException("Comment text cannot be empty or null"))
+                .when(commentDataIntegrity).validateCommentRequestDto(commentRequestDto);
+
         Exception exception = assertThrows(InvalidCommentRequestException.class,
                 () -> commentService.saveComment(commentRequestDto));
         assertEquals("Comment text cannot be empty or null", exception.getMessage());
@@ -177,6 +190,9 @@ class CommentServiceTests {
     @Test
     void testSaveCommentWhenTextIsEmpty() {
         commentRequestDto.setText("");
+
+        doThrow(new InvalidCommentRequestException("Comment text cannot be empty or null"))
+                .when(commentDataIntegrity).validateCommentRequestDto(commentRequestDto);
 
         Exception exception = assertThrows(InvalidCommentRequestException.class,
                 () -> commentService.saveComment(commentRequestDto));
@@ -203,6 +219,7 @@ class CommentServiceTests {
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Comment> comments = new PageImpl<>(Collections.singletonList(comment));
 
+        doNothing().when(topicDataIntegrity).validateTopicId(UUID.fromString(UUID_CONSTANT));
         when(commentDao.getAllParentCommentsByTopic(UUID.fromString(UUID_CONSTANT), pageable)).thenReturn(comments);
         when(commentMapper.toParentCommentDto(comment)).thenReturn(parentCommentResponseDto);
 
@@ -219,6 +236,9 @@ class CommentServiceTests {
     @Test
     void testGetAllParentCommentsByTopicWhenTopicIdIsNull() {
         PageRequest pageable = PageRequest.of(0, 10);
+
+        doThrow(new InvalidCommentRequestException("Topic ID cannot be null"))
+                .when(topicDataIntegrity).validateTopicId(null);
 
         Exception exception = assertThrows(InvalidCommentRequestException.class,
                 () -> commentService.getAllParentCommentsByTopic(null, pageable));

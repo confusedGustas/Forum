@@ -12,6 +12,7 @@ import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.comment.integrity.CommentDataIntegrity;
 import org.site.forum.domain.comment.mapper.CommentMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
+import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class CommentServiceImpl implements CommentService {
     private final AuthenticationService authenticationService;
     private final CommentMapper commentMapper;
     private final CommentDataIntegrity commentDataIntegrity;
+    private final TopicDataIntegrity topicDataIntegrity;
 
     @Override
     public ParentCommentResponseDto saveComment(CommentRequestDto commentRequestDto) {
@@ -70,6 +72,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Page<ParentCommentResponseDto> getAllParentCommentsByTopic(UUID topicId, PageRequest pageRequest) {
+        topicDataIntegrity.validateTopicId(topicId);
+
         var comments = commentDao.getAllParentCommentsByTopic(topicId, pageRequest);
 
         return comments.map(commentMapper::toParentCommentDto);
