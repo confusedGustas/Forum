@@ -13,10 +13,15 @@ import org.site.forum.domain.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -43,17 +48,24 @@ public class CommentControllerTests {
 
     private CommentRequestDto commentRequestDto;
     private ParentCommentResponseDto parentCommentResponseDto;
+    private Topic topic;
+    private User user;
 
     @BeforeEach
     void setUp() {
-        User user = User.builder()
+        user = User.builder()
                 .id(UUID.randomUUID())
                 .build();
 
-        Topic topic = Topic.builder()
+        topic = Topic.builder()
                 .id(UUID.randomUUID())
                 .title(TITLE)
                 .content(CONTENT)
+                .createdAt(CREATED_AT)
+                .updatedAt(CREATED_AT)
+                .deletedAt(CREATED_AT)
+                .isEnabled(true)
+                .rating(0)
                 .author(user)
                 .build();
 
@@ -104,29 +116,48 @@ public class CommentControllerTests {
                 .andExpect(status().isBadRequest());
     }
 
-//    @Test
-//   void testGetAllCommentsByTopic() throws Exception {
-//        UUID topicId = UUID.randomUUID();
-//        int page = 0;
-//        int pageSize = 10;
-//
-//        ParentCommentResponseDto comment1 = new ParentCommentResponseDto();
-//
-//        ParentCommentResponseDto comment2 = new ParentCommentResponseDto();
-//
-//        Page<ParentCommentResponseDto> mockPage = new PageImpl<>(Arrays.asList(comment1, comment2));
-//
-//        when(commentService.getAllParentCommentsByTopic(topicId, PageRequest.of(page, pageSize))).thenReturn(mockPage);
-//
-//        mockMvc.perform(get("/comments/topics/{topicId}", topicId)
-//                        .param("page", String.valueOf(page))
-//                        .param("pageSize", String.valueOf(pageSize))
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.content.length()").value(2))
-//                .andExpect(jsonPath("$.content[0].id").value(comment1.getId().toString()))
-//                .andExpect(jsonPath("$.content[1].id").value(comment2.getId().toString()));
-//    } //TODO fix this test
+    @Test
+   void testGetAllCommentsByTopic() throws Exception {
+        UUID topicId = UUID.randomUUID();
+        int page = 0;
+        int pageSize = 10;
+
+        ParentCommentResponseDto comment1 = ParentCommentResponseDto.builder()
+                .id(UUID.randomUUID())
+                .text("Comment 1")
+                .createdAt(LocalDateTime.now())
+                .isEnabled(true)
+                .author(user)
+                .topic(topic)
+                .build();
+
+        ParentCommentResponseDto comment2 = ParentCommentResponseDto.builder()
+                .id(UUID.randomUUID())
+                .text("Comment 2")
+                .createdAt(LocalDateTime.now())
+                .isEnabled(true)
+                .author(user)
+                .topic(topic)
+                .build();
+
+        System.out.println(comment1);
+        System.out.println(comment2);
+        System.out.println(user);
+        System.out.println(topic);
+
+        Page<ParentCommentResponseDto> mockPage = new PageImpl<>(Arrays.asList(comment1, comment2));
+
+        when(commentService.getAllParentCommentsByTopic(topicId, PageRequest.of(page, pageSize))).thenReturn(mockPage);
+
+        mockMvc.perform(get("/comments/topics/{topicId}", topicId)
+                        .param("page", String.valueOf(page))
+                        .param("pageSize", String.valueOf(pageSize))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id").value(comment1.getId().toString()))
+                .andExpect(jsonPath("$.content[1].id").value(comment2.getId().toString()));
+    }
 
     @Test
     void testGetAllCommentsByTopicWithInvalidPage() throws Exception {

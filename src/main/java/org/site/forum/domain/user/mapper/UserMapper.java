@@ -9,7 +9,7 @@ import java.util.UUID;
 public class UserMapper {
 
     public User toUser(Jwt jwt) {
-        return new User(UUID.fromString(jwt.getClaimAsString("sub")));
+        return new User(UUID.fromString(jwt.getClaimAsString("sub")), null, null);
     }
 
 }
