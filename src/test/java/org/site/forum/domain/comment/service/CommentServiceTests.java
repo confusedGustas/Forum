@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
@@ -278,6 +279,30 @@ class CommentServiceTests {
 
         verify(commentDao).getComment(UUID.fromString(UUID_CONSTANT));
         verify(authenticationService).getAuthenticatedAndPersistedUser();
+    }
+
+    @Test
+    void testDeleteComment() {
+        doNothing().when(commentDataIntegrity).validateCommentId(UUID.fromString(UUID_CONSTANT));
+        when(commentDao.getComment(UUID.fromString(UUID_CONSTANT))).thenReturn(comment);
+        when(commentDao.saveComment(comment)).thenReturn(comment);
+        when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
+        when(commentMapper.toParentCommentDto(comment)).thenReturn(parentCommentResponseDto);
+
+        ParentCommentResponseDto result = commentService.deleteComment(UUID.fromString(UUID_CONSTANT));
+
+        System.out.println(comment.getText());
+        System.out.println(comment.isEnabled());
+
+        assertNotNull(result);
+        assertEquals(parentCommentResponseDto, result);
+        assertEquals("[Deleted comment]", comment.getText());
+        assertFalse(comment.isEnabled());
+
+        verify(commentDao).getComment(UUID.fromString(UUID_CONSTANT));
+        verify(commentDao).saveComment(comment);
+        verify(authenticationService).getAuthenticatedAndPersistedUser();
+        verify(commentMapper).toParentCommentDto(comment);
     }
 
 }
