@@ -1,7 +1,10 @@
 package org.site.forum.common.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SearchConstant {
 
     public static final int DEFAULT_OFFSET = 0;

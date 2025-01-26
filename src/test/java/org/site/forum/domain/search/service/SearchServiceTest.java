@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.site.forum.domain.search.dto.response.PaginatedResponseDto;
 import org.site.forum.domain.search.entity.TopicSearchCriteria;
+import org.site.forum.domain.search.integrity.SearchDataIntegrity;
 import org.site.forum.domain.search.mapper.PaginatedResponseMapper;
 import org.site.forum.domain.search.util.TopicSpecification;
 import org.site.forum.domain.topic.entity.Topic;
@@ -25,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class SearchServiceTest {
+class SearchServiceTest {
 
     @Mock
     private TopicRepository topicRepository;
@@ -35,6 +36,9 @@ public class SearchServiceTest {
 
     @Mock
     private TopicSpecification topicSpecification;
+
+    @Mock
+    private SearchDataIntegrity searchDataIntegrity;
 
     @InjectMocks
     private SearchServiceImpl searchService;
@@ -63,6 +67,10 @@ public class SearchServiceTest {
 
     @Test
     void searchTopics_WithValidCriteria_ReturnsPaginatedResponse() {
+        criteria.setSearch(null);
+        criteria.setSortDirection("ASC");
+        criteria.setSortBy("rating");
+
         when(topicSpecification.withCriteria(any(TopicSearchCriteria.class)))
                 .thenReturn((Specification<Topic>) (root, query, criteriaBuilder) -> null);
         when(topicRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(topicPage);
@@ -75,7 +83,10 @@ public class SearchServiceTest {
 
     @Test
     void searchTopics_WithEmptySearch_ReturnsAllTopics() {
-        criteria.setSearch(null);
+        criteria.setSearch("");
+        criteria.setSortDirection("DESC");
+        criteria.setSortBy("date");
+
         when(topicSpecification.withCriteria(any(TopicSearchCriteria.class)))
                 .thenReturn((Specification<Topic>) (root, query, criteriaBuilder) -> null);
         when(topicRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(topicPage);

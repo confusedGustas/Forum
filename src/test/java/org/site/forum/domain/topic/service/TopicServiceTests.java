@@ -18,6 +18,7 @@ import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dto.request.TopicRequestDto;
 import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.entity.Topic;
+import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.site.forum.domain.topic.mapper.TopicMapper;
 import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.entity.User;
@@ -55,6 +56,9 @@ class TopicServiceTests {
     private FileMapper fileMapper;
 
     @Mock
+    private FileService fileService;
+
+    @Mock
     private MultipartFile multipartFile;
 
     @Mock
@@ -64,7 +68,7 @@ class TopicServiceTests {
     private UserDao userDao;
 
     @Mock
-    private FileService fileService;
+    private TopicDataIntegrity topicDataIntegrity;
 
     @Mock
     private AuthenticationService authenticationService;

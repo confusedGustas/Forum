@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.domain.topic.entity.Topic;
+import org.site.forum.domain.topic.integrity.TopicDataIntegrityImpl;
 import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.dao.UserDaoImpl;
 import org.site.forum.domain.user.entity.User;
@@ -23,7 +24,7 @@ import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import({TopicDaoImpl.class, UserDaoImpl.class})
+@Import({TopicDaoImpl.class, UserDaoImpl.class, TopicDataIntegrityImpl.class})
 class TopicDaoTests {
 
     @Autowired
