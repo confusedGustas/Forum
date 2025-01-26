@@ -67,5 +67,21 @@ class TopicControllerTests {
                 .andExpect(jsonPath("$.author.id").value(topicResponseDto.getAuthor().getId().toString()));
     }
 
+    @Test
+    void testUpdateTopic() throws Exception {
+        UUID topicId = UUID.randomUUID();
+        when(topicService.updateTopic(eq(topicId), any(TopicRequestDto.class), eq(null)))
+                .thenReturn(topicResponseDto);
+
+        mockMvc.perform(multipart("/topics/update/{id}", topicId)
+                        .param("title", TITLE)
+                        .param("content", CONTENT)
+                        .contentType("multipart/form-data"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(topicResponseDto.getId().toString()))
+                .andExpect(jsonPath("$.title").value(topicResponseDto.getTitle()))
+                .andExpect(jsonPath("$.content").value(topicResponseDto.getContent()));
+    }
+
 
 }

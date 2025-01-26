@@ -64,12 +64,24 @@ class TopicServiceTests {
     private User user;
     private Topic topic;
     private TopicRequestDto topicRequestDto;
+    private UUID testTopicId;
 
     @BeforeEach
     void setUp() {
+        testTopicId = UUID.randomUUID();
         user = User.builder().id(UUID.randomUUID()).build();
-        topic = Topic.builder().title("Test Title").content("Test Content").author(user).build();
         topicRequestDto = TopicRequestDto.builder().title("Test Title").content("Test Content").build();
+
+        topic = Topic.builder()
+                .id(testTopicId)
+                .title("Test Title")
+                .content("Test Content")
+                .author(user)
+                .build();
+        topicRequestDto = TopicRequestDto.builder()
+                .title("Test Title")
+                .content("Test Content")
+                .build();
     }
 
     @Test
@@ -153,6 +165,68 @@ class TopicServiceTests {
     void testGetTopicWithNullId() {
         doThrow(new InvalidTopicIdException("Test")).when(topicDataIntegrity).validateTopicId(null);
         assertThrows(InvalidTopicIdException.class, () -> topicService.getTopic(null));
+    }
+
+    @Test
+    void testUpdateTopicWithFiles() {
+        UUID topicId = testTopicId;
+        Topic updatedTopic = Topic.builder()
+                .id(topicId)
+                .title("Updated Title")
+                .content("Updated Content")
+                .author(user)
+                .build();
+        TopicResponseDto expectedDto = new TopicResponseDto();
+        List<MultipartFile> files = List.of(multipartFile);
+
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(updatedTopic);
+        when(topicDao.updateTopic(topicId, updatedTopic)).thenReturn(updatedTopic);
+        when(fileDao.findFilesByTopicId(topicId)).thenReturn(Collections.emptyList());
+        when(topicMapper.toDto(updatedTopic, Collections.emptyList())).thenReturn(expectedDto);
+        doNothing().when(topicDataIntegrity).validateFileCount(topicId);
+
+        TopicResponseDto result = topicService.updateTopic(topicId, topicRequestDto, files);
+
+        assertSame(expectedDto, result);
+        verify(fileService).uploadFiles(files, updatedTopic);
+    }
+
+    @Test
+    void testUpdateTopic() {
+        UUID topicId = testTopicId;
+        Topic updatedTopic = Topic.builder()
+                .id(topicId)
+                .title("Updated Title")
+                .content("Updated Content")
+                .author(user)
+                .build();
+        TopicResponseDto expectedDto = new TopicResponseDto();
+
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(updatedTopic);
+        when(topicDao.updateTopic(topicId, updatedTopic)).thenReturn(updatedTopic);
+        when(fileDao.findFilesByTopicId(topicId)).thenReturn(Collections.emptyList());
+        when(topicMapper.toDto(updatedTopic, Collections.emptyList())).thenReturn(expectedDto);
+        doNothing().when(topicDataIntegrity).validateFileCount(topicId);
+
+        TopicResponseDto result = topicService.updateTopic(topicId, topicRequestDto, Collections.emptyList());
+
+        assertSame(expectedDto, result);
+        verify(topicDataIntegrity).validateTopicId(topicId);
+        verify(topicDataIntegrity).validateTopicRequestDto(topicRequestDto);
+        verify(fileService, never()).uploadFiles(any(), any());
+    }
+
+    @Test
+    void testUpdateTopicWithInvalidId() {
+        UUID invalidId = UUID.randomUUID();
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(topic);
+        when(topicDao.updateTopic(invalidId, topic)).thenThrow(new InvalidTopicIdException("Not found"));
+
+        assertThrows(InvalidTopicIdException.class, () ->
+                topicService.updateTopic(invalidId, topicRequestDto, Collections.emptyList()));
     }
 
 }

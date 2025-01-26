@@ -39,4 +39,10 @@ public class FileDaoImpl implements FileDao {
         fileRepository.deleteById(id);
     }
 
+    @Override
+    public Boolean fileCountExceedsLimit(UUID topicId) {
+        fileDataIntegrity.validateTopicIdNotNull(topicId);
+        return fileRepository.countFilesByTopicId(topicId) >= 5;
+    }
+
 }

@@ -1,5 +1,6 @@
 package org.site.forum.domain.topic.integrity;
 
+import lombok.AllArgsConstructor;
 import org.site.forum.common.exception.InvalidFileException;
 import org.site.forum.common.exception.InvalidTopicAuthorException;
 import org.site.forum.common.exception.InvalidTopicContentException;
@@ -7,6 +8,7 @@ import org.site.forum.common.exception.InvalidTopicException;
 import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.common.exception.InvalidTopicRequestException;
 import org.site.forum.common.exception.InvalidTopicTitleException;
+import org.site.forum.domain.file.dao.FileDao;
 import org.site.forum.domain.topic.dto.request.TopicRequestDto;
 import org.site.forum.domain.topic.entity.Topic;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class TopicDataIntegrityImpl implements TopicDataIntegrity {
 
     private static final String TOPIC_CANNOT_BE_NULL = "Topic cannot be null";
@@ -25,6 +28,9 @@ public class TopicDataIntegrityImpl implements TopicDataIntegrity {
     private static final String TOPIC_REQUEST_NULL = "Topic request data cannot be null";
     private static final String TOPIC_ID_NULL = "Topic ID cannot be null";
     private static final String FILE_EMPTY = "File cannot be null or empty";
+    public static final String YOU_CAN_UPLOAD_ONLY_5_FILES_PER_TOPIC = "You can upload only 5 files per topic";
+
+    private final FileDao fileDao;
 
     @Override
     public void validateTopicEntity(Topic topic) {
@@ -69,6 +75,13 @@ public class TopicDataIntegrityImpl implements TopicDataIntegrity {
     public void validateTopicId(UUID id) {
         if (id == null) {
             throw new InvalidTopicIdException(TOPIC_ID_NULL);
+        }
+    }
+
+    @Override
+    public void validateFileCount(UUID topicId) {
+        if (fileDao.fileCountExceedsLimit(topicId)) {
+            throw new InvalidFileException(YOU_CAN_UPLOAD_ONLY_5_FILES_PER_TOPIC);
         }
     }
 

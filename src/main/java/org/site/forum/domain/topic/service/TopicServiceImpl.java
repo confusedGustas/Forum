@@ -66,6 +66,22 @@ public class TopicServiceImpl implements TopicService {
         topicDao.deleteTopic(id);
     }
 
+    @Override
+    public TopicResponseDto updateTopic(UUID id, TopicRequestDto topicRequestDto, List<MultipartFile> files) {
+        topicDataIntegrity.validateTopicId(id);
+        topicDataIntegrity.validateTopicRequestDto(topicRequestDto);
+
+        User user = getAuthenticatedAndPersistedUser();
+        Topic topic = topicDao.updateTopic(id, topicMapper.toEntity(topicRequestDto, user));
+
+        topicDataIntegrity.validateFileCount(id);
+        if (files != null && !files.isEmpty()) {
+            fileService.uploadFiles(files, topic);
+        }
+
+        return topicMapper.toDto(topic, fileDao.findFilesByTopicId(topic.getId()));
+    }
+
     private User getAuthenticatedAndPersistedUser() {
         User user = authenticationService.getAuthenticatedUser();
         if (user == null) throw new UserNotFoundException(USER_NOT_FOUND);
