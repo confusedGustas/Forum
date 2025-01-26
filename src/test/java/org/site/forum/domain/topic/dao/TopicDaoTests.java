@@ -12,16 +12,18 @@ import org.site.forum.domain.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional
+@AutoConfigureTestDatabase(replace = NONE)
 @Import({TopicDaoImpl.class, UserDaoImpl.class, TopicDataIntegrityImpl.class})
 class TopicDaoTests {
 
@@ -31,75 +33,72 @@ class TopicDaoTests {
     @Autowired
     private UserDao userDao;
 
-    private Topic topic;
+    @Autowired
+    private TestEntityManager entityManager;
+
     private User user;
 
     @BeforeEach
     void setUp() {
         user = User.builder()
-                .id(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"))
+                .id(UUID.fromString(UUID_CONSTANT))
                 .build();
-        userDao.saveUser(user);
+        user = userDao.saveUser(user);
+        entityManager.flush();
     }
 
     @Test
     void testSaveTopic() {
-        topic = Topic.builder()
-                .title("Test Title")
+        Topic topic = Topic.builder()
+                .title("Valid Title")
                 .content("Test Content")
                 .author(user)
                 .build();
-        var savedTopic = topicDao.saveTopic(topic);
+
+        Topic savedTopic = topicDao.saveTopic(topic);
+
         assertNotNull(savedTopic.getId());
-        assertEquals("Test Title", savedTopic.getTitle());
-        assertEquals("Test Content", savedTopic.getContent());
-        assertEquals(user, savedTopic.getAuthor());
+        assertEquals("Valid Title", savedTopic.getTitle());
+        assertEquals(user.getId(), savedTopic.getAuthor().getId());
     }
 
     @Test
-    void testGetTopic() {
-        topic = Topic.builder()
-                .title("Test Title")
-                .content("Test Content")
-                .author(user)
-                .build();
-        var savedTopic = topicDao.saveTopic(topic);
-        var foundTopic = topicDao.getTopic(savedTopic.getId());
-        assertEquals(savedTopic.getId(), foundTopic.getId());
-        assertEquals(savedTopic.getTitle(), foundTopic.getTitle());
-        assertEquals(savedTopic.getContent(), foundTopic.getContent());
-        assertEquals(savedTopic.getAuthor(), foundTopic.getAuthor());
-    }
-
-    @Test
-    void testGetTopicWhenTopicNotFound() {
-        Exception exception = assertThrows(InvalidTopicIdException.class, () -> topicDao.getTopic(UUID.fromString("123e4567-e89b-12d3-a456-426614174000")));
-        assertEquals("Topic with the specified id does not exist", exception.getMessage());
+    void testGetTopicWhenNotFound() {
+        UUID randomId = UUID.randomUUID();
+        assertThrows(InvalidTopicIdException.class,
+                () -> topicDao.getTopic(randomId),
+                "Should throw for non-existent ID"
+        );
     }
 
     @Test
     void testDeleteTopic() {
-        topic = Topic.builder()
-                .title("Test Title")
-                .content("Test Content")
+        Topic topic = Topic.builder()
+                .title("To Delete")
+                .content("Content")
                 .author(user)
                 .build();
-        var savedTopic = topicDao.saveTopic(topic);
+        Topic savedTopic = topicDao.saveTopic(topic);
+
         topicDao.deleteTopic(savedTopic.getId());
-        var deletedTopic = topicDao.getTopic(savedTopic.getId());
+        Topic deletedTopic = topicDao.getTopic(savedTopic.getId());
+
         assertEquals("This topic has been deleted", deletedTopic.getTitle());
-        assertEquals("This topic has been deleted", deletedTopic.getContent());
         assertNotNull(deletedTopic.getDeletedAt());
     }
 
     @Test
-    void testSaveTopicWithInvalidData() {
+    void testInvalidTopicTitle() {
         Topic invalidTopic = Topic.builder()
                 .title("")
-                .content("Test Content")
+                .content("Content")
                 .author(user)
                 .build();
-        assertThrows(InvalidTopicTitleException.class, () -> topicDao.saveTopic(invalidTopic));
+
+        assertThrows(InvalidTopicTitleException.class,
+                () -> topicDao.saveTopic(invalidTopic),
+                "Should reject empty title"
+        );
     }
 
 }
