@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.site.forum.domain.file.dto.response.FileResponseDto;
-import org.site.forum.domain.user.entity.User;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +21,7 @@ public class TopicResponseDto {
     private UUID id;
     private String title;
     private String content;
-    private User author;
+    private UUID authorId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;

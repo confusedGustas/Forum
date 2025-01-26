@@ -103,8 +103,8 @@ class CommentServiceTests {
                 .text(CONTENT)
                 .createdAt(CREATED_AT)
                 .isEnabled(true)
-                .author(user)
-                .topic(topic)
+                .authorId(user.getId())
+                .topicId(topic.getId())
                 .build();
 
         replyResponseDto = ReplyResponseDto.builder()

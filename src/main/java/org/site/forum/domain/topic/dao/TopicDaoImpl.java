@@ -2,12 +2,19 @@ package org.site.forum.domain.topic.dao;
 
 import lombok.AllArgsConstructor;
 import org.site.forum.common.exception.InvalidTopicIdException;
+import org.site.forum.common.exception.InvalidUserIdException;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.site.forum.domain.topic.repository.TopicRepository;
+import org.site.forum.domain.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static org.site.forum.domain.comment.dao.CommentDaoImpl.USER_WITH_THE_SPECIFIED_ID_DOES_NOT_EXIST;
 
 @Service
 @AllArgsConstructor
@@ -19,6 +26,7 @@ public class TopicDaoImpl implements TopicDao {
 
     private final TopicRepository topicRepository;
     private final TopicDataIntegrity topicDataIntegrity;
+    private final UserRepository userRepository;
 
     @Override
     public Topic saveTopic(Topic topic) {
@@ -39,6 +47,19 @@ public class TopicDaoImpl implements TopicDao {
         topic.setContent(DELETED_TOPIC_CONTENT);
         topic.setDeletedAt(LocalDateTime.now());
         topicRepository.save(topic);
+    }
+
+    @Override
+    public Page<Topic> getAllTopicsByUserId(UUID userId, Pageable pageable) {
+        checkIfUserExists(userId);
+
+        return topicRepository.findAllTopicsByAuthorId(userId, pageable);
+    }
+
+    private void checkIfUserExists(UUID userId) {
+        if (userRepository.findById(userId).isEmpty()) {
+            throw new InvalidUserIdException(USER_WITH_THE_SPECIFIED_ID_DOES_NOT_EXIST);
+        }
     }
 
 }

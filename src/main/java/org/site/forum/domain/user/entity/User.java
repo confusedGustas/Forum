@@ -1,6 +1,6 @@
 package org.site.forum.domain.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -28,11 +28,11 @@ public class User {
     @Id
     private UUID id;
 
-    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
 
-    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "author")
     private List<Topic> topics;
 

@@ -6,6 +6,7 @@ import org.site.forum.common.exception.UserAlreadyExistsException;
 import org.site.forum.domain.user.entity.User;
 import org.site.forum.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 import java.util.UUID;
 

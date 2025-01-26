@@ -81,4 +81,5 @@ class UserDaoTest {
         assertThrows(InvalidUserIdException.class, () -> userDao.getUserById(null));
         verify(userRepository, never()).findById(any());
     }
+
 }

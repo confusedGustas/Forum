@@ -12,5 +12,6 @@ public interface CommentDao {
     Comment getComment(UUID parentCommentId);
     Page<Comment> getAllParentCommentsByTopic(UUID topicId, Pageable pageable);
     Page<Comment> getAllRepliesByParent(UUID parentCommentId, Pageable pageable);
+    Page<Comment> getAllCommentsByUserId(UUID userId, Pageable pageable);
 
 }

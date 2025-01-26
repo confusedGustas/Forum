@@ -5,7 +5,6 @@ import org.site.forum.common.exception.UserNotFoundException;
 import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.entity.User;
 import org.site.forum.domain.user.mapper.UserMapper;
-import org.site.forum.domain.user.service.UserService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ public class AuthenticationService {
 
     private final UserMapper userMapper;
     private final UserDao userDao;
-    private final UserService userService;
 
     private static final String USER_NOT_FOUND = "User not found";
 
@@ -29,7 +27,7 @@ public class AuthenticationService {
         checkUser(user);
 
         if (userDao.getUserById(user.getId()).isEmpty()) {
-            userService.saveUser(user);
+            userDao.saveUser(user);
         }
 
         return user;

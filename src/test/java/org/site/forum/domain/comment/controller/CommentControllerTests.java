@@ -80,8 +80,8 @@ public class CommentControllerTests {
                 .text(CONTENT)
                 .createdAt(CREATED_AT)
                 .isEnabled(true)
-                .author(user)
-                .topic(topic)
+                .authorId(user.getId())
+                .topicId(topic.getId())
                 .build();
     }
 
@@ -100,8 +100,8 @@ public class CommentControllerTests {
                 .andExpect(jsonPath("$.text").value(parentCommentResponseDto.getText()))
                 .andExpect(jsonPath("$.createdAt").value(parentCommentResponseDto.getCreatedAt().toString()))
                 .andExpect(jsonPath("$.enabled").value(parentCommentResponseDto.isEnabled()))
-                .andExpect(jsonPath("$.author.id").value(parentCommentResponseDto.getAuthor().getId().toString()))
-                .andExpect(jsonPath("$.topic.id").value(parentCommentResponseDto.getTopic().getId().toString()));
+                .andExpect(jsonPath("$.authorId").value(parentCommentResponseDto.getAuthorId().toString()))
+                .andExpect(jsonPath("$.topicId").value(parentCommentResponseDto.getTopicId().toString()));
     }
 
     @Test
@@ -127,8 +127,8 @@ public class CommentControllerTests {
                 .text("Comment 1")
                 .createdAt(LocalDateTime.now())
                 .isEnabled(true)
-                .author(user)
-                .topic(topic)
+                .authorId(user.getId())
+                .topicId(topic.getId())
                 .build();
 
         ParentCommentResponseDto comment2 = ParentCommentResponseDto.builder()
@@ -136,8 +136,8 @@ public class CommentControllerTests {
                 .text("Comment 2")
                 .createdAt(LocalDateTime.now())
                 .isEnabled(true)
-                .author(user)
-                .topic(topic)
+                .authorId(user.getId())
+                .topicId(topic.getId())
                 .build();
 
         System.out.println(comment1);

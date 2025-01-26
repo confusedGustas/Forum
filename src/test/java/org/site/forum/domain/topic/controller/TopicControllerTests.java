@@ -48,7 +48,7 @@ class TopicControllerTests {
                 .id(UUID.randomUUID())
                 .title(TITLE)
                 .content(CONTENT)
-                .author(user)
+                .authorId(user.getId())
                 .build();
     }
 
@@ -64,7 +64,7 @@ class TopicControllerTests {
                 .andExpect(jsonPath("$.id").value(topicResponseDto.getId().toString()))
                 .andExpect(jsonPath("$.title").value(topicResponseDto.getTitle()))
                 .andExpect(jsonPath("$.content").value(topicResponseDto.getContent()))
-                .andExpect(jsonPath("$.author.id").value(topicResponseDto.getAuthor().getId().toString()));
+                .andExpect(jsonPath("$.authorId").value(topicResponseDto.getAuthorId().toString()));
     }
 
 

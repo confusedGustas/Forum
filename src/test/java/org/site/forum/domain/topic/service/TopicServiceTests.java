@@ -109,7 +109,7 @@ class TopicServiceTests {
         topicResponseDto = TopicResponseDto.builder()
                 .title(TITLE)
                 .content(CONTENT)
-                .author(user)
+                .authorId(user.getId())
                 .files(fileMapper.toDto(List.of(file)))
                 .build();
     }
