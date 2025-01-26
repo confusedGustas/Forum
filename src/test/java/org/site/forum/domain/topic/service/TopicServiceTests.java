@@ -22,11 +22,9 @@ import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.entity.User;
 import org.site.forum.domain.user.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;

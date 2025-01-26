@@ -1,19 +1,15 @@
 package org.site.forum.domain.file.service;
 
 import io.minio.MinioClient;
+import io.minio.ObjectWriteResponse;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidResponseException;
-import io.minio.errors.ServerException;
-import io.minio.errors.XmlParserException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.site.forum.common.exception.FileNotFoundException;
 import org.site.forum.common.exception.InvalidFileDataException;
 import org.site.forum.common.exception.InvalidFileIdException;
@@ -22,171 +18,192 @@ import org.site.forum.common.exception.UnauthorizedAccessException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.file.dao.FileDao;
 import org.site.forum.domain.file.entity.File;
+import org.site.forum.domain.file.integrity.FileDataIntegrity;
 import org.site.forum.domain.file.mapper.FileMapper;
-import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
+
 import java.util.List;
 import java.util.UUID;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class FileServiceTests {
+@ExtendWith(MockitoExtension.class)
+public class FileServiceTests {
 
-    @Mock
-    private MinioClient minioClient;
-
-    @Mock
-    private AuthenticationService authenticationService;
-
-    @Mock
-    private FileMapper fileMapper;
-
-    @Mock
-    private FileDao fileDao;
-
-    @Mock
-    private TopicDao topicDao;
-
-    @Mock
-    private MultipartFile multipartFile;
-
-    @InjectMocks
-    private FileServiceImpl fileService;
-
-    private Topic topic;
-    private User user;
-    private File file;
+    @Mock private MinioClient minioClient;
+    @Mock private AuthenticationService authenticationService;
+    @Mock private FileMapper fileMapper;
+    @Mock private FileDao fileDao;
+    @Mock private FileDataIntegrity fileDataIntegrity;
+    @InjectMocks private FileServiceImpl fileService;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        user = User.builder().id(UUID.randomUUID()).build();
-        topic = Topic.builder().title("Test Topic").content("Test Content").author(user).build();
-        file = File.builder().id(UUID.randomUUID()).minioObjectName("test-file.txt").contentType("text/plain").topic(topic).build();
-
         ReflectionTestUtils.setField(fileService, "bucket", "test-bucket");
     }
 
     @Test
-    void testUploadFiles_Success() throws Exception {
-        when(multipartFile.getOriginalFilename()).thenReturn("test-file.txt");
-        when(multipartFile.getSize()).thenReturn(1024L);
-        when(multipartFile.getContentType()).thenReturn("text/plain");
-
-        byte[] content = "Test content for file upload".getBytes();
-        InputStream inputStream = new ByteArrayInputStream(content);
-        when(multipartFile.getInputStream()).thenReturn(inputStream);
-
-        when(minioClient.putObject(any(PutObjectArgs.class))).thenReturn(null);
-
-        when(fileMapper.toEntity(any(), any(), any())).thenReturn(file);
-
-        fileService.uploadFiles(List.of(multipartFile), topic);
-
-        verify(minioClient, times(1)).putObject(any(PutObjectArgs.class));
-        verify(fileDao, times(1)).saveFile(any());
+    void uploadFiles_TopicIsNull_ThrowsInvalidTopicIdException() {
+        List<MultipartFile> files = List.of(mock(MultipartFile.class));
+        doThrow(new InvalidTopicIdException("")).when(fileDataIntegrity).validateTopicNotNull(null);
+        assertThrows(InvalidTopicIdException.class, () -> fileService.uploadFiles(files, null));
     }
 
     @Test
-    void testUploadFiles_InvalidTopicIdException() {
-        assertThrows(InvalidTopicIdException.class, () -> fileService.uploadFiles(Collections.singletonList(multipartFile), null));
+    void uploadFiles_InvalidFileName_ThrowsInvalidFileDataException() {
+        Topic topic = new Topic();
+        MultipartFile invalidFile = mock(MultipartFile.class);
+        when(invalidFile.getOriginalFilename()).thenReturn("");
+        doThrow(new InvalidFileDataException("")).when(fileDataIntegrity).validateFileName("");
+        assertThrows(InvalidFileDataException.class, () -> fileService.uploadFiles(List.of(invalidFile), topic));
     }
 
     @Test
-    void testDeleteFile_InvalidFileIdException() {
+    void uploadFiles_FileWithoutExtension_ThrowsException() {
+        Topic topic = new Topic();
+        MultipartFile invalidFile = mock(MultipartFile.class);
+        when(invalidFile.getOriginalFilename()).thenReturn("testfile");
+        doThrow(new InvalidFileDataException("")).when(fileDataIntegrity).validateOriginalFileName("testfile");
+        assertThrows(InvalidFileDataException.class, () -> fileService.uploadFiles(List.of(invalidFile), topic));
+    }
+
+    @Test
+    void uploadFiles_ValidFiles_CallsMinioAndSavesFiles() throws Exception {
+        Topic topic = new Topic();
+        MultipartFile file1 = mock(MultipartFile.class);
+        MultipartFile file2 = mock(MultipartFile.class);
+
+        when(file1.getOriginalFilename()).thenReturn("test.txt");
+        when(file2.getOriginalFilename()).thenReturn("image.jpg");
+        when(file1.getContentType()).thenReturn("text/plain");
+        when(file2.getContentType()).thenReturn("image/jpeg");
+        when(file1.getInputStream()).thenReturn(new java.io.ByteArrayInputStream(new byte[0]));
+        when(file2.getInputStream()).thenReturn(new java.io.ByteArrayInputStream(new byte[0]));
+        when(minioClient.putObject(any(PutObjectArgs.class))).thenReturn(mock(ObjectWriteResponse.class));
+        when(fileMapper.toEntity(any(), any(), anyString())).thenReturn(new File());
+
+        fileService.uploadFiles(List.of(file1, file2), topic);
+
+        verify(minioClient, times(2)).putObject(any());
+        verify(fileDao, times(2)).saveFile(any(File.class));
+    }
+
+    @Test
+    void uploadFiles_MinioUploadFails_ThrowsException() throws Exception {
+        Topic topic = new Topic();
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.getOriginalFilename()).thenReturn("test.txt");
+        when(file.getContentType()).thenReturn("text/plain");
+        when(file.getInputStream()).thenReturn(new java.io.ByteArrayInputStream(new byte[0]));
+        when(minioClient.putObject(any(PutObjectArgs.class))).thenThrow(new RuntimeException());
+
+        assertThrows(RuntimeException.class, () -> fileService.uploadFiles(List.of(file), topic));
+    }
+
+    @Test
+    void deleteFile_NullFileId_ThrowsInvalidFileIdException() {
+        doThrow(new InvalidFileIdException("")).when(fileDataIntegrity).validateFileIdNotNull(null);
         assertThrows(InvalidFileIdException.class, () -> fileService.deleteFile(null));
     }
 
     @Test
-    void testDeleteFile_InvalidTopicIdException() {
-        file.setTopic(null);
-        when(fileDao.getFileById(any(UUID.class))).thenReturn(file);
-
-        assertThrows(InvalidTopicIdException.class, () -> fileService.deleteFile(file.getId()));
+    void deleteFile_FileNotFound_ThrowsFileNotFoundException() {
+        UUID fileId = UUID.randomUUID();
+        doThrow(new FileNotFoundException("")).when(fileDataIntegrity).validateFileExists(fileId);
+        assertThrows(FileNotFoundException.class, () -> fileService.deleteFile(fileId));
     }
 
     @Test
-    void testDeleteFile_FileNotFoundException() {
-        when(fileDao.getFileById(any(UUID.class))).thenReturn(null);
+    void deleteFile_UnauthorizedUser_ThrowsUnauthorizedAccessException() {
+        UUID fileId = UUID.randomUUID();
+        File file = new File();
+        Topic topic = new Topic();
+        User author = new User(UUID.randomUUID());
+        topic.setAuthor(author);
+        file.setTopic(topic);
 
-        assertThrows(FileNotFoundException.class, () -> fileService.deleteFile(UUID.randomUUID()));
-    }
+        when(fileDao.getFileById(fileId)).thenReturn(file);
+        when(authenticationService.getAuthenticatedUser()).thenReturn(new User(UUID.randomUUID()));
 
-
-    @Test
-    void testUploadFiles_InvalidFileDataException() {
-        MultipartFile invalidFile = new MockMultipartFile(
-                "file",
-                "",
-                "text/plain",
-                "Hello, World!".getBytes()
-        );
-
-        assertThrows(InvalidFileDataException.class, () -> fileService.uploadFiles(Collections.singletonList(invalidFile), topic));
+        assertThrows(UnauthorizedAccessException.class, () -> fileService.deleteFile(fileId));
     }
 
     @Test
-    void testDeleteFile_UnauthorizedAccessException() {
-        topic.setAuthor(new org.site.forum.domain.user.entity.User());
-        when(fileDao.getFileById(any(UUID.class))).thenReturn(file);
-        when(authenticationService.getAuthenticatedUser()).thenReturn(new org.site.forum.domain.user.entity.User());
+    void deleteFile_TopicAuthorNull_ThrowsUnauthorized() {
+        UUID fileId = UUID.randomUUID();
+        File file = new File();
+        file.setTopic(new Topic());
 
-        assertThrows(NullPointerException.class, () -> fileService.deleteFile(file.getId()));
+        when(fileDao.getFileById(fileId)).thenReturn(file);
+
+        assertThrows(UnauthorizedAccessException.class, () -> fileService.deleteFile(fileId));
+        verify(authenticationService, never()).getAuthenticatedUser();
     }
 
     @Test
-    void testDeleteFile_Success() throws Exception {
-        when(fileDao.getFileById(file.getId())).thenReturn(file);
-        when(topicDao.getTopic(file.getTopic().getId())).thenReturn(topic);
-        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+    void deleteFile_NoAuthenticatedUser_ThrowsUnauthorized() {
+        UUID fileId = UUID.randomUUID();
+        File file = new File();
+        Topic topic = new Topic();
+        topic.setAuthor(new User(UUID.randomUUID()));
+        file.setTopic(topic);
+
+        when(fileDao.getFileById(fileId)).thenReturn(file);
+        when(authenticationService.getAuthenticatedUser()).thenReturn(null);
+
+        assertThrows(UnauthorizedAccessException.class, () -> fileService.deleteFile(fileId));
+    }
+
+    @Test
+    void deleteFile_ValidRequest_DeletesFile() throws Exception {
+        UUID fileId = UUID.randomUUID();
+        File file = new File();
+        Topic topic = new Topic();
+        User author = new User(UUID.randomUUID());
+        topic.setAuthor(author);
+        file.setTopic(topic);
+        file.setMinioObjectName("test-object");
+
+        when(fileDao.getFileById(fileId)).thenReturn(file);
+        when(authenticationService.getAuthenticatedUser()).thenReturn(author);
         doNothing().when(minioClient).removeObject(any(RemoveObjectArgs.class));
 
-        assertDoesNotThrow(() -> fileService.deleteFile(file.getId()));
+        fileService.deleteFile(fileId);
 
-        verify(fileDao, times(1)).deleteFile(file.getId());
-        verify(minioClient, times(1)).removeObject(any(RemoveObjectArgs.class));
+        verify(minioClient).removeObject(argThat(args ->
+                args.bucket().equals("test-bucket") &&
+                        args.object().equals("test-object")
+        ));
+        verify(fileDao).deleteFile(fileId);
     }
 
     @Test
-    void testDeleteFile_UnauthorizedUser() {
-        User anotherUser = User.builder().id(UUID.randomUUID()).build();
-        when(fileDao.getFileById(file.getId())).thenReturn(file);
-        when(topicDao.getTopic(file.getTopic().getId())).thenReturn(topic);
-        when(authenticationService.getAuthenticatedUser()).thenReturn(anotherUser);
+    void deleteFile_MinioDeleteFails_ThrowsException() throws Exception {
+        UUID fileId = UUID.randomUUID();
+        File file = new File();
+        Topic topic = new Topic();
+        User author = new User(UUID.randomUUID());
+        topic.setAuthor(author);
+        file.setTopic(topic);
+        file.setMinioObjectName("test-object");
 
-        Exception exception = assertThrows(UnauthorizedAccessException.class, () -> fileService.deleteFile(file.getId()));
-        assertEquals("You can delete only your files", exception.getMessage());
+        when(fileDao.getFileById(fileId)).thenReturn(file);
+        when(authenticationService.getAuthenticatedUser()).thenReturn(author);
+        doThrow(new RuntimeException()).when(minioClient).removeObject(any(RemoveObjectArgs.class));
 
-        verify(fileDao, never()).deleteFile(any());
+        assertThrows(RuntimeException.class, () -> fileService.deleteFile(fileId));
     }
-
-    @Test
-    void testDeleteFile_FileNotFound() throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-        UUID nonExistingFileId = UUID.randomUUID();
-        when(fileDao.getFileById(nonExistingFileId)).thenReturn(null);
-
-        Exception exception = assertThrows(FileNotFoundException.class, () -> fileService.deleteFile(nonExistingFileId));
-        assertEquals("File not found", exception.getMessage());
-
-        verify(minioClient, never()).removeObject(any(RemoveObjectArgs.class));
-        verify(fileDao, never()).deleteFile(any());
-    }
-
 }

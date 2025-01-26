@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.site.forum.common.exception.GlobalExceptionHandler;
+import org.site.forum.domain.search.integrity.SearchDataIntegrity;
 import org.site.forum.domain.search.service.SearchService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -25,6 +26,9 @@ class SearchControllerTest {
     @InjectMocks
     private SearchController searchController;
 
+    @Mock
+    private SearchDataIntegrity searchDataIntegrity;
+
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(searchController)
@@ -34,13 +38,13 @@ class SearchControllerTest {
 
     @Test
     void testGetTopicsEmpty_Success() throws Exception {
-        mockMvc.perform(get("/api/v1/search/topics"))
+        mockMvc.perform(get("/search/topics"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testGetTopicsFull_Success() throws Exception {
-        mockMvc.perform(get("/api/v1/search/topics")
+        mockMvc.perform(get("/search/topics")
                         .param("limit", "10")
                         .param("offset", "0")
                         .param("search", "topic"))
