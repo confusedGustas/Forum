@@ -8,7 +8,6 @@ public interface RatingDataIntegrity {
 
     void validateRatingValue(Integer ratingValue);
     void validateRatingEntity(Rating rating);
-    void validateRatingExists(UUID topicId, UUID userId);
     void validatePostIdAndUserId(UUID postId, UUID userId);
     void validateUserExists(User user);
 

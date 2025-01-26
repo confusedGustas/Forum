@@ -2,7 +2,6 @@ package org.site.forum.domain.rating.integrity;
 
 import lombok.AllArgsConstructor;
 import org.site.forum.common.exception.UserNotFoundException;
-import org.site.forum.domain.rating.dao.RatingDao;
 import org.site.forum.domain.rating.entity.Rating;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.stereotype.Service;
@@ -21,8 +20,6 @@ public class RatingDataIntegrityImpl implements RatingDataIntegrity {
     private static final String USER_NULL = "User must not be null";
     private static final String TOPIC_NULL = "Topic must not be null";
 
-    private final RatingDao ratingDao;
-
     @Override
     public void validateRatingValue(Integer ratingValue) {
         if (!VALID_RATINGS.contains(ratingValue)) throw new IllegalArgumentException(INVALID_RATING_VALUE);
@@ -34,11 +31,6 @@ public class RatingDataIntegrityImpl implements RatingDataIntegrity {
         if (!VALID_RATINGS.contains(rating.getRatingValue())) throw new IllegalArgumentException(INVALID_RATING_VALUE);
         if (rating.getTopic() == null) throw new IllegalArgumentException(TOPIC_NULL);
         if (rating.getUser() == null) throw new IllegalArgumentException(USER_NULL);
-    }
-
-    @Override
-    public void validateRatingExists(UUID topicId, UUID userId) {
-        if (ratingDao.findByPostIdAndUserId(topicId, userId).isEmpty()) throw new IllegalArgumentException(RATING_NOT_FOUND);
     }
 
     @Override

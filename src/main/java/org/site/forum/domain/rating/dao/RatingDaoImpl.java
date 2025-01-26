@@ -12,6 +12,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class RatingDaoImpl implements RatingDao {
 
+    private static final String RATING_NOT_FOUND = "Rating not found";
+
     private final RatingRepository ratingRepository;
     private final RatingDataIntegrity ratingDataIntegrity;
 
@@ -30,8 +32,12 @@ public class RatingDaoImpl implements RatingDao {
     @Override
     public void delete(Rating rating) {
         ratingDataIntegrity.validateRatingEntity(rating);
-        ratingDataIntegrity.validateRatingExists(rating.getTopic().getId(), rating.getUser().getId());
+        validateRatingExists(rating.getTopic().getId(), rating.getUser().getId());
         ratingRepository.delete(rating);
+    }
+
+    public void validateRatingExists(UUID topicId, UUID userId) {
+        if (findByPostIdAndUserId(topicId, userId).isEmpty()) throw new IllegalArgumentException(RATING_NOT_FOUND);
     }
 
 }

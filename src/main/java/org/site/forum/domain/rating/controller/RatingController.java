@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
-@RequestMapping("/api/v1/ratings")
+@RequestMapping("/ratings")
 @RestController
 @AllArgsConstructor
 public class RatingController {
