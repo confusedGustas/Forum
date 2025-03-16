@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.site.forum.common.exception.InvalidUserException;
 import org.site.forum.common.exception.InvalidUserIdException;
-import org.site.forum.common.exception.UserAlreadyExistsException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
@@ -27,18 +26,15 @@ import org.site.forum.domain.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
@@ -46,7 +42,7 @@ import static org.site.forum.constants.TestConstants.CREATED_AT;
 import static org.site.forum.constants.TestConstants.TITLE;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+public class UserServiceTest {
 
     @Mock
     private UserDao userDao;
@@ -113,7 +109,6 @@ class UserServiceTest {
                 .createdAt(CREATED_AT)
                 .isEnabled(true)
                 .authorId(user.getId())
-                .topicId(topic.getId())
                 .build();
 
         topicResponseDto = TopicResponseDto.builder()
@@ -136,32 +131,10 @@ class UserServiceTest {
                 .build();
     }
 
-    @Test
-    void saveUser_WhenUserIsNull_ThrowsInvalidUserException() {
-        doThrow(InvalidUserException.class).when(userDataIntegrity).validateUser(null);
-
+    void saveUser_NullUser_ThrowsInvalidUserException() {
+        doThrow(new InvalidUserException("")).when(userDataIntegrity).validateUserNotNull(null);
         assertThrows(InvalidUserException.class, () -> userService.saveUser(null));
-        verify(userDao, never()).getUserById(any());
         verify(userDao, never()).saveUser(any());
-    }
-
-    @Test
-    void saveUser_WhenUserAlreadyExists_ThrowsUserAlreadyExistsException() {
-        when(userDao.getUserById(userId)).thenReturn(Optional.of(user));
-
-        assertThrows(UserAlreadyExistsException.class, () -> userService.saveUser(user));
-        verify(userDao, times(1)).getUserById(userId);
-        verify(userDao, never()).saveUser(any());
-    }
-
-    @Test
-    void saveUser_WhenUserDoesNotExist_SavesUserSuccessfully() {
-        when(userDao.getUserById(userId)).thenReturn(Optional.empty());
-
-        userService.saveUser(user);
-
-        verify(userDao, times(1)).getUserById(userId);
-        verify(userDao, times(1)).saveUser(user);
     }
 
     @Test

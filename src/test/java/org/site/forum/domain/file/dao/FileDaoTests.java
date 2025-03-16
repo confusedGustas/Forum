@@ -3,8 +3,10 @@ package org.site.forum.domain.file.dao;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.site.forum.common.exception.FileNotFoundException;
 import org.site.forum.domain.file.entity.File;
+import org.site.forum.domain.file.integrity.FileDataIntegrityImpl;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dao.TopicDaoImpl;
 import org.site.forum.domain.topic.entity.Topic;
@@ -16,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,7 +30,7 @@ import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import({FileDaoImpl.class, UserDaoImpl.class, TopicDaoImpl.class, TopicDataIntegrityImpl.class})
+@Import({FileDaoImpl.class, UserDaoImpl.class, TopicDaoImpl.class, TopicDataIntegrityImpl.class, FileDataIntegrityImpl.class})
 class FileDaoTests {
 
     @Autowired
@@ -37,6 +41,9 @@ class FileDaoTests {
 
     @Autowired
     private FileDao fileDao;
+
+    @Mock
+    private FileDaoImpl fileDaoImpl;
 
     private File file;
     private Topic topic;
@@ -115,7 +122,7 @@ class FileDaoTests {
     @Test
     void testFindNonExistingFile() {
         Exception exception = assertThrows(FileNotFoundException.class, () -> fileDao.getFileById(UUID.randomUUID()));
-        assertEquals("File with the specified id does not exist", exception.getMessage());
+        assertEquals("File not found", exception.getMessage());
     }
 
 }

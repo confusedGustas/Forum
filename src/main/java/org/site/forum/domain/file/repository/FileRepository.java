@@ -14,4 +14,7 @@ public interface FileRepository extends JpaRepository<File, UUID> {
     @Query("SELECT f.topic FROM File f WHERE f.id = :id")
     Topic getTopicById(UUID id);
 
+    @Query("SELECT COUNT(f) FROM File f WHERE f.topic.id = :topicId")
+    Integer countFilesByTopicId(UUID topicId);
+
 }

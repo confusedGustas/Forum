@@ -12,5 +12,6 @@ public interface TopicDao {
     Topic getTopic(UUID id);
     void deleteTopic(UUID id);
     Page<Topic> getAllTopicsByUserId(UUID userId, Pageable pageable);
+    Topic updateTopic(UUID id, Topic topic);
 
 }
