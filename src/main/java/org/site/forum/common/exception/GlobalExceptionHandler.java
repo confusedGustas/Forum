@@ -112,6 +112,23 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidCommentException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidCommentException(InvalidCommentException ex) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidCommentIdException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidCommentIdException(InvalidCommentIdException ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidCommentRequestException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidCommentRequestException(InvalidCommentRequestException ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+
+
     private ResponseEntity<Map<String, String>> buildErrorResponse(HttpStatus status, String message) {
         Map<String, String> response = new HashMap<>();
         response.put("error", message);

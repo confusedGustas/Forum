@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.site.forum.domain.search.dto.response.PaginatedResponseDto;
 import org.site.forum.domain.search.entity.TopicSearchCriteria;
+import org.site.forum.domain.search.integrity.SearchDataIntegrity;
 import org.site.forum.domain.search.mapper.PaginatedResponseMapper;
 import org.site.forum.domain.search.util.TopicSpecification;
 import org.site.forum.domain.topic.entity.Topic;
@@ -35,6 +36,9 @@ class SearchServiceTest {
 
     @Mock
     private TopicSpecification topicSpecification;
+
+    @Mock
+    private SearchDataIntegrity searchDataIntegrity;
 
     @InjectMocks
     private SearchServiceImpl searchService;

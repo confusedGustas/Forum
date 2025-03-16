@@ -9,8 +9,10 @@ import org.site.forum.domain.comment.dto.request.CommentRequestDto;
 import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.dto.response.ReplyResponseDto;
 import org.site.forum.domain.comment.entity.Comment;
+import org.site.forum.domain.comment.integrity.CommentDataIntegrity;
 import org.site.forum.domain.comment.mapper.CommentMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
+import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,16 +23,20 @@ import java.util.UUID;
 @Transactional
 public class CommentServiceImpl implements CommentService {
 
+    private static final String DELETED_COMMENT_TEXT = "[Deleted comment]";
+    public static final String NOT_AUTHORIZED_TO_DELETE = "You are not authorized to delete this comment";
+
     private final CommentDao commentDao;
     private final TopicDao topicDao;
     private final AuthenticationService authenticationService;
     private final CommentMapper commentMapper;
-
-    private static final String DELETED_COMMENT_TEXT = "[Deleted comment]";
-    public static final String NOT_AUTHORIZED_TO_DELETE = "You are not authorized to delete this comment";
+    private final CommentDataIntegrity commentDataIntegrity;
+    private final TopicDataIntegrity topicDataIntegrity;
 
     @Override
     public ParentCommentResponseDto saveComment(CommentRequestDto commentRequestDto) {
+        commentDataIntegrity.validateCommentRequestDto(commentRequestDto);
+
         var user = authenticationService.getAuthenticatedAndPersistedUser();
         var topic = topicDao.getTopic(commentRequestDto.getTopicId());
 
@@ -44,6 +50,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public ReplyResponseDto getCommentByParent(UUID parentCommentId) {
+        commentDataIntegrity.validateCommentId(parentCommentId);
+
         var comment = commentDao.getComment(parentCommentId);
 
         return commentMapper.toReplyResponseDto(comment);
@@ -51,6 +59,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public ParentCommentResponseDto deleteComment(UUID commentId) {
+        commentDataIntegrity.validateCommentId(commentId);
+
         var comment = commentDao.getComment(commentId);
         checkAuthorization(comment);
 
@@ -62,6 +72,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Page<ParentCommentResponseDto> getAllParentCommentsByTopic(UUID topicId, PageRequest pageRequest) {
+        topicDataIntegrity.validateTopicId(topicId);
+
         var comments = commentDao.getAllParentCommentsByTopic(topicId, pageRequest);
 
         return comments.map(commentMapper::toParentCommentDto);
@@ -69,12 +81,16 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Page<ReplyResponseDto> getAllRepliesByParent(UUID parentCommentId, PageRequest pageRequest) {
+        commentDataIntegrity.validateCommentId(parentCommentId);
+
         var replies = commentDao.getAllRepliesByParent(parentCommentId, pageRequest);
 
         return replies.map(commentMapper::toReplyResponseDto);
     }
 
     private void checkAuthorization(Comment comment) {
+        commentDataIntegrity.validateComment(comment);
+
         if (!comment.getUser().getId().equals(authenticationService.getAuthenticatedAndPersistedUser().getId())) {
             throw new UnauthorizedAccessException(NOT_AUTHORIZED_TO_DELETE);
         }

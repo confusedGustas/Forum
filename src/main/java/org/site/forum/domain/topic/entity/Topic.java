@@ -1,5 +1,6 @@
 package org.site.forum.domain.topic.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.site.forum.domain.user.entity.User;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -36,6 +38,7 @@ public class Topic {
     private Boolean isEnabled;
     private Integer rating;
 
+    @JsonBackReference
     @ManyToOne
     private User author;
 

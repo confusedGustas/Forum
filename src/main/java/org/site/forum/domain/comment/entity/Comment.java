@@ -1,5 +1,6 @@
 package org.site.forum.domain.comment.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,6 +40,7 @@ public class Comment {
 
     private boolean isEnabled;
 
+    @JsonBackReference
     @ManyToOne
     private User user;
 

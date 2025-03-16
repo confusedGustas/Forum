@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.site.forum.domain.topic.entity.Topic;
-import org.site.forum.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -24,7 +22,7 @@ public class ParentCommentResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
     private LocalDateTime createdAt;
     private boolean isEnabled;
-    private User author;
-    private Topic topic;
+    private UUID authorId;
+    private UUID topicId;
 
 }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.common.exception.UserNotFoundException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.file.dao.FileDao;
@@ -16,6 +17,7 @@ import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dto.request.TopicRequestDto;
 import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.entity.Topic;
+import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.site.forum.domain.topic.mapper.TopicMapper;
 import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.entity.User;
@@ -30,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,6 +66,9 @@ class TopicServiceTests {
 
     @Mock
     private UserDao userDao;
+
+    @Mock
+    private TopicDataIntegrity topicDataIntegrity;
 
     @Mock
     private AuthenticationService authenticationService;
@@ -103,7 +109,7 @@ class TopicServiceTests {
         topicResponseDto = TopicResponseDto.builder()
                 .title(TITLE)
                 .content(CONTENT)
-                .author(user)
+                .authorId(user.getId())
                 .files(fileMapper.toDto(List.of(file)))
                 .build();
     }
@@ -112,7 +118,7 @@ class TopicServiceTests {
     void testCreateTopic() {
         List<MultipartFile> files = Collections.emptyList();
 
-        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
         when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(topic);
         when(topicDao.saveTopic(topic)).thenReturn(topic);
 
@@ -124,7 +130,7 @@ class TopicServiceTests {
         assertNotNull(response);
         assertEquals(topicResponseDto, response);
 
-        verify(authenticationService).getAuthenticatedUser();
+        verify(authenticationService).getAuthenticatedAndPersistedUser();
         verify(topicMapper).toEntity(topicRequestDto, user);
         verify(topicDao).saveTopic(topic);
         verify(topicMapper).toDto(topic, List.of(file));
@@ -132,12 +138,12 @@ class TopicServiceTests {
 
     @Test
     void testCreateTopicIfUserIsNull() {
-        when(authenticationService.getAuthenticatedUser()).thenReturn(null);
+        doThrow(new UserNotFoundException("User not found")).when(authenticationService).getAuthenticatedAndPersistedUser();
 
         Exception exception = assertThrows(UserNotFoundException.class, () -> topicService.saveTopic(topicRequestDto, List.of(multipartFile)));
         assertEquals("User not found", exception.getMessage());
 
-        verify(authenticationService).getAuthenticatedUser();
+        verify(authenticationService).getAuthenticatedAndPersistedUser();
         verify(userService, never()).saveUser(any());
         verify(topicMapper, never()).toEntity(any(), any());
         verify(topicDao, never()).saveTopic(any());
@@ -159,6 +165,45 @@ class TopicServiceTests {
         verify(topicDao).getTopic(UUID.fromString(UUID_CONSTANT));
         verify(fileDao).findFilesByTopicId(UUID.fromString(UUID_CONSTANT));
         verify(topicMapper).toDto(topic, List.of(file));
+    }
+
+    @Test
+    void testGetTopicIfTopicIdIsNull(){
+        doThrow(new InvalidTopicIdException("Topic ID cannot be null")).when(topicDataIntegrity).validateTopicId(null);
+
+        Exception exception = assertThrows(InvalidTopicIdException.class, () -> topicService.getTopic(null));
+        assertEquals("Topic ID cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void testDeleteTopic(){
+        when(topicDao.getTopic(UUID.fromString(UUID_CONSTANT))).thenReturn(topic);
+
+        topicService.deleteTopic(UUID.fromString(UUID_CONSTANT));
+
+        verify(topicDao).deleteTopic(UUID.fromString(UUID_CONSTANT));
+    }
+
+    @Test
+    void testDeleteTopicIfTopicNotFound(){
+        when(topicDao.getTopic(UUID.fromString(UUID_CONSTANT))).thenReturn(null);
+
+        Exception exception = assertThrows(InvalidTopicIdException.class, () -> topicService.deleteTopic(UUID.fromString(UUID_CONSTANT)));
+        assertEquals("Topic not found", exception.getMessage());
+
+        verify(topicDao).getTopic(UUID.fromString(UUID_CONSTANT));
+        verify(topicDao, never()).deleteTopic(UUID.fromString(UUID_CONSTANT));
+    }
+
+    @Test
+    void testDeleteTopicIfTopicIdIsNull(){
+        doThrow(new InvalidTopicIdException("Topic ID cannot be null")).when(topicDataIntegrity).validateTopicId(null);
+
+        Exception exception = assertThrows(InvalidTopicIdException.class, () -> topicService.deleteTopic(null));
+        assertEquals("Topic ID cannot be null", exception.getMessage());
+
+        verify(topicDao, never()).getTopic(any());
+        verify(topicDao, never()).deleteTopic(any());
     }
 
 }

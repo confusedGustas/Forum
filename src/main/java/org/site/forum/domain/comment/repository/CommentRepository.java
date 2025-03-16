@@ -18,4 +18,6 @@ public interface CommentRepository extends JpaRepository<Comment, UUID> {
     @Query("SELECT c FROM Comment c WHERE c.parentComment.id = :parentCommentId")
     Page<Comment> findAllRepliesByParentCommentId(UUID parentCommentId, Pageable pageable);
 
+    Page<Comment> findAllCommentsByUserId(UUID userId, Pageable pageable);
+
 }

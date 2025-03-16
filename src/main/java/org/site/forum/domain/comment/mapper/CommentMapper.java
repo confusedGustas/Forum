@@ -24,8 +24,8 @@ public class CommentMapper {
                 .text(comment.getText())
                 .createdAt(comment.getCreatedAt())
                 .isEnabled(comment.isEnabled())
-                .author(comment.getUser())
-                .topic(comment.getTopic())
+                .authorId(comment.getUser().getId())
+                .topicId(comment.getTopic().getId())
                 .build();
     }
 

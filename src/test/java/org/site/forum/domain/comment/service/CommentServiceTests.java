@@ -6,15 +6,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.site.forum.common.exception.InvalidCommentRequestException;
+import org.site.forum.common.exception.UnauthorizedAccessException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
 import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.dto.response.ReplyResponseDto;
 import org.site.forum.domain.comment.entity.Comment;
+import org.site.forum.domain.comment.integrity.CommentDataIntegrity;
 import org.site.forum.domain.comment.mapper.CommentMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.entity.Topic;
+import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -24,7 +28,11 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
@@ -46,6 +54,12 @@ class CommentServiceTests {
 
     @Mock
     private CommentMapper commentMapper;
+
+    @Mock
+    private CommentDataIntegrity commentDataIntegrity;
+
+    @Mock
+    private TopicDataIntegrity topicDataIntegrity;
 
     @InjectMocks
     private CommentServiceImpl commentService;
@@ -89,8 +103,8 @@ class CommentServiceTests {
                 .text(CONTENT)
                 .createdAt(CREATED_AT)
                 .isEnabled(true)
-                .author(user)
-                .topic(topic)
+                .authorId(user.getId())
+                .topicId(topic.getId())
                 .build();
 
         replyResponseDto = ReplyResponseDto.builder()
@@ -163,6 +177,31 @@ class CommentServiceTests {
     }
 
     @Test
+    void testSaveCommentWhenTextIsNull() {
+        commentRequestDto.setText(null);
+
+        doThrow(new InvalidCommentRequestException("Comment text cannot be empty or null"))
+                .when(commentDataIntegrity).validateCommentRequestDto(commentRequestDto);
+
+        Exception exception = assertThrows(InvalidCommentRequestException.class,
+                () -> commentService.saveComment(commentRequestDto));
+        assertEquals("Comment text cannot be empty or null", exception.getMessage());
+    }
+
+    @Test
+    void testSaveCommentWhenTextIsEmpty() {
+        commentRequestDto.setText("");
+
+        doThrow(new InvalidCommentRequestException("Comment text cannot be empty or null"))
+                .when(commentDataIntegrity).validateCommentRequestDto(commentRequestDto);
+
+        Exception exception = assertThrows(InvalidCommentRequestException.class,
+                () -> commentService.saveComment(commentRequestDto));
+        assertEquals("Comment text cannot be empty or null", exception.getMessage());
+    }
+
+
+    @Test
     void testGetCommentByParent() {
         when(commentDao.getComment(UUID.fromString(UUID_CONSTANT))).thenReturn(comment);
         when(commentMapper.toReplyResponseDto(comment)).thenReturn(replyResponseDto);
@@ -181,6 +220,7 @@ class CommentServiceTests {
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Comment> comments = new PageImpl<>(Collections.singletonList(comment));
 
+        doNothing().when(topicDataIntegrity).validateTopicId(UUID.fromString(UUID_CONSTANT));
         when(commentDao.getAllParentCommentsByTopic(UUID.fromString(UUID_CONSTANT), pageable)).thenReturn(comments);
         when(commentMapper.toParentCommentDto(comment)).thenReturn(parentCommentResponseDto);
 
@@ -192,6 +232,18 @@ class CommentServiceTests {
 
         verify(commentDao).getAllParentCommentsByTopic(UUID.fromString(UUID_CONSTANT), pageable);
         verify(commentMapper).toParentCommentDto(comment);
+    }
+
+    @Test
+    void testGetAllParentCommentsByTopicWhenTopicIdIsNull() {
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        doThrow(new InvalidCommentRequestException("Topic ID cannot be null"))
+                .when(topicDataIntegrity).validateTopicId(null);
+
+        Exception exception = assertThrows(InvalidCommentRequestException.class,
+                () -> commentService.getAllParentCommentsByTopic(null, pageable));
+        assertEquals("Topic ID cannot be null", exception.getMessage());
     }
 
     @Test
@@ -221,12 +273,36 @@ class CommentServiceTests {
 
         try {
             commentService.deleteComment(UUID.fromString(UUID_CONSTANT));
-        } catch (IllegalArgumentException e) {
+        } catch (UnauthorizedAccessException e) {
             assertEquals(CommentServiceImpl.NOT_AUTHORIZED_TO_DELETE, e.getMessage());
         }
 
         verify(commentDao).getComment(UUID.fromString(UUID_CONSTANT));
         verify(authenticationService).getAuthenticatedAndPersistedUser();
+    }
+
+    @Test
+    void testDeleteComment() {
+        doNothing().when(commentDataIntegrity).validateCommentId(UUID.fromString(UUID_CONSTANT));
+        when(commentDao.getComment(UUID.fromString(UUID_CONSTANT))).thenReturn(comment);
+        when(commentDao.saveComment(comment)).thenReturn(comment);
+        when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
+        when(commentMapper.toParentCommentDto(comment)).thenReturn(parentCommentResponseDto);
+
+        ParentCommentResponseDto result = commentService.deleteComment(UUID.fromString(UUID_CONSTANT));
+
+        System.out.println(comment.getText());
+        System.out.println(comment.isEnabled());
+
+        assertNotNull(result);
+        assertEquals(parentCommentResponseDto, result);
+        assertEquals("[Deleted comment]", comment.getText());
+        assertFalse(comment.isEnabled());
+
+        verify(commentDao).getComment(UUID.fromString(UUID_CONSTANT));
+        verify(commentDao).saveComment(comment);
+        verify(authenticationService).getAuthenticatedAndPersistedUser();
+        verify(commentMapper).toParentCommentDto(comment);
     }
 
 }
