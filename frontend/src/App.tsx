@@ -4,7 +4,8 @@ import {KeycloakProvider} from "./context/KeycloakContext";
 import LandingPage from "./components/LandingPage";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
-import "./components/css/Navbar.css";
+import "./css/Navbar.css";
+import NewTopic from "./pages/NewTopic";
 
 const App = () => {
     return (
@@ -14,6 +15,7 @@ const App = () => {
                 <Routes>
                     <Route path="/" element={<LandingPage/>}/>
                     <Route path="/home" element={<Home/>}/>
+                    <Route path="/newTopic" element={<NewTopic/>}/>
                 </Routes>
             </Router>
         </KeycloakProvider>

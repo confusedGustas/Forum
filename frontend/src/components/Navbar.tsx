@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AppBar, Toolbar, Typography, TextField, IconButton, Container, Box } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
-import "./css/Navbar.css"
+import "../css/Navbar.css"
 
 const Navbar = () => {
     const [searchQuery, setSearchQuery] = useState("");
