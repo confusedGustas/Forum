@@ -1,0 +1,24 @@
+.navbar {
+    background-color: #65aeeb !important;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+}
+
+.navbar-search-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border-color: #808080 !important;
+}
+
+.search-bar {
+    margin-right: 16px;
+    background-color: white;
+    border-radius: 10px;
+    width: 70%;
+}
+
+.search-button {
+    color: inherit;
+}
