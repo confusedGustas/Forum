@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 import { TextField, Button, Box, Typography } from '@mui/material';
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const NewTopic = () => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [files, setFiles] = useState([]);
+    const navigate = useNavigate();
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
@@ -50,6 +52,7 @@ const NewTopic = () => {
         setTitle('');
         setContent('');
         setErrorMessage('');
+        navigate(-1);
     };
 
     const handleFileChange = (e) => {
