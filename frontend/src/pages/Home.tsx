@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Button, Container } from "@mui/material";
 import Topic from "../components/Topic";
+import {useNavigate} from "react-router-dom";
 
 const Home = () => {
     const [topics, setTopics] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchTopics();
@@ -26,7 +28,7 @@ const Home = () => {
 
     return (
         <Container sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Button sx={{ mt: 2, alignSelf: 'flex-end' }} variant="contained">
+            <Button sx={{ mt: 2, alignSelf: 'flex-end' }} variant="contained" onClick={() => navigate("/newTopic")}>
                 Add new post
             </Button>
             {topics.map((topic) => (
