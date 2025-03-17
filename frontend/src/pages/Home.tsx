@@ -1,20 +1,37 @@
-import React from "react";
-import {Button, Container} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Button, Container } from "@mui/material";
 import Topic from "../components/Topic";
 
-const dummyTopic = {
-    title: "My First Topic",
-    content: "This is a sample post for the forum.",
-    createdAt: new Date().toISOString(),
-    author: { name: "John Doe" },
-    rating: 5,
-};
-
 const Home = () => {
+    const [topics, setTopics] = useState([]);
+
+    useEffect(() => {
+        fetchTopics();
+    }, []);
+
+    const fetchTopics = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/api/v1/search/topics?offset=0&limit=10", {
+                params: {
+                    limit: 10,
+                    offset: 0
+                }
+            });
+            setTopics(response.data.items);
+        } catch (error) {
+            console.error("Error fetching topics:", error);
+        }
+    };
+
     return (
-        <Container sx={{display: 'flex', flexDirection: 'column'}}>
-            <Button sx={{  mt: 2, alignSelf: 'flex-end'}} variant="contained">Add new post</Button>
-            <Topic topic={dummyTopic} />
+        <Container sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Button sx={{ mt: 2, alignSelf: 'flex-end' }} variant="contained">
+                Add new post
+            </Button>
+            {topics.map((topic) => (
+                <Topic key={topic.id} topic={topic} />
+            ))}
         </Container>
     );
 };
