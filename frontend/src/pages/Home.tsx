@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Typography } from "@mui/material";
+import {Button, Container} from "@mui/material";
 import Topic from "../components/Topic";
 
 const dummyTopic = {
@@ -12,7 +12,8 @@ const dummyTopic = {
 
 const Home = () => {
     return (
-        <Container>
+        <Container sx={{display: 'flex', flexDirection: 'column'}}>
+            <Button sx={{  mt: 2, alignSelf: 'flex-end'}} variant="contained">Add new post</Button>
             <Topic topic={dummyTopic} />
         </Container>
     );
