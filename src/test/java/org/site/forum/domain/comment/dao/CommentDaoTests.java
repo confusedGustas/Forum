@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.site.forum.common.exception.InvalidCommentException;
 import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.domain.comment.entity.Comment;
+import org.site.forum.domain.file.dao.FileDao;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dao.TopicDaoImpl;
 import org.site.forum.domain.topic.entity.Topic;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.UUID;
 
@@ -31,7 +33,7 @@ import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import({CommentDaoImpl.class, UserDaoImpl.class, TopicDaoImpl.class, TopicDataIntegrityImpl.class})
+@Import({CommentDaoImpl.class, UserDaoImpl.class, TopicDaoImpl.class, TopicDataIntegrityImpl.class, User.class, Topic.class})
 class CommentDaoTests {
 
     @Autowired
@@ -42,6 +44,9 @@ class CommentDaoTests {
 
     @Autowired
     private TopicDao topicDao;
+
+    @MockitoBean
+    private FileDao fileDao;
 
     private Comment comment;
     private Topic topic;

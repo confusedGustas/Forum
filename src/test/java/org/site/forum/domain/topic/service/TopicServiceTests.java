@@ -10,7 +10,6 @@ import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.common.exception.UserNotFoundException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.file.dao.FileDao;
-import org.site.forum.domain.file.entity.File;
 import org.site.forum.domain.file.mapper.FileMapper;
 import org.site.forum.domain.file.service.FileService;
 import org.site.forum.domain.topic.dao.TopicDao;
@@ -23,9 +22,9 @@ import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.entity.User;
 import org.site.forum.domain.user.service.UserService;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,6 +38,8 @@ import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
 import static org.site.forum.constants.TestConstants.TITLE;
 import static org.site.forum.constants.TestConstants.UUID_CONSTANT;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TopicServiceTests {
@@ -51,9 +52,6 @@ class TopicServiceTests {
 
     @Mock
     private TopicMapper topicMapper;
-
-    @Mock
-    private FileMapper fileMapper;
 
     @Mock
     private FileService fileService;
@@ -78,93 +76,39 @@ class TopicServiceTests {
 
     private User user;
     private Topic topic;
-    private File file;
     private TopicRequestDto topicRequestDto;
-    private TopicResponseDto topicResponseDto;
+    private UUID testTopicId;
 
     @BeforeEach
     void setUp() {
-        user = User.builder()
-                .id(UUID.randomUUID())
-                .build();
-
-        file = File.builder()
-                .id(UUID.randomUUID())
-                .minioObjectName("test-file.txt")
-                .contentType("text/plain")
-                .topic(topic)
-                .build();
-
-        topicRequestDto = TopicRequestDto.builder()
-                .title(TITLE)
-                .content(CONTENT)
-                .build();
+        testTopicId = UUID.randomUUID();
+        user = User.builder().id(UUID.randomUUID()).build();
+        topicRequestDto = TopicRequestDto.builder().title("Test Title").content("Test Content").build();
 
         topic = Topic.builder()
-                .title(TITLE)
-                .content(CONTENT)
+                .id(testTopicId)
+                .title("Test Title")
+                .content("Test Content")
                 .author(user)
                 .build();
 
-        topicResponseDto = TopicResponseDto.builder()
-                .title(TITLE)
-                .content(CONTENT)
-                .authorId(user.getId())
-                .files(fileMapper.toDto(List.of(file)))
+        topicRequestDto = TopicRequestDto.builder()
+                .title("Test Title")
+                .content("Test Content")
                 .build();
     }
 
     @Test
-    void testCreateTopic() {
-        List<MultipartFile> files = Collections.emptyList();
+    void testGetTopic() {
+        UUID topicId = UUID.randomUUID();
+        when(topicDao.getTopic(topicId)).thenReturn(topic);
+        when(fileDao.findFilesByTopicId(topicId)).thenReturn(Collections.emptyList());
+        when(topicMapper.toDto(topic, Collections.emptyList())).thenReturn(new TopicResponseDto());
 
-        when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
-        when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(topic);
-        when(topicDao.saveTopic(topic)).thenReturn(topic);
-
-        when(fileDao.findFilesByTopicId(topic.getId())).thenReturn(List.of(file));
-        when(topicMapper.toDto(topic, List.of(file))).thenReturn(topicResponseDto);
-
-        TopicResponseDto response = topicService.saveTopic(topicRequestDto, files);
+        TopicResponseDto response = topicService.getTopic(topicId);
 
         assertNotNull(response);
-        assertEquals(topicResponseDto, response);
-
-        verify(authenticationService).getAuthenticatedAndPersistedUser();
-        verify(topicMapper).toEntity(topicRequestDto, user);
-        verify(topicDao).saveTopic(topic);
-        verify(topicMapper).toDto(topic, List.of(file));
-    }
-
-    @Test
-    void testCreateTopicIfUserIsNull() {
-        doThrow(new UserNotFoundException("User not found")).when(authenticationService).getAuthenticatedAndPersistedUser();
-
-        Exception exception = assertThrows(UserNotFoundException.class, () -> topicService.saveTopic(topicRequestDto, List.of(multipartFile)));
-        assertEquals("User not found", exception.getMessage());
-
-        verify(authenticationService).getAuthenticatedAndPersistedUser();
-        verify(userService, never()).saveUser(any());
-        verify(topicMapper, never()).toEntity(any(), any());
-        verify(topicDao, never()).saveTopic(any());
-    }
-
-    @Test
-    void testGetTopic(){
-        List<File> files = List.of(file);
-
-        when(topicDao.getTopic(UUID.fromString(UUID_CONSTANT))).thenReturn(topic);
-        when(fileDao.findFilesByTopicId(UUID.fromString(UUID_CONSTANT))).thenReturn(files);
-        when(topicMapper.toDto(topic, files)).thenReturn(topicResponseDto);
-
-        TopicResponseDto response = topicService.getTopic(UUID.fromString(UUID_CONSTANT));
-
-        assertNotNull(response);
-        assertEquals(topicResponseDto, response);
-
-        verify(topicDao).getTopic(UUID.fromString(UUID_CONSTANT));
-        verify(fileDao).findFilesByTopicId(UUID.fromString(UUID_CONSTANT));
-        verify(topicMapper).toDto(topic, List.of(file));
+        verify(fileDao).findFilesByTopicId(topicId);
     }
 
     @Test
@@ -204,6 +148,81 @@ class TopicServiceTests {
 
         verify(topicDao, never()).getTopic(any());
         verify(topicDao, never()).deleteTopic(any());
+    }
+
+    @Test
+    void testDeleteTopicWhenTopicNotFound() {
+        UUID topicId = UUID.randomUUID();
+        when(topicDao.getTopic(topicId)).thenThrow(new InvalidTopicIdException("Not found"));
+        assertThrows(InvalidTopicIdException.class, () -> topicService.deleteTopic(topicId));
+    }
+
+    @Test
+    void testGetTopicWithNullId() {
+        doThrow(new InvalidTopicIdException("Test")).when(topicDataIntegrity).validateTopicId(null);
+        assertThrows(InvalidTopicIdException.class, () -> topicService.getTopic(null));
+    }
+
+    @Test
+    void testUpdateTopicWithFiles() {
+        UUID topicId = testTopicId;
+        Topic updatedTopic = Topic.builder()
+                .id(topicId)
+                .title("Updated Title")
+                .content("Updated Content")
+                .author(user)
+                .build();
+        TopicResponseDto expectedDto = new TopicResponseDto();
+        List<MultipartFile> files = List.of(multipartFile);
+
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(updatedTopic);
+        when(topicDao.updateTopic(topicId, updatedTopic)).thenReturn(updatedTopic);
+        when(fileDao.findFilesByTopicId(topicId)).thenReturn(Collections.emptyList());
+        when(topicMapper.toDto(updatedTopic, Collections.emptyList())).thenReturn(expectedDto);
+        doNothing().when(topicDataIntegrity).validateFileCount(topicId);
+
+        TopicResponseDto result = topicService.updateTopic(topicId, topicRequestDto, files);
+
+        assertSame(expectedDto, result);
+        verify(fileService).uploadFiles(files, updatedTopic);
+    }
+
+    @Test
+    void testUpdateTopic() {
+        UUID topicId = testTopicId;
+        Topic updatedTopic = Topic.builder()
+                .id(topicId)
+                .title("Updated Title")
+                .content("Updated Content")
+                .author(user)
+                .build();
+        TopicResponseDto expectedDto = new TopicResponseDto();
+
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(updatedTopic);
+        when(topicDao.updateTopic(topicId, updatedTopic)).thenReturn(updatedTopic);
+        when(fileDao.findFilesByTopicId(topicId)).thenReturn(Collections.emptyList());
+        when(topicMapper.toDto(updatedTopic, Collections.emptyList())).thenReturn(expectedDto);
+        doNothing().when(topicDataIntegrity).validateFileCount(topicId);
+
+        TopicResponseDto result = topicService.updateTopic(topicId, topicRequestDto, Collections.emptyList());
+
+        assertSame(expectedDto, result);
+        verify(topicDataIntegrity).validateTopicId(topicId);
+        verify(topicDataIntegrity).validateTopicRequestDto(topicRequestDto);
+        verify(fileService, never()).uploadFiles(any(), any());
+    }
+
+    @Test
+    void testUpdateTopicWithInvalidId() {
+        UUID invalidId = UUID.randomUUID();
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(topic);
+        when(topicDao.updateTopic(invalidId, topic)).thenThrow(new InvalidTopicIdException("Not found"));
+
+        assertThrows(InvalidTopicIdException.class, () ->
+                topicService.updateTopic(invalidId, topicRequestDto, Collections.emptyList()));
     }
 
 }

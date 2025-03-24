@@ -12,5 +12,6 @@ public interface TopicDataIntegrity {
     void validateTopicRequestDto(TopicRequestDto dto);
     void validateFiles(List<MultipartFile> files);
     void validateTopicId(UUID id);
+    void validateFileCount(UUID topicId);
 
 }

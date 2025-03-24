@@ -19,17 +19,15 @@ import org.site.forum.domain.user.mapper.UserMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
+
+import static org.site.forum.domain.user.integrity.UserDataIntegrityImpl.USER_CANNOT_BE_NULL;
 
 @Service
 @AllArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService {
-
-    private static final String USER_CANNOT_BE_NULL = "User cannot be null";
-    private static final String USER_ALREADY_EXISTS = "User with the specified UUID already exists";
 
     private final UserDao userDao;
     private final CommentDao commentDao;
@@ -43,11 +41,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveUser(User user) {
         userDataIntegrity.validateUser(user);
-
-        if (userDao.getUserById(user.getId()).isPresent()) {
-            throw new UserAlreadyExistsException(USER_ALREADY_EXISTS);
-        }
-
         userDao.saveUser(user);
     }
 

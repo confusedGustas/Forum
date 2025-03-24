@@ -47,4 +47,13 @@ public class TopicController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/update/{id}")
+    @PreAuthorize("hasRole('client_user')")
+    public ResponseEntity<TopicResponseDto> updateTopic(
+            @PathVariable UUID id,
+            @Valid @ModelAttribute("topicRequestDto") TopicRequestDto topicRequestDto,
+            @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+        return ResponseEntity.ok(topicService.updateTopic(id, topicRequestDto, files));
+    }
+
 }

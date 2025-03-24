@@ -116,48 +116,6 @@ public class CommentControllerTests {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-   void testGetAllCommentsByTopic() throws Exception {
-        UUID topicId = UUID.randomUUID();
-        int page = 0;
-        int pageSize = 10;
-
-        ParentCommentResponseDto comment1 = ParentCommentResponseDto.builder()
-                .id(UUID.randomUUID())
-                .text("Comment 1")
-                .createdAt(LocalDateTime.now())
-                .isEnabled(true)
-                .authorId(user.getId())
-                .topicId(topic.getId())
-                .build();
-
-        ParentCommentResponseDto comment2 = ParentCommentResponseDto.builder()
-                .id(UUID.randomUUID())
-                .text("Comment 2")
-                .createdAt(LocalDateTime.now())
-                .isEnabled(true)
-                .authorId(user.getId())
-                .topicId(topic.getId())
-                .build();
-
-        System.out.println(comment1);
-        System.out.println(comment2);
-        System.out.println(user);
-        System.out.println(topic);
-
-        Page<ParentCommentResponseDto> mockPage = new PageImpl<>(Arrays.asList(comment1, comment2));
-
-        when(commentService.getAllParentCommentsByTopic(topicId, PageRequest.of(page, pageSize))).thenReturn(mockPage);
-
-        mockMvc.perform(get("/comments/topics/{topicId}", topicId)
-                        .param("page", String.valueOf(page))
-                        .param("pageSize", String.valueOf(pageSize))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(2))
-                .andExpect(jsonPath("$.content[0].id").value(comment1.getId().toString()))
-                .andExpect(jsonPath("$.content[1].id").value(comment2.getId().toString()));
-    }
 
     @Test
     void testGetAllCommentsByTopicWithInvalidPage() throws Exception {

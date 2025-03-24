@@ -62,4 +62,18 @@ public class TopicDaoImpl implements TopicDao {
         }
     }
 
+    @Override
+    public Topic updateTopic(UUID id, Topic topic) {
+        topicDataIntegrity.validateTopicId(id);
+        topicDataIntegrity.validateTopicEntity(topic);
+
+        Topic existingTopic = getTopic(id);
+
+        existingTopic.setTitle(topic.getTitle());
+        existingTopic.setContent(topic.getContent());
+        existingTopic.setUpdatedAt(LocalDateTime.now());
+
+        return topicRepository.save(existingTopic);
+    }
+
 }

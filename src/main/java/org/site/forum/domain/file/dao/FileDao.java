@@ -10,5 +10,6 @@ public interface FileDao {
     List<File> findFilesByTopicId(UUID topicId);
     File getFileById(UUID id);
     void deleteFile(UUID id);
+    Boolean fileCountExceedsLimit(UUID topicId);
 
 }
