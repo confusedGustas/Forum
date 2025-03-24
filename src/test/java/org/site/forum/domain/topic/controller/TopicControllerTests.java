@@ -21,6 +21,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
 import static org.site.forum.constants.TestConstants.TITLE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -67,5 +68,16 @@ class TopicControllerTests {
                 .andExpect(jsonPath("$.authorId").value(topicResponseDto.getAuthorId().toString()));
     }
 
+    @Test
+    void testGetTopic() throws Exception {
+        when(topicService.getTopic(any(UUID.class))).thenReturn(topicResponseDto);
+
+        mockMvc.perform(get("/topics/{id}", topicResponseDto.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(topicResponseDto.getId().toString()))
+                .andExpect(jsonPath("$.title").value(topicResponseDto.getTitle()))
+                .andExpect(jsonPath("$.content").value(topicResponseDto.getContent()))
+                .andExpect(jsonPath("$.authorId").value(topicResponseDto.getAuthorId().toString()));
+    }
 
 }
