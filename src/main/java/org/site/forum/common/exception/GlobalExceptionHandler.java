@@ -27,6 +27,60 @@ public class GlobalExceptionHandler {
         return errors;
     }
 
+    @ExceptionHandler(InvalidSortFieldException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidSortFieldException(InvalidSortFieldException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", "Invalid sort field: " + ex.getInvalidField());
+        response.put("message", "Please use one of the allowed sort fields");
+        response.put("allowedFields", ex.getAllowedFields());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @ExceptionHandler(InvalidSortDirectionException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidSortDirectionException(InvalidSortDirectionException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", "Invalid sort direction: " + ex.getInvalidDirection());
+        response.put("message", "Please use one of the allowed sort directions");
+        response.put("allowedDirections", ex.getAllowedDirections());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    private ResponseEntity<Map<String, Object>> buildErrorResponseWithDetails(
+            HttpStatus status,
+            String message,
+            Map<String, Object> details) {
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", message);
+        response.putAll(details);
+
+        return ResponseEntity.status(status)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
+    @ExceptionHandler(InvalidPageException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidPageException(InvalidPageException ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidPageSizeException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidPageSizeException(InvalidPageSizeException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", ex.getMessage());
+        response.put("maxPageSize", ex.getMaxPageSize());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response);
+    }
+
     @ExceptionHandler(InvalidFileDataException.class)
     public ResponseEntity<Map<String, String>> handleInvalidFileDataException(InvalidFileDataException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
