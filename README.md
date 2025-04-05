@@ -144,6 +144,7 @@ docker compose up
 ## 👥 Project Contributors
 
 - [UgniusSP](https://github.com/UgniusSP)
+- [Antanas4](https://github.com/Antanas4)
 
 ---
 
