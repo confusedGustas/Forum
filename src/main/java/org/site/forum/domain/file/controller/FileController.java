@@ -37,4 +37,5 @@ public class FileController {
     public void deleteFile(@PathVariable UUID fileId) {
         fileService.deleteFile(fileId);
     }
+
 }

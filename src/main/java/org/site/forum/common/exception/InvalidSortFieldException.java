@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class InvalidSortFieldException extends IllegalArgumentException {
+
     private final String invalidField;
     private final Iterable<String> allowedFields;
 

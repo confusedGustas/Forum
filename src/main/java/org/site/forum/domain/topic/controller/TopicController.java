@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -98,4 +97,5 @@ public class TopicController {
                 id, TopicRequestDto.builder().title(title).content(content).build(), files)
         );
     }
+
 }

@@ -38,4 +38,5 @@ public class AuthenticationService {
             throw new UserNotFoundException(USER_NOT_FOUND);
         }
     }
+
 }

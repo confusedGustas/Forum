@@ -1,6 +1,10 @@
 package org.site.forum.common.exception;
 
+import lombok.Getter;
+
+@Getter
 public class InvalidPageSizeException extends IllegalArgumentException {
+
     private final int maxPageSize;
 
     public InvalidPageSizeException(String message, int maxPageSize) {
@@ -8,7 +12,4 @@ public class InvalidPageSizeException extends IllegalArgumentException {
         this.maxPageSize = maxPageSize;
     }
 
-    public int getMaxPageSize() {
-        return maxPageSize;
-    }
 }

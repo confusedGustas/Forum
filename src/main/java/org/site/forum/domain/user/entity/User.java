@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.topic.entity.Topic;
-
 import java.util.List;
 import java.util.UUID;
 

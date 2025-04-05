@@ -42,4 +42,5 @@ public class TopicSpecificationImpl implements TopicSpecification {
     private Predicate likeIgnoreCase(CriteriaBuilder criteriaBuilder, Root<Topic> root, String field, String searchTerm) {
         return criteriaBuilder.like(criteriaBuilder.lower(root.get(field)), searchTerm);
     }
+
 }

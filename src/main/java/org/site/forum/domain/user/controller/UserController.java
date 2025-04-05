@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.UUID;
 
 @Tag(name = "User Controller", description = "Operations related to user data and activity")
@@ -107,4 +106,5 @@ public class UserController {
         PageRequest pageRequest = userDataIntegrity.createValidPageRequest(page, pageSize);
         return ResponseEntity.ok(userService.getUserTopics(id, pageRequest));
     }
+
 }

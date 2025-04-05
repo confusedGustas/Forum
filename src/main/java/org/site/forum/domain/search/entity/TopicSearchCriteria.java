@@ -19,8 +19,4 @@ public class TopicSearchCriteria {
     private String sortBy;
     private String sortDirection;
 
-    public boolean hasSearch() {
-        return search != null && !search.isBlank();
-    }
-
 }

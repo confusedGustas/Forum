@@ -3,7 +3,6 @@ package org.site.forum.domain.user.service;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.site.forum.common.exception.InvalidUserException;
-import org.site.forum.common.exception.UserAlreadyExistsException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;

@@ -8,10 +8,7 @@ import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.topic.mapper.TopicMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
-
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -26,9 +23,9 @@ public class PaginatedResponseMapper {
     }
 
     private List<TopicResponseDto> mapTopicsToResponseDto(Page<Topic> topicPage) {
-        return Collections.unmodifiableList(topicPage.getContent().stream()
+        return topicPage.getContent().stream()
                 .map(this::mapTopicToResponseDto)
-                .toList());
+                .toList();
     }
 
     private TopicResponseDto mapTopicToResponseDto(Topic topic) {

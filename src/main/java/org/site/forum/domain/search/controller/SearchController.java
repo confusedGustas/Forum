@@ -29,21 +29,22 @@ public class SearchController {
             description = "Search for forum topics based on the provided criteria, including optional filters like limit, offset, search term, sorting, etc."
     )
     public ResponseEntity<PaginatedResponseDto> getTopics(
-            @Parameter(description = "Maximum number of results to return", required = false)
+            @Parameter(description = "Maximum number of results to return")
             @RequestParam(required = false) Integer limit,
 
-            @Parameter(description = "Starting point of the result set", required = false)
+            @Parameter(description = "Starting point of the result set")
             @RequestParam(required = false) Integer offset,
 
-            @Parameter(description = "Search term to filter topics", required = false)
+            @Parameter(description = "Search term to filter topics")
             @RequestParam(required = false) String search,
 
-            @Parameter(description = "Field to sort results by", required = false)
+            @Parameter(description = "Field to sort results by")
             @RequestParam(required = false) String sortBy,
 
-            @Parameter(description = "Sorting order (asc/desc)", required = false)
+            @Parameter(description = "Sorting order (asc/desc)")
             @RequestParam(required = false) String sortOrder) {
 
         return ResponseEntity.ok(searchService.searchTopics(new TopicSearchCriteria(search, offset, limit, sortBy, sortOrder)));
     }
+
 }

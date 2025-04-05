@@ -6,6 +6,7 @@ import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SearchConstant {
+
     public static final int DEFAULT_OFFSET = 0;
     public static final int DEFAULT_LIMIT = 20;
     public static final int MAX_LIMIT = 50;
@@ -18,6 +19,5 @@ public class SearchConstant {
 
     public static final String ERROR_INVALID_OFFSET = "Offset must be greater than or equal to 0";
     public static final String ERROR_INVALID_LIMIT = "Limit must be between 1 and " + MAX_LIMIT;
-    public static final String ERROR_INVALID_SORT_FIELD = "Invalid sort field: ";
-    public static final String ERROR_INVALID_SORT_DIRECTION = "Invalid sort direction: ";
+
 }

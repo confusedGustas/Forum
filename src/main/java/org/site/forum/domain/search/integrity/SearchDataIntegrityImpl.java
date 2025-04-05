@@ -66,4 +66,5 @@ public class SearchDataIntegrityImpl implements SearchDataIntegrity {
                 .sortDirection(validateSortDirection(criteria.getSortDirection()))
                 .build();
     }
+
 }

@@ -9,7 +9,6 @@ import org.site.forum.domain.user.dto.UserResponseDto;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.UUID;
 

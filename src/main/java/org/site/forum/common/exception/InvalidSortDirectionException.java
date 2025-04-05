@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class InvalidSortDirectionException extends IllegalArgumentException {
+
     private final String invalidDirection;
     private final Iterable<String> allowedDirections;
 

@@ -3,7 +3,6 @@ package org.site.forum.domain.topic.dao;
 import org.site.forum.domain.topic.entity.Topic;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.util.UUID;
 
 public interface TopicDao {

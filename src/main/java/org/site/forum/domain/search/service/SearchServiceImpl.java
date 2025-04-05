@@ -44,4 +44,5 @@ public class SearchServiceImpl implements SearchService {
         Sort.Direction direction = Sort.Direction.fromString(sortOrder);
         return PageRequest.of(offset, limit, Sort.by(direction, sortBy));
     }
+
 }

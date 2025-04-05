@@ -3,7 +3,6 @@ package org.site.forum.domain.user.integrity;
 import lombok.RequiredArgsConstructor;
 import org.site.forum.common.constant.PageConstant;
 import org.site.forum.common.exception.*;
-import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -15,8 +14,6 @@ public class UserDataIntegrityImpl implements UserDataIntegrity {
 
     public static final String USER_CANNOT_BE_NULL = "User cannot be null";
     public static final String USER_ID_CANNOT_BE_NULL = "User ID cannot be null";
-
-    private final UserDao userDao;
 
     @Override
     public void validateUser(User user) {
@@ -63,4 +60,5 @@ public class UserDataIntegrityImpl implements UserDataIntegrity {
         int validatedPageSize = validatePageSize(pageSize);
         return PageRequest.of(validatedPage, validatedPageSize);
     }
+
 }
