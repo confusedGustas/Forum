@@ -127,8 +127,6 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-
-
     private ResponseEntity<Map<String, String>> buildErrorResponse(HttpStatus status, String message) {
         Map<String, String> response = new HashMap<>();
         response.put("error", message);

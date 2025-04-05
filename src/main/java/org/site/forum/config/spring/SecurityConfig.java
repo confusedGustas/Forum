@@ -27,11 +27,13 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/actuator/**",
                                 "/topics/*",
-                                "/search/topics/**").permitAll()
+                                "/search/topics/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter)))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
-
 }

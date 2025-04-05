@@ -21,12 +21,4 @@ public class TopicSearchCriteria {
         return search != null && !search.isBlank();
     }
 
-    public int getEffectiveOffset(int defaultValue) {
-        return (offset != null) ? offset : defaultValue;
-    }
-
-    public int getEffectiveLimit(int defaultValue) {
-        return (limit != null) ? limit : defaultValue;
-    }
-
 }
