@@ -4,6 +4,7 @@ import {KeycloakProvider} from "./context/KeycloakContext";
 import Home from "./pages/Home";
 import NewPost from "./pages/NewPost";
 import Profile from "./pages/Profile";
+import TopicPage from "./pages/TopicPage";
 import Navbar from "./components/Navbar";
 
 const App = () => {
@@ -16,6 +17,7 @@ const App = () => {
                     <Route path="/home" element={<Home/>}/>
                     <Route path="/new-post" element={<NewPost/>}/>
                     <Route path="/profile" element={<Profile/>}/>
+                    <Route path="/topic/:topicId" element={<TopicPage/>}/>
                     <Route path="*" element={<Navigate to="/home" replace />}/>
                 </Routes>
             </KeycloakProvider>

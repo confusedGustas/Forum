@@ -15,4 +15,7 @@ module.exports = function(app) {
   app.use('/search', backendProxy);
   app.use('/users', backendProxy);
   app.use('/ratings', backendProxy);
+  app.use('/comments', backendProxy);
+  
+  app.use('/api', backendProxy);
 };

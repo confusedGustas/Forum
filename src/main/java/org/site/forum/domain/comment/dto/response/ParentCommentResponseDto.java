@@ -22,6 +22,7 @@ public class ParentCommentResponseDto {
     private LocalDateTime createdAt;
     private boolean isEnabled;
     private UUID authorId;
+    private String authorName;
     private UUID topicId;
 
 }

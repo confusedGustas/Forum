@@ -1,10 +1,11 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
-import { Card, CardContent, Typography, IconButton, Box, Link } from "@mui/material";
-import { ArrowUpward, ArrowDownward, AccountCircle, AttachFile } from "@mui/icons-material";
+import { Card, CardContent, Typography, IconButton, Box, Link, Button } from "@mui/material";
+import { ArrowUpward, ArrowDownward, AccountCircle, AttachFile, Comment } from "@mui/icons-material";
 import { TopicResponseDto } from "../lib/topicService";
 import apiProxy from "../lib/apiProxy";
 import config from "../lib/config";
 import { KeycloakContext } from "../context/KeycloakContext";
+import { Link as RouterLink } from "react-router-dom";
 
 interface TopicProps {
     topic: TopicResponseDto;
@@ -93,106 +94,76 @@ const Topic: React.FC<TopicProps> = ({ topic }) => {
     };
 
     return (
-        <Card className="retro-card" sx={{ mb: 2, mt: 2, p: 2 }}>
-            <CardContent>
-                <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <AccountCircle sx={{ color: "var(--text-color)" }} />
-                    <Typography variant="body2" sx={{ fontFamily: "'VT323', monospace", fontSize: "1.2rem", color: "var(--accent-color)" }}>
-                        {author?.name || authorName || "User " + authorId?.substring(0, 8) || "Anonymous"} • {formatDate(createdAt)}
-                    </Typography>
-                </Box>
-
-                <Typography variant="h6" sx={{ 
-                    mt: 1, 
-                    fontFamily: "'Courier Prime', monospace", 
-                    fontSize: "1.3rem",
-                    fontWeight: "bold",
-                    color: "var(--text-color)",
-                    pb: 1,
-                    borderBottom: "1px solid var(--border-color)"
+        <Card sx={{
+            mb: 4,
+            backgroundColor: "var(--bg-color)",
+            border: "1px solid var(--border-color)",
+            position: "relative",
+            "&:hover": {
+                borderColor: "var(--accent-color)"
+            }
+        }}>
+            {error && (
+                <div style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    padding: "8px",
+                    backgroundColor: "var(--error-color)",
+                    color: "white",
+                    fontSize: "0.8em",
+                    zIndex: 1
                 }}>
+                    {error}
+                </div>
+            )}
+            <CardContent>
+                <Typography 
+                    variant="h6" 
+                    component={RouterLink} 
+                    to={`/topic/${id}`}
+                    sx={{ 
+                        color: "var(--accent-color)",
+                        textDecoration: "none",
+                        fontFamily: "'VT323', monospace",
+                        fontSize: "1.5rem",
+                        "&:hover": {
+                            textDecoration: "underline"
+                        }
+                    }}
+                >
                     {title}
                 </Typography>
-                <Typography variant="body1" sx={{ 
-                    my: 1, 
-                    fontFamily: "'Courier Prime', monospace",
-                    color: "var(--text-color)",
-                    borderLeft: "2px solid var(--border-color)",
-                    pl: 2,
-                    py: 1
+                
+                <Typography sx={{ 
+                    color: 'var(--text-secondary)', 
+                    mb: 1, 
+                    fontSize: "0.8rem",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5
+                }}>
+                    <AccountCircle fontSize="small" /> 
+                    {authorName || (author && author.name) || "Anonymous"} | {formatDate(createdAt)}
+                    {hasFiles && <AttachFile fontSize="small" />}
+                </Typography>
+                
+                <Typography sx={{ 
+                    color: 'var(--text-color)', 
+                    whiteSpace: 'pre-wrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    mb: 2,
+                    fontFamily: "monospace"
                 }}>
                     {content}
                 </Typography>
                 
-                {hasFiles && (
-                    <Box sx={{ 
-                        mt: 2, 
-                        p: 1, 
-                        borderTop: "1px dashed var(--border-color)",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 1
-                    }}>
-                        <Typography variant="body2" sx={{ fontFamily: "'VT323', monospace", color: "var(--accent-color)" }}>
-                            Attachments:
-                        </Typography>
-                        
-                        <Box sx={{ 
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: 1
-                        }}>
-                            {Array.isArray(files) && files.map((file, index) => {
-                                const fileExtension = file.minioObjectName?.split('.').pop()?.toUpperCase() || 'FILE';
-                                const displayUrl = `http://localhost:9000/forum-bucket/${file.minioObjectName}`;
-                                
-                                return (
-                                    <Link 
-                                        key={index}
-                                        href={displayUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: 0.5,
-                                            color: "var(--accent-color)",
-                                            textDecoration: "none",
-                                            border: "1px solid var(--border-color)",
-                                            borderRadius: "4px",
-                                            p: 0.75,
-                                            "&:hover": {
-                                                backgroundColor: "rgba(255, 255, 255, 0.1)",
-                                                textDecoration: "underline"
-                                            }
-                                        }}
-                                    >
-                                        <AttachFile fontSize="small" />
-                                        <Typography 
-                                            variant="body2" 
-                                            sx={{ 
-                                                fontFamily: "'Courier Prime', monospace",
-                                                fontSize: "0.9rem",
-                                                fontWeight: "bold"
-                                            }}
-                                        >
-                                            {fileExtension}
-                                        </Typography>
-                                    </Link>
-                                );
-                            })}
-                        </Box>
-                    </Box>
-                )}
-                
-                <Box sx={{ 
-                    display: "flex", 
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    mt: 2,
-                    pt: 1, 
-                    borderTop: "1px solid var(--border-color)"
-                }}>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                         <IconButton 
                             onClick={handleUpvote}
@@ -228,15 +199,21 @@ const Topic: React.FC<TopicProps> = ({ topic }) => {
                         </IconButton>
                     </Box>
                     
-                    {error && (
-                        <Typography sx={{ 
-                            color: "var(--error-color)",
-                            fontFamily: "'Courier Prime', monospace",
-                            fontSize: "0.9rem"
-                        }}>
-                            {error}
-                        </Typography>
-                    )}
+                    <Button
+                        component={RouterLink}
+                        to={`/topic/${id}`}
+                        startIcon={<Comment />}
+                        size="small"
+                        sx={{
+                            fontFamily: "'VT323', monospace",
+                            color: "var(--text-color)",
+                            '&:hover': {
+                                color: "var(--accent-color)",
+                            }
+                        }}
+                    >
+                        View Discussion
+                    </Button>
                 </Box>
             </CardContent>
         </Card>

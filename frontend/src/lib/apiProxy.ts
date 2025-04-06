@@ -72,8 +72,27 @@ const apiProxy = {
   },
 
   comments: {
-    getForTopic: (topicId: string) => apiClient.get(`${config.api.endpoints.topic(topicId)}/comments`),
-    create: (topicId: string, content: string) => apiClient.post(`${config.api.endpoints.topic(topicId)}/comments`, { content })
+    getForTopic: (topicId: string, page?: number, pageSize?: number) => {
+      const params: Record<string, any> = {};
+      if (page !== undefined) params.page = page;
+      if (pageSize !== undefined) params.pageSize = pageSize;
+      
+      return apiClient.get(config.api.endpoints.topicComments(topicId), { params });
+    },
+    create: (commentRequestDto: { text: string, topicId: string, parentCommentId: string | null }) => 
+      apiClient.post(config.api.endpoints.comments, commentRequestDto),
+    getById: (commentId: string) => 
+      apiClient.get(config.api.endpoints.comment(commentId)),
+    delete: (commentId: string) => 
+      apiClient.delete(config.api.endpoints.comment(commentId)),
+    getReplies: (commentId: string, page?: number, pageSize?: number) => {
+      const params: Record<string, any> = {};
+      if (page !== undefined) params.page = page;
+      if (pageSize !== undefined) params.pageSize = pageSize;
+      
+      console.log(`Fetching replies for comment ${commentId}, page: ${page}, size: ${pageSize}`);
+      return apiClient.get(config.api.endpoints.commentReplies(commentId), { params });
+    }
   },
 
   users: {
