@@ -25,15 +25,20 @@ jobs:
         run: |
           echo "KC_ADMIN_USERNAME=admin" >> .env
           echo "KC_ADMIN_PASSWORD=admin" >> .env
-          echo "KC_POSTGRES_USERNAME=postgres" >> .env
-          echo "KC_POSTGRES_PASSWORD=postgres" >> .env
-          echo "POSTGRES_USERNAME=postgres" >> .env
-          echo "POSTGRES_PASSWORD=postgres" >> .env
+          echo "SPRING_DATASOURCE_USERNAME=admin" >> .env
+          echo "SPRING_DATASOURCE_PASSWORD=admin" >> .env
+          echo "SPRING_USERNAME=admin" >> .env
+          echo "SPRING_PASSWORD=admin" >> .env
+          echo "PGADMIN_DEFAULT_EMAIL=admin@gmail.com" >> .env
           echo "PGADMIN_DEFAULT_PASSWORD=admin" >> .env
-          echo "PGADMIN_DEFAULT_EMAIL=admin@admin.com" >> .env
-          echo "MINIO_USERNAME=minio" >> .env
-          echo "MINIO_PASSWORD=minio123" >> .env
-          echo "MINIO_BUCKET=forum" >> .env
+          echo "POSTGRES_USERNAME=admin" >> .env
+          echo "POSTGRES_PASSWORD=admin" >> .env
+          echo "KC_POSTGRES_USERNAME=admin" >> .env
+          echo "KC_POSTGRES_PASSWORD=admin" >> .env
+          echo "MINIO_USERNAME=admin" >> .env
+          echo "MINIO_PASSWORD=adminadmin" >> .env
+          echo "MINIO_BUCKET=forum-bucket" >> .env
+          echo "MINIO_SERVER_URL=http://localhost:9000" >> .env
 
       - name: Start Docker services
         run: docker compose up -d
@@ -46,7 +51,7 @@ jobs:
 
       - name: Check PostgreSQL readiness
         run: |
-          docker exec spring_postgres pg_isready -U postgres -d forum || (docker compose logs spring_postgres && exit 1)
+          docker exec spring_postgres pg_isready -U admin -d forum || (docker compose logs spring_postgres && exit 1)
 
       - name: Check Keycloak readiness
         run: |
