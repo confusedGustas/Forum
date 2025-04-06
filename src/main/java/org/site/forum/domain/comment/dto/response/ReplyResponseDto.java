@@ -21,6 +21,7 @@ public class ReplyResponseDto {
     private LocalDateTime createdAt;
     private boolean isEnabled;
     private UUID userId;
+    private String userName;
     private UUID topicId;
     private UUID parentCommentId;
     private List<ReplyResponseDto> replies;

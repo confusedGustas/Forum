@@ -70,11 +70,14 @@ export const KeycloakProvider = ({ children }: { children: ReactNode }) => {
                 id: decoded.sub,
                 name: decoded.preferred_username || decoded.name || 'User',
                 email: decoded.email,
+                realm_access: decoded.realm_access || { roles: [] },
+                resource_access: decoded.resource_access || {}
             };
         } catch (error) {
             return {
                 id: 'unknown',
-                name: 'User'
+                name: 'User',
+                realm_access: { roles: [] }
             };
         }
     };

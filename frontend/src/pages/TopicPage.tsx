@@ -20,12 +20,12 @@ import Comment from '../components/Comment';
 import { AccountCircle, AttachFile } from '@mui/icons-material';
 
 const topicAsciiArt = `
- _______             _      
-|__   __|           (_)     
-   | |     ___  _ __  _  ___ 
-   | |    / _ \\| '__|| |/ __|
-   | |   | (_) | |   | |\\__ \\
-   |_|    \\___/|_|   |_||___/
+  ______                               
+ |  ____|                              
+ | |__    ___   _ __  _   _  _ __ ___  
+ |  __|  / _ \\ | '__|| | | || '_ \` _ \\ 
+ | |    | (_) || |   | |_| || | | | | |
+ |_|     \\___/ |_|    \\__,_||_| |_| |_|
 `;
 
 const TopicPage = () => {

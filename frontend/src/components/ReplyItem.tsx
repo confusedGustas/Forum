@@ -23,6 +23,15 @@ import { ReplyResponseDto } from '../lib/commentService';
 import { KeycloakContext } from '../context/KeycloakContext';
 import apiProxy from '../lib/apiProxy';
 
+// Helper function to check if user has moderator permissions
+const hasModerationPermission = (userDetails: any): boolean => {
+  if (!userDetails) return false;
+  
+  // Check for moderator or admin roles in the token
+  const roles = userDetails.realm_access?.roles || [];
+  return roles.includes('moderator') || roles.includes('admin');
+};
+
 interface ReplyItemProps {
   reply: ReplyResponseDto;
   onDelete: () => void;
@@ -58,8 +67,71 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
   
   const isReplyAuthor = userDetails?.id === reply.authorId;
   
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
+  // Add debugging log for createdAt format
+  useEffect(() => {
+    console.log("Reply createdAt format:", reply.id, reply.createdAt, typeof reply.createdAt);
+  }, [reply]);
+  
+  // Add debugging for user details and author
+  useEffect(() => {
+    if (userDetails) {
+      console.log("Reply author check:", {
+        userId: userDetails.id,
+        authorId: reply.authorId,
+        isAuthor: userDetails.id === reply.authorId,
+        deleted: reply.deleted
+      });
+    }
+  }, [userDetails, reply]);
+  
+  // Explicitly determine author status on mount and when user changes
+  const [isAuthor, setIsAuthor] = useState(false);
+  const [isModerator, setIsModerator] = useState(false);
+  
+  useEffect(() => {
+    if (userDetails) {
+      // Check if user is the author - direct comparison with console log
+      const isAuthorMatch = userDetails.id === reply.authorId;
+      console.log(`UserID: ${userDetails.id}, AuthorID: ${reply.authorId}, Match: ${isAuthorMatch}`);
+      
+      // Check for moderator permissions
+      const hasModerationRights = hasModerationPermission(userDetails);
+      
+      setIsAuthor(isAuthorMatch);
+      setIsModerator(hasModerationRights);
+      
+      console.log("Permission check:", {
+        isAuthorMatch,
+        hasModerationRights,
+        userDetailsId: userDetails?.id,
+        authorId: reply.authorId
+      });
+    } else {
+      setIsAuthor(false);
+      setIsModerator(false);
+    }
+  }, [userDetails, reply.authorId]);
+  
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return 'No date';
+    
+    try {
+      // Handle array format (sometimes backend sends [year, month, day, hour, minute])
+      if (Array.isArray(dateString)) {
+        const [year, month, day, hour, minute] = dateString;
+        return new Date(year, month - 1, day, hour, minute).toLocaleString();
+      }
+      
+      // Handle ISO string format (most common)
+      if (typeof dateString === 'string') {
+        return new Date(dateString).toLocaleString();
+      }
+      
+      return 'Unknown date format';
+    } catch (err) {
+      console.error("Error formatting date:", err, dateString);
+      return 'Invalid date';
+    }
   };
   
   // Check if this reply has child replies
@@ -79,22 +151,31 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
   }, [reply.id]);
   
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deletingReply, setDeletingReply] = useState(false);
   
   const handleDeleteClick = () => {
+    // Just open the dialog without permission checks
     setOpenDeleteDialog(true);
   };
 
   const handleCloseDeleteDialog = () => {
+    if (deletingReply) return; // Prevent closing while deleting
     setOpenDeleteDialog(false);
   };
   
   const handleConfirmDelete = async () => {
+    setDeletingReply(true);
     try {
-      await apiProxy.comments.delete(reply.id);
+      console.log("Deleting reply:", reply.id);
+      const response = await apiProxy.comments.delete(reply.id);
+      console.log("Delete response:", response);
       setOpenDeleteDialog(false);
       onDelete();
     } catch (err: any) {
-      setError(`Failed to delete reply: ${err.message}`);
+      console.error("Error deleting reply:", err);
+      setError(`Failed to delete reply: ${err.message || 'Unknown error'}`);
+    } finally {
+      setDeletingReply(false);
       setOpenDeleteDialog(false);
     }
   };
@@ -188,6 +269,14 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
   const handleChildReplyPageChange = (event: React.ChangeEvent<unknown>, page: number) => {
     loadChildReplies(page);
   };
+
+  // Add auto-dismissing error message
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => setError(''), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
   
   return (
     <>
@@ -216,13 +305,27 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
         />
         
         <CardContent sx={{ py: 1, '&:last-child': { pb: 1 } }}>
+          {/* Error message toast */}
           {error && (
-            <Typography color="error" sx={{ 
-              mb: 1,
-              fontFamily: "'Courier Prime', monospace" 
+            <Box sx={{ 
+              position: 'absolute',
+              top: -40,
+              left: 0,
+              right: 0,
+              zIndex: 10,
+              p: 1,
+              bgcolor: 'rgba(255, 0, 0, 0.9)',
+              color: 'white',
+              borderRadius: '4px',
+              fontFamily: "'Courier Prime', monospace",
+              fontSize: '0.85rem',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+              animation: 'fadeIn 0.3s ease'
             }}>
               {error}
-            </Typography>
+            </Box>
           )}
           
           <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
@@ -235,7 +338,8 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
                 fontSize: '0.8rem' 
               }}
             >
-              {reply.authorName ? reply.authorName.charAt(0).toUpperCase() : 'U'}
+              {reply.authorName ? reply.authorName.charAt(0).toUpperCase() : 
+               reply.userName ? reply.userName.charAt(0).toUpperCase() : 'A'}
             </Avatar>
             
             <Box sx={{ flexGrow: 1 }}>
@@ -244,7 +348,7 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
                   fontWeight: 'bold',
                   fontFamily: "'VT323', monospace" 
                 }}>
-                  {reply.authorName || 'Unknown User'}
+                  {reply.authorName || reply.userName || 'Anonymous'}
                 </Typography>
                 <Typography variant="caption" color="textSecondary" sx={{ 
                   fontFamily: "'Courier Prime', monospace" 
@@ -300,22 +404,14 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
                   )}
                 </Box>
                 
-                {isReplyAuthor && !reply.deleted && (
+                {/* Simplified delete button logic - match root comment style */}
+                {!reply.deleted && userDetails && (
                   <Tooltip title="Delete reply" placement="top" arrow>
                     <IconButton 
                       size="small" 
                       color="error" 
                       onClick={handleDeleteClick}
                       aria-label="delete reply"
-                      sx={{
-                        color: 'var(--danger-color)',
-                        p: 0.5,
-                        border: '1px solid transparent',
-                        '&:hover': {
-                          backgroundColor: 'rgba(255, 0, 0, 0.1)',
-                          border: '1px solid var(--danger-color)',
-                        }
-                      }}
                     >
                       <Delete fontSize="small" />
                     </IconButton>
@@ -461,39 +557,64 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
         aria-describedby="alert-dialog-description"
         PaperProps={{
           sx: {
-            backgroundColor: 'var(--card-bg)',
-            color: 'var(--text-color)',
-            border: '1px solid var(--border-color)'
+            backgroundColor: 'var(--card-bg, #fff)',
+            color: 'var(--text-color, #000)',
+            border: '2px solid var(--danger-color, red)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+            padding: '8px'
           }
         }}
       >
-        <DialogTitle id="alert-dialog-title" sx={{ fontFamily: "'VT323', monospace" }}>
-          Confirm Deletion
+        <DialogTitle id="alert-dialog-title" sx={{ fontFamily: "'VT323', monospace", fontSize: '1.5rem' }}>
+          Confirm Delete Reply
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description" sx={{ color: 'var(--text-color)' }}>
-            Are you sure you want to delete this reply? This action cannot be undone.
+          <DialogContentText id="alert-dialog-description" sx={{ color: 'var(--text-color, #000)' }}>
+            <strong>Are you sure you want to delete this reply?</strong><br/>
+            <Box sx={{ 
+              mt: 1, 
+              p: 1, 
+              backgroundColor: 'rgba(0,0,0,0.05)',
+              borderLeft: '3px solid var(--accent-color, #1976d2)',
+              fontStyle: 'italic'
+            }}>
+              "{reply.text?.length > 100 ? reply.text.substring(0, 100) + '...' : reply.text}"
+            </Box>
+            <Box sx={{ mt: 1 }}>
+              This action cannot be undone.
+            </Box>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button 
             onClick={handleCloseDeleteDialog} 
+            disabled={deletingReply}
             sx={{ 
-              color: 'var(--text-color)',
-              fontFamily: "'VT323', monospace"
+              color: 'var(--text-color, #000)',
+              fontFamily: "'VT323', monospace",
+              fontWeight: 'bold'
             }}
           >
             Cancel
           </Button>
           <Button 
             onClick={handleConfirmDelete} 
+            disabled={deletingReply}
             autoFocus
+            variant="contained"
             sx={{ 
-              color: 'var(--danger-color)',
-              fontFamily: "'VT323', monospace"
+              backgroundColor: 'var(--danger-color, red)',
+              fontFamily: "'VT323', monospace",
+              fontWeight: 'bold',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'darkred'
+              }
             }}
           >
-            Delete
+            {deletingReply ? (
+              <CircularProgress size={20} sx={{ color: 'white' }} />
+            ) : 'Delete'}
           </Button>
         </DialogActions>
       </Dialog>

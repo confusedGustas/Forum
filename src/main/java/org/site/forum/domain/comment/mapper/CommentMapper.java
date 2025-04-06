@@ -35,6 +35,7 @@ public class CommentMapper {
                 .text(comment.getText())
                 .createdAt(comment.getCreatedAt())
                 .userId(comment.getUser().getId())
+                .userName(comment.getUser().getName())
                 .topicId(comment.getTopic().getId())
                 .parentCommentId(getParentComment(comment))
                 .replies(getReplies(comment))

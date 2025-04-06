@@ -26,6 +26,7 @@ export interface ReplyResponseDto {
   topicId: string;
   authorId: string;
   authorName: string;
+  userName?: string;
   createdAt: string;
   deleted: boolean;
 }
