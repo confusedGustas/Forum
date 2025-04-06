@@ -28,7 +28,6 @@ const AccessTokenDisplay = () => {
             }).join(''));
             return JSON.parse(jsonPayload);
         } catch (e) {
-            // Failed to parse JWT
             return null;
         }
     };

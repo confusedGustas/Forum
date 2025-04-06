@@ -23,11 +23,9 @@ import { ReplyResponseDto } from '../lib/commentService';
 import { KeycloakContext } from '../context/KeycloakContext';
 import apiProxy from '../lib/apiProxy';
 
-// Helper function to check if user has moderator permissions
 const hasModerationPermission = (userDetails: any): boolean => {
   if (!userDetails) return false;
   
-  // Check for moderator or admin roles in the token
   const roles = userDetails.realm_access?.roles || [];
   return roles.includes('moderator') || roles.includes('admin');
 };
@@ -53,7 +51,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
   const [replyContent, setReplyContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
   
-  // New state for handling nested replies
   const [childReplies, setChildReplies] = useState<ReplyResponseDto[]>([]);
   const [showChildReplies, setShowChildReplies] = useState(false);
   const [loadingChildReplies, setLoadingChildReplies] = useState(false);
@@ -63,16 +60,14 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
   const [childReplyCount, setChildReplyCount] = useState(0);
   
   const MAX_REPLIES_PER_PAGE = 3;
-  const MAX_NESTING_LEVEL = 5; // Prevent too deep nesting
+  const MAX_NESTING_LEVEL = 5;
   
   const isReplyAuthor = userDetails?.id === reply.authorId;
   
-  // Add debugging log for createdAt format
   useEffect(() => {
     console.log("Reply createdAt format:", reply.id, reply.createdAt, typeof reply.createdAt);
   }, [reply]);
   
-  // Add debugging for user details and author
   useEffect(() => {
     if (userDetails) {
       console.log("Reply author check:", {
@@ -84,17 +79,14 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
     }
   }, [userDetails, reply]);
   
-  // Explicitly determine author status on mount and when user changes
   const [isAuthor, setIsAuthor] = useState(false);
   const [isModerator, setIsModerator] = useState(false);
   
   useEffect(() => {
     if (userDetails) {
-      // Check if user is the author - direct comparison with console log
       const isAuthorMatch = userDetails.id === reply.authorId;
       console.log(`UserID: ${userDetails.id}, AuthorID: ${reply.authorId}, Match: ${isAuthorMatch}`);
       
-      // Check for moderator permissions
       const hasModerationRights = hasModerationPermission(userDetails);
       
       setIsAuthor(isAuthorMatch);
@@ -116,13 +108,11 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
     if (!dateString) return 'No date';
     
     try {
-      // Handle array format (sometimes backend sends [year, month, day, hour, minute])
       if (Array.isArray(dateString)) {
         const [year, month, day, hour, minute] = dateString;
         return new Date(year, month - 1, day, hour, minute).toLocaleString();
       }
       
-      // Handle ISO string format (most common)
       if (typeof dateString === 'string') {
         return new Date(dateString).toLocaleString();
       }
@@ -134,7 +124,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
     }
   };
   
-  // Check if this reply has child replies
   useEffect(() => {
     const checkForChildReplies = async () => {
       try {
@@ -154,12 +143,11 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
   const [deletingReply, setDeletingReply] = useState(false);
   
   const handleDeleteClick = () => {
-    // Just open the dialog without permission checks
     setOpenDeleteDialog(true);
   };
 
   const handleCloseDeleteDialog = () => {
-    if (deletingReply) return; // Prevent closing while deleting
+    if (deletingReply) return;
     setOpenDeleteDialog(false);
   };
   
@@ -202,26 +190,22 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
       await apiProxy.comments.create({
         text: replyContent,
         topicId: topicId,
-        parentCommentId: reply.id // Use the reply's ID as the parent
+        parentCommentId: reply.id
       });
       
       setReplyContent('');
       setShowReplyForm(false);
       
-      // Update child reply count
       setChildReplyCount(prev => prev + 1);
       setHasChildReplies(true);
       
-      // If showing child replies, refresh them
       if (showChildReplies) {
         loadChildReplies(1);
       } else {
-        // Show child replies automatically after posting
         setShowChildReplies(true);
         loadChildReplies(1);
       }
       
-      // Notify parent component about new reply
       onReplyAdded();
       
     } catch (err: any) {
@@ -270,7 +254,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
     loadChildReplies(page);
   };
 
-  // Add auto-dismissing error message
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => setError(''), 5000);
@@ -291,7 +274,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
         position: 'relative',
         overflow: 'visible'
       }}>
-        {/* Connection line to indicate reply */}
         <Box
           sx={{
             position: 'absolute',
@@ -305,7 +287,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
         />
         
         <CardContent sx={{ py: 1, '&:last-child': { pb: 1 } }}>
-          {/* Error message toast */}
           {error && (
             <Box sx={{ 
               position: 'absolute',
@@ -404,7 +385,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
                   )}
                 </Box>
                 
-                {/* Simplified delete button logic - match root comment style */}
                 {!reply.deleted && userDetails && (
                   <Tooltip title="Delete reply" placement="top" arrow>
                     <IconButton 
@@ -473,7 +453,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
                 </form>
               </Collapse>
               
-              {/* Nested Replies Section */}
               <Collapse in={showChildReplies} sx={{ mt: 1 }}>
                 {loadingChildReplies ? (
                   <Box sx={{ display: 'flex', justifyContent: 'center', my: 1 }}>
@@ -497,11 +476,9 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
                             topicId={topicId}
                             level={level + 1}
                             onReplyAdded={() => {
-                              // When a reply is added to a child reply, refresh
                               loadChildReplies(childReplyPage);
                             }}
                             onDelete={() => {
-                              // When a child reply is deleted, refresh
                               loadChildReplies(childReplyPage);
                             }} 
                           />
@@ -549,7 +526,6 @@ const ReplyItem: React.FC<ReplyItemProps> = ({
         </CardContent>
       </Card>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog
         open={openDeleteDialog}
         onClose={handleCloseDeleteDialog}

@@ -69,13 +69,10 @@ const Comment: React.FC<CommentProps> = ({ comment, onDelete }) => {
       setReplyContent('');
       setShowReplyForm(false);
       
-      // Increment local reply count
       setLocalReplyCount(prev => prev + 1);
       
-      // Always show replies after posting a new one
       setShowReplies(true);
       
-      // Reload replies to include the newly posted one
       await loadReplies(1);
       
     } catch (err: any) {
@@ -112,7 +109,6 @@ const Comment: React.FC<CommentProps> = ({ comment, onDelete }) => {
     const newShowReplies = !showReplies;
     setShowReplies(newShowReplies);
     
-    // Load replies when showing them
     if (newShowReplies) {
       loadReplies(1);
     }
@@ -131,12 +127,10 @@ const Comment: React.FC<CommentProps> = ({ comment, onDelete }) => {
     }
   };
 
-  // Check if there are new replies whenever replyCount changes
   useEffect(() => {
     if (comment.replyCount > localReplyCount) {
       setLocalReplyCount(comment.replyCount);
       
-      // If replies are currently visible, reload them to show new ones
       if (showReplies) {
         loadReplies(1);
       }
@@ -299,7 +293,6 @@ const Comment: React.FC<CommentProps> = ({ comment, onDelete }) => {
                     position: 'relative'
                   }}
                 >
-                  {/* Vertical thread line */}
                   <Box 
                     sx={{ 
                       position: 'absolute',
@@ -318,14 +311,11 @@ const Comment: React.FC<CommentProps> = ({ comment, onDelete }) => {
                       reply={reply} 
                       topicId={comment.topicId}
                       onReplyAdded={() => {
-                        // Increment reply count and reload replies when a nested reply is added
                         setLocalReplyCount(prev => prev + 1);
                         loadReplies(repliesPage);
                       }}
                       onDelete={() => {
-                        // Decrement reply count when a reply is deleted
                         setLocalReplyCount(prev => Math.max(0, prev - 1));
-                        // Reload the current page of replies
                         loadReplies(repliesPage);
                       }} 
                     />

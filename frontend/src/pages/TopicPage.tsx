@@ -125,7 +125,6 @@ const TopicPage = () => {
   };
   
   const handleCommentDelete = (commentId: string) => {
-    // Refresh comments after deletion
     fetchComments(currentPage);
   };
   

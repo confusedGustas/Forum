@@ -19,7 +19,7 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
-    "start": "echo 'Starting with proxy to http://localhost:8080' && react-scripts start",
+    "start": "echo 'Starting with proxy to http://localhost:8080' && cross-env NODE_OPTIONS=--no-deprecation react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -44,7 +44,8 @@
   },
   "devDependencies": {
     "@types/keycloak-js": "^3.4.1",
-    "@types/react": "^19.0.4"
+    "@types/react": "^19.0.4",
+    "cross-env": "^7.0.3"
   },
   "proxy": "http://localhost:8080"
 }
