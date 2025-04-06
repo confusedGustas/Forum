@@ -21,6 +21,8 @@ public class CommentDataIntegrityImpl implements CommentDataIntegrity {
     public static final String COMMENT_CANNOT_BE_NULL = "Comment cannot be null";
     public static final String COMMENT_ID_CANNOT_BE_NULL = "Comment ID cannot be null";
     public static final String TOPIC_ID_CANNOT_BE_NULL = "Topic ID cannot be null";
+    private static final int MAX_COMMENT_TEXT_SIZE = 600;
+    private static final int MIN_COMMENT_TEXT_SIZE = 5;
 
     @Override
     public void validateComment(Comment comment) {
@@ -48,6 +50,14 @@ public class CommentDataIntegrityImpl implements CommentDataIntegrity {
 
         if (commentRequestDto.getTopicId() == null) {
             throw new InvalidCommentRequestException(TOPIC_ID_CANNOT_BE_NULL);
+        }
+
+        if(commentRequestDto.getText().length() >= MAX_COMMENT_TEXT_SIZE){
+            throw new InvalidCommentRequestException("Comment text exceeds maximum length of " + MAX_COMMENT_TEXT_SIZE);
+        }
+
+        if(commentRequestDto.getText().length() <= MIN_COMMENT_TEXT_SIZE){
+            throw new InvalidCommentRequestException("Comment text must be at least " + MIN_COMMENT_TEXT_SIZE + " characters long");
         }
     }
 
