@@ -7,7 +7,9 @@ import org.site.forum.domain.rating.entity.Rating;
 import org.site.forum.domain.rating.integrity.RatingDataIntegrity;
 import org.site.forum.domain.rating.mapper.RatingMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
+import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.entity.Topic;
+import org.site.forum.domain.topic.mapper.TopicMapper;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
@@ -21,9 +23,10 @@ public class RatingServiceImpl implements RatingService {
     private final TopicDao topicDao;
     private final RatingMapper ratingMapper;
     private final RatingDataIntegrity ratingDataIntegrity;
+    private final TopicMapper topicMapper;
 
     @Override
-    public void rateTopic(UUID topicId, Integer ratingValue) {
+    public Topic rateTopic(UUID topicId, Integer ratingValue) {
         ratingDataIntegrity.validateRatingValue(ratingValue);
         User user = authenticationService.getAuthenticatedUser();
         ratingDataIntegrity.validateUserExists(user);
@@ -35,6 +38,8 @@ public class RatingServiceImpl implements RatingService {
         } else if (ratingValue != 0) {
             createNewRating(topicId, user, ratingValue);
         }
+
+        return topicDao.getTopic(topicId);
     }
 
     private void handleExistingRating(Rating rating, Integer newValue) {

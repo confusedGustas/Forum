@@ -1,7 +1,10 @@
 .navbar {
-    background-color: #65aeeb !important;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 20px;
+    background-color: var(--header-color) !important;
+    border: 2px solid var(--border-color) !important;
+    box-shadow: 0 4px 0 var(--border-color) !important;
+    color: var(--text-color) !important;
+    border-radius: 0 !important;
+    margin-bottom: 1rem;
 }
 
 .navbar-search-container {
@@ -9,16 +12,58 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    border-color: #808080 !important;
+}
+
+.brand-name {
+    font-family: 'Press Start 2P', cursive !important;
+    color: var(--text-color) !important;
+    text-shadow: 2px 2px 0 #000 !important;
+    letter-spacing: 2px;
+    font-size: 1.5rem !important;
+    position: relative;
 }
 
 .search-bar {
     margin-right: 16px;
-    background-color: white;
-    border-radius: 10px;
+    background-color: var(--bg-color) !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: 0 !important;
     width: 70%;
 }
 
+.search-bar fieldset {
+    border-color: var(--border-color) !important;
+    border-radius: 0 !important;
+}
+
+.search-bar input {
+    color: var(--text-color) !important;
+    font-family: 'VT323', monospace !important;
+    font-size: 1.2rem !important;
+}
+
+.search-bar label {
+    color: var(--text-color) !important;
+    font-family: 'VT323', monospace !important;
+}
+
 .search-button {
-    color: inherit;
+    color: var(--text-color) !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: 0 !important;
+}
+
+.search-button:hover {
+    background-color: var(--text-color) !important;
+    color: var(--bg-color) !important;
+}
+
+.terminal-cursor::after {
+    content: '█';
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }

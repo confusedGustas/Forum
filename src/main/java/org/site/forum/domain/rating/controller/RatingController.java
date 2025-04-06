@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.site.forum.domain.rating.service.RatingService;
+import org.site.forum.domain.topic.entity.Topic;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,14 +27,14 @@ public class RatingController {
             summary = "Rate a topic",
             description = "Allows a user with the role 'client_user' to rate a topic by its UUID"
     )
-    public void rateTopic(
+    public Topic rateTopic(
             @Parameter(description = "UUID of the topic to be rated", required = true)
             @RequestParam UUID topicId,
 
-            @Parameter(description = "Rating value (e.g. 1 to 5)", required = true)
+            @Parameter(description = "Rating value (e.g. -1, 0 and 1)", required = true)
             @RequestParam Integer rating) {
 
-        ratingService.rateTopic(topicId, rating);
+        return ratingService.rateTopic(topicId, rating);
     }
 
 }

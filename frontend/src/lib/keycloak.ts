@@ -1,36 +1,48 @@
 import Keycloak from 'keycloak-js';
+import config from './config';
 
 const keycloak = new Keycloak({
-    url: 'http://localhost:8181',
-    realm: 'forum',
-    clientId: 'client'
+    url: config.keycloak.url,
+    realm: config.keycloak.realm,
+    clientId: config.keycloak.clientId
 });
 
 keycloak.onAuthSuccess = () => {
-    console.log('Auth Success');
+    if (keycloak.token) {
+        localStorage.setItem('keycloak_token', keycloak.token);
+    }
 };
 
 keycloak.onAuthError = (error) => {
-    console.error('Auth Error:', error);
+    localStorage.removeItem('keycloak_token');
 };
 
 keycloak.onAuthRefreshSuccess = () => {
-    console.log('Auth Refresh Success');
+    if (keycloak.token) {
+        localStorage.setItem('keycloak_token', keycloak.token);
+    }
 };
 
 keycloak.onAuthRefreshError = () => {
-    console.log('Auth Refresh Error');
+    localStorage.removeItem('keycloak_token');
 };
 
 keycloak.onAuthLogout = () => {
-    console.log('Auth Logout');
+    localStorage.removeItem('keycloak_token');
 };
 
 keycloak.onTokenExpired = () => {
-    console.log('Token Expired');
-    keycloak.updateToken(30).catch(() => {
-        console.log('Failed to refresh token');
-    });
+    keycloak.updateToken(70)
+        .then((refreshed) => {
+            if (refreshed) {
+                if (keycloak.token) {
+                    localStorage.setItem('keycloak_token', keycloak.token);
+                }
+            }
+        })
+        .catch(() => {
+            localStorage.removeItem('keycloak_token');
+        });
 };
 
 export default keycloak;

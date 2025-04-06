@@ -26,6 +26,7 @@ public class User {
 
     @Id
     private UUID id;
+    private String name;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "user")

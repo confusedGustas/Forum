@@ -23,6 +23,7 @@ public class TopicMapper {
                 .title(topic.getTitle())
                 .content(topic.getContent())
                 .authorId(topic.getAuthor().getId())
+                .authorName(topic.getAuthor().getName())
                 .createdAt(topic.getCreatedAt())
                 .updatedAt(topic.getUpdatedAt())
                 .deletedAt(topic.getDeletedAt())
