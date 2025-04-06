@@ -30,6 +30,7 @@
 | **MinIO UI**               | `Run "docker logs minio", find the WebUI link`                                                 | `admin`           | `adminadmin` |
 | **MinIO API**              | `http://localhost:9000`                                                                        | `admin`           | `adminadmin` |
 | **Swagger UI**             | [http://localhost:8080/swagger-ui/index.html#/](http://localhost:8080/swagger-ui/index.html#/) | -                 | -            |
+ | **React**                  | [http://localhost:3000](http://localhost:3000)                                                 | -                 | -            |"
 
 ---
 
