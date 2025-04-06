@@ -1,4 +1,3 @@
-
 spring:
   config:
     import: optional:file:.env[.properties]
@@ -46,7 +45,3 @@ minio:
   access-key: ${MINIO_USERNAME}
   secret-key: ${MINIO_PASSWORD}
   bucket: ${MINIO_BUCKET}
-
-server:
-  servlet:
-    context-path: /api/v1

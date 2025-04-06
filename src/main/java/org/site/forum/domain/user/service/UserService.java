@@ -6,7 +6,6 @@ import org.site.forum.domain.user.dto.UserResponseDto;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-
 import java.util.UUID;
 
 public interface UserService {
@@ -17,4 +16,5 @@ public interface UserService {
     Page<TopicResponseDto> getAuthenticatedUserTopics(PageRequest pageRequest);
     Page<ParentCommentResponseDto> getUserComments(UUID id, PageRequest pageRequest);
     Page<TopicResponseDto> getUserTopics(UUID id, PageRequest pageRequest);
+
 }

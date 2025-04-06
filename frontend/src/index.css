@@ -1,13 +1,118 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Courier+Prime&display=swap');
+
+:root {
+  --bg-color: #000;
+  --text-color: #00ff00;
+  --border-color: #00ff00;
+  --header-color: #222;
+  --card-bg: #111;
+  --accent-color: #ff8800;
+  --accent-color-rgb: 255, 136, 0;
+  --secondary-color: #00aaff;
+  --secondary-color-rgb: 0, 170, 255;
+  --success-color: #22ff22;
+  --warning-color: #ffff00;
+  --danger-color: #ff0000;
+  --bg-secondary: rgba(20, 20, 20, 0.7);
+  --text-secondary: rgba(0, 255, 0, 0.7);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  margin: 0;
+  font-family: 'Courier Prime', monospace;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Press Start 2P', cursive;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  letter-spacing: 1px;
+}
+
+button, input, textarea, select {
+  font-family: 'VT323', monospace;
+  border: 2px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: 8px 16px;
+  font-size: 1.2rem;
+}
+
+button {
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+button:hover {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+}
+
+button:active {
+  transform: translateY(2px);
+}
+
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-color);
+  border: 2px solid var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+.retro-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  box-shadow: 4px 4px 0 var(--border-color);
+}
+
+.retro-card {
+  background-color: var(--card-bg);
+  border: 2px solid var(--border-color);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 4px 4px 0 var(--border-color);
+}
+
+.crt-effect {
+  position: relative;
+}
+
+.crt-effect::before {
+  content: " ";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  z-index: 2;
 }

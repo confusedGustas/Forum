@@ -1,10 +1,12 @@
 package org.site.forum.domain.search.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,17 +18,5 @@ public class TopicSearchCriteria {
     private Integer limit;
     private String sortBy;
     private String sortDirection;
-
-    public boolean hasSearch() {
-        return search != null && !search.isBlank();
-    }
-
-    public int getEffectiveOffset(int defaultValue) {
-        return (offset != null) ? offset : defaultValue;
-    }
-
-    public int getEffectiveLimit(int defaultValue) {
-        return (limit != null) ? limit : defaultValue;
-    }
 
 }

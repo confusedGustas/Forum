@@ -9,7 +9,6 @@ import org.site.forum.domain.user.dto.UserResponseDto;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +20,7 @@ public class UserMapper {
     private final TopicMapper topicMapper;
 
     public User toUser(Jwt jwt) {
-        return new User(UUID.fromString(jwt.getClaimAsString("sub")), null, null);
+        return new User(UUID.fromString(jwt.getClaimAsString("sub")), jwt.getClaimAsString("name"),  null, null);
     }
 
     public UserResponseDto toUserResponseDto(User user) {

@@ -7,17 +7,23 @@ import org.site.forum.domain.search.entity.TopicSearchCriteria;
 import org.site.forum.domain.topic.entity.Topic;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 @Component
 public class TopicSpecificationImpl implements TopicSpecification {
 
+    @Override
     public Specification<Topic> withCriteria(TopicSearchCriteria criteria) {
         return (root, query, criteriaBuilder) -> {
-            if (!criteria.hasSearch()) {
+            if (!hasSearch(criteria)) {
                 return criteriaBuilder.conjunction();
             }
             return createSearchPredicate(criteria, criteriaBuilder, root);
         };
+    }
+
+    private boolean hasSearch(TopicSearchCriteria criteria) {
+        return criteria != null && StringUtils.hasText(criteria.getSearch());
     }
 
     private Predicate createSearchPredicate(TopicSearchCriteria criteria, CriteriaBuilder criteriaBuilder, Root<Topic> root) {

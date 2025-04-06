@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

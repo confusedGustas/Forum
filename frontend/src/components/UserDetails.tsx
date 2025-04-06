@@ -1,11 +1,22 @@
 import React, { useContext, useId } from "react";
 import { KeycloakContext } from "../context/KeycloakContext";
+import { Box, Typography, TextField, Paper, Divider } from "@mui/material";
 
 const AccessTokenDisplay = () => {
     const { accessToken } = useContext(KeycloakContext);
 
     if (!accessToken) {
-        return <div>Not authenticated</div>;
+        return (
+            <Typography sx={{ 
+                fontFamily: "'VT323', monospace", 
+                color: "var(--danger-color)", 
+                textAlign: "center",
+                fontSize: "1.2rem",
+                mt: 2
+            }}>
+                [ACCESS DENIED] - AUTHENTICATION REQUIRED<span className="blink">█</span>
+            </Typography>
+        );
     }
 
     const parseJwt = (token: string) => {
@@ -17,7 +28,6 @@ const AccessTokenDisplay = () => {
             }).join(''));
             return JSON.parse(jsonPayload);
         } catch (e) {
-            console.error('Failed to parse JWT', e);
             return null;
         }
     };
@@ -25,16 +35,80 @@ const AccessTokenDisplay = () => {
     const userDetails = parseJwt(accessToken);
 
     return (
-        <div>
-            <h3>Access Token:</h3>
-            <textarea readOnly rows={10} cols={50} value={accessToken} />
-            <h3>User Details</h3>
-            {userDetails ? (
-                <pre>{JSON.stringify(userDetails, null, 2)}</pre>
-            ) : (
-                <div>Failed to load user details</div>
-            )}
-        </div>
+        <Paper className="retro-card" sx={{ width: "100%", maxWidth: "600px", mt: 2 }}>
+            <Box sx={{ p: 2 }}>
+                <Typography variant="h6" sx={{ 
+                    fontFamily: "'Press Start 2P', cursive", 
+                    color: "var(--success-color)", 
+                    fontSize: "1rem",
+                    mb: 2
+                }}>
+                    &gt; USER AUTHENTICATED &lt;
+                </Typography>
+                
+                <Divider sx={{ borderColor: "var(--border-color)", mb: 2 }} />
+                
+                <Typography sx={{ 
+                    fontFamily: "'VT323', monospace", 
+                    color: "var(--text-color)", 
+                    fontSize: "1.2rem",
+                    mb: 1
+                }}>
+                    ACCESS TOKEN:
+                </Typography>
+                
+                <TextField
+                    multiline
+                    rows={3}
+                    value={accessToken}
+                    fullWidth
+                    InputProps={{
+                        readOnly: true,
+                        sx: { 
+                            fontFamily: "'Courier Prime', monospace", 
+                            fontSize: "0.7rem",
+                            color: "var(--accent-color)",
+                            bgcolor: "rgba(0,0,0,0.3)"
+                        }
+                    }}
+                    sx={{ mb: 2 }}
+                />
+                
+                <Typography sx={{ 
+                    fontFamily: "'VT323', monospace", 
+                    color: "var(--text-color)", 
+                    fontSize: "1.2rem",
+                    mb: 1
+                }}>
+                    USER DETAILS:
+                </Typography>
+                
+                {userDetails ? (
+                    <Box sx={{ 
+                        bgcolor: "rgba(0,0,0,0.3)", 
+                        p: 1, 
+                        border: "1px solid var(--border-color)",
+                        overflowX: "auto" 
+                    }}>
+                        <pre style={{ 
+                            fontFamily: "'Courier Prime', monospace", 
+                            color: "var(--success-color)",
+                            fontSize: "0.8rem",
+                            margin: 0
+                        }}>
+                            {JSON.stringify(userDetails, null, 2)}
+                        </pre>
+                    </Box>
+                ) : (
+                    <Typography sx={{ 
+                        fontFamily: "'VT323', monospace", 
+                        color: "var(--danger-color)"
+                    }}>
+                        ERROR: FAILED TO DECODE USER DETAILS
+                    </Typography>
+                )}
+            </Box>
+        </Paper>
     );
 };
 

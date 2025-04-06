@@ -16,7 +16,6 @@ public class RatingDataIntegrityImpl implements RatingDataIntegrity {
     private static final String INVALID_RATING_VALUE = "Rating must be one of: -1, 0, 1";
     private static final String RATING_NULL = "Rating must not be null";
     private static final String POST_USER_IDS_NULL = "PostId and UserId must not be null";
-    private static final String RATING_NOT_FOUND = "Rating not found";
     private static final String USER_NULL = "User must not be null";
     private static final String TOPIC_NULL = "Topic must not be null";
 

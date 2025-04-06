@@ -9,7 +9,6 @@ import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +24,7 @@ public class CommentMapper {
                 .createdAt(comment.getCreatedAt())
                 .isEnabled(comment.isEnabled())
                 .authorId(comment.getUser().getId())
+                .authorName(comment.getUser().getName())
                 .topicId(comment.getTopic().getId())
                 .build();
     }
@@ -35,6 +35,7 @@ public class CommentMapper {
                 .text(comment.getText())
                 .createdAt(comment.getCreatedAt())
                 .userId(comment.getUser().getId())
+                .userName(comment.getUser().getName())
                 .topicId(comment.getTopic().getId())
                 .parentCommentId(getParentComment(comment))
                 .replies(getReplies(comment))

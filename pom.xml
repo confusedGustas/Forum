@@ -24,6 +24,7 @@
         <lombok.version>1.18.36</lombok.version>
         <minio.version>8.5.15</minio.version>
         <keycloak.version>26.1.0</keycloak.version>
+        <springdoc.version>2.8.3</springdoc.version>
     </properties>
 
     <dependencies>
@@ -101,6 +102,11 @@
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-core</artifactId>
             <version>${keycloak.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
         </dependency>
     </dependencies>
 

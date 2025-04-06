@@ -8,7 +8,6 @@ import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,6 +23,7 @@ public class TopicMapper {
                 .title(topic.getTitle())
                 .content(topic.getContent())
                 .authorId(topic.getAuthor().getId())
+                .authorName(topic.getAuthor().getName())
                 .createdAt(topic.getCreatedAt())
                 .updatedAt(topic.getUpdatedAt())
                 .deletedAt(topic.getDeletedAt())

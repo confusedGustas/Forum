@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -23,6 +22,7 @@ public class ParentCommentResponseDto {
     private LocalDateTime createdAt;
     private boolean isEnabled;
     private UUID authorId;
+    private String authorName;
     private UUID topicId;
 
 }

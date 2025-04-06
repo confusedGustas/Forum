@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +21,7 @@ public class ReplyResponseDto {
     private LocalDateTime createdAt;
     private boolean isEnabled;
     private UUID userId;
+    private String userName;
     private UUID topicId;
     private UUID parentCommentId;
     private List<ReplyResponseDto> replies;
