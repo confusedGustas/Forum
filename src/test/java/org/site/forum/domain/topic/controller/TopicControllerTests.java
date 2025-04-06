@@ -11,6 +11,8 @@ import org.site.forum.domain.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -58,9 +60,9 @@ class TopicControllerTests {
         when(topicService.saveTopic(any(TopicRequestDto.class), eq(null))).thenReturn(topicResponseDto);
 
         mockMvc.perform(multipart("/topics")
-                .param("title", TITLE)
-                .param("content", CONTENT)
-                .contentType("multipart/form-data"))
+                        .file(new MockMultipartFile("title", "", "text/plain", TITLE.getBytes()))
+                        .file(new MockMultipartFile("content", "", "text/plain", CONTENT.getBytes()))
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(topicResponseDto.getId().toString()))
                 .andExpect(jsonPath("$.title").value(topicResponseDto.getTitle()))
@@ -75,9 +77,9 @@ class TopicControllerTests {
                 .thenReturn(topicResponseDto);
 
         mockMvc.perform(multipart("/topics/update/{id}", topicId)
-                        .param("title", TITLE)
-                        .param("content", CONTENT)
-                        .contentType("multipart/form-data"))
+                        .file(new MockMultipartFile("title", "", "text/plain", "Test title".getBytes()))
+                        .file(new MockMultipartFile("content", "", "text/plain", "Test content".getBytes()))
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(topicResponseDto.getId().toString()))
                 .andExpect(jsonPath("$.title").value(topicResponseDto.getTitle()))

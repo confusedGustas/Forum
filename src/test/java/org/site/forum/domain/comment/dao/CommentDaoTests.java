@@ -56,6 +56,7 @@ class CommentDaoTests {
     void setUp() {
         user = User.builder()
                 .id(UUID.fromString(UUID_CONSTANT))
+                .name("test")
                 .build();
 
         user = userDao.saveUser(user);

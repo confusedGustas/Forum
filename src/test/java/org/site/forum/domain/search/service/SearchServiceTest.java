@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import java.util.Collections;
 import java.util.List;
@@ -50,6 +51,8 @@ class SearchServiceTest {
     @BeforeEach
     void setUp() {
         criteria = new TopicSearchCriteria();
+        criteria.setSortBy("rating");
+        criteria.setSortDirection("DESC");
         criteria.setSearch("test");
         criteria.setOffset(0);
         criteria.setLimit(10);
@@ -67,32 +70,38 @@ class SearchServiceTest {
 
     @Test
     void searchTopics_WithValidCriteria_ReturnsPaginatedResponse() {
-        criteria.setSearch("");
-        criteria.setSortDirection("ASC");
-        criteria.setSortBy("rating");
+        TopicSearchCriteria testCriteria = new TopicSearchCriteria();
+        testCriteria.setSearch("");
+        testCriteria.setSortDirection("ASC");
+        testCriteria.setSortBy("rating");
+        testCriteria.setOffset(0);
+        testCriteria.setLimit(10);
 
         when(topicSpecification.withCriteria(any(TopicSearchCriteria.class)))
                 .thenReturn((Specification<Topic>) (root, query, criteriaBuilder) -> null);
         when(topicRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(topicPage);
         when(paginatedResponseMapper.toDto(topicPage)).thenReturn(expectedResponse);
 
-        PaginatedResponseDto actualResponse = searchService.searchTopics(criteria);
+        PaginatedResponseDto actualResponse = searchService.searchTopics(testCriteria);
 
         assertEquals(expectedResponse, actualResponse);
     }
 
     @Test
     void searchTopics_WithEmptySearch_ReturnsAllTopics() {
-        criteria.setSearch("");
-        criteria.setSortDirection("DESC");
-        criteria.setSortBy("date");
+        TopicSearchCriteria testCriteria = new TopicSearchCriteria();
+        testCriteria.setSearch("");
+        testCriteria.setSortDirection("DESC");
+        testCriteria.setSortBy("date");
+        testCriteria.setOffset(0);
+        testCriteria.setLimit(10);
 
         when(topicSpecification.withCriteria(any(TopicSearchCriteria.class)))
                 .thenReturn((Specification<Topic>) (root, query, criteriaBuilder) -> null);
         when(topicRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(topicPage);
         when(paginatedResponseMapper.toDto(topicPage)).thenReturn(expectedResponse);
 
-        PaginatedResponseDto actualResponse = searchService.searchTopics(criteria);
+        PaginatedResponseDto actualResponse = searchService.searchTopics(testCriteria);
 
         assertEquals(expectedResponse, actualResponse);
     }
