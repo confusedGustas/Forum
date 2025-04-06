@@ -245,6 +245,18 @@ class CommentServiceTests {
     }
 
     @Test
+    void testGetAllRepliesByTopicWhenCommentIdIsNull() {
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        doThrow(new InvalidCommentRequestException("Comment ID cannot be null"))
+                .when(commentDataIntegrity).validateCommentId(null);
+
+        Exception exception = assertThrows(InvalidCommentRequestException.class,
+                () -> commentService.getAllRepliesByParent(null, pageable));
+        assertEquals("Comment ID cannot be null", exception.getMessage());
+    }
+
+    @Test
     void testGetAllRepliesByParent() {
         PageRequest pageable = PageRequest.of(0, 10);
         Page<Comment> replies = new PageImpl<>(Collections.singletonList(comment));
@@ -303,4 +315,53 @@ class CommentServiceTests {
         verify(commentMapper).toParentCommentDto(comment);
     }
 
+    @Test
+    void testMinCommentLength() {
+        String shortText = "abc";
+        commentRequestDto.setText(shortText);
+
+        doThrow(new InvalidCommentRequestException("Comment text must be at least 5 characters long"))
+                .when(commentDataIntegrity).validateCommentRequestDto(commentRequestDto);
+
+        Exception exception = assertThrows(InvalidCommentRequestException.class,
+                () -> commentService.saveComment(commentRequestDto));
+        assertEquals("Comment text must be at least 5 characters long", exception.getMessage());
+    }
+
+    @Test
+    void testMaxCommentLength() {
+        String longText = "a".repeat(1001);
+        commentRequestDto.setText(longText);
+
+        doThrow(new InvalidCommentRequestException("Comment text must be at most 600 characters long"))
+                .when(commentDataIntegrity).validateCommentRequestDto(commentRequestDto);
+
+        Exception exception = assertThrows(InvalidCommentRequestException.class,
+                () -> commentService.saveComment(commentRequestDto));
+        assertEquals("Comment text must be at most 600 characters long", exception.getMessage());
+    }
+
+    @Test
+    void testSaveIfTopicIdIsNull() {
+        commentRequestDto.setTopicId(null);
+
+        doThrow(new InvalidCommentRequestException("Topic ID cannot be null"))
+                .when(commentDataIntegrity).validateCommentRequestDto(commentRequestDto);
+
+        Exception exception = assertThrows(InvalidCommentRequestException.class,
+                () -> commentService.saveComment(commentRequestDto));
+        assertEquals("Topic ID cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void testSaveIfUserIsNotAuthenticated() {
+        commentRequestDto.setTopicId(UUID.fromString(UUID_CONSTANT));
+
+        doThrow(new UnauthorizedAccessException("User is not authenticated"))
+                .when(authenticationService).getAuthenticatedAndPersistedUser();
+
+        Exception exception = assertThrows(UnauthorizedAccessException.class,
+                () -> commentService.saveComment(commentRequestDto));
+        assertEquals("User is not authenticated", exception.getMessage());
+    }
 }
