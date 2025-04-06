@@ -7,10 +7,14 @@
   --header-color: #222;
   --card-bg: #111;
   --accent-color: #ff8800;
+  --accent-color-rgb: 255, 136, 0;
   --secondary-color: #00aaff;
+  --secondary-color-rgb: 0, 170, 255;
   --success-color: #22ff22;
   --warning-color: #ffff00;
   --danger-color: #ff0000;
+  --bg-secondary: rgba(20, 20, 20, 0.7);
+  --text-secondary: rgba(0, 255, 0, 0.7);
 }
 
 body {

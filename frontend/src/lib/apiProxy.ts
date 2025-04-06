@@ -79,8 +79,9 @@ const apiProxy = {
       
       return apiClient.get(config.api.endpoints.topicComments(topicId), { params });
     },
-    create: (commentRequestDto: { text: string, topicId: string, parentCommentId: string | null }) => 
-      apiClient.post(config.api.endpoints.comments, commentRequestDto),
+    create: (commentRequestDto: { text: string, topicId: string, parentCommentId: string | null }) => {
+      return apiClient.post(config.api.endpoints.comments, commentRequestDto);
+    },
     getById: (commentId: string) => 
       apiClient.get(config.api.endpoints.comment(commentId)),
     delete: (commentId: string) => 

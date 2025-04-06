@@ -291,11 +291,37 @@ const Comment: React.FC<CommentProps> = ({ comment, onDelete }) => {
           ) : (
             <>
               {replies.length > 0 ? (
-                <Box sx={{ pl: 4, borderLeft: '2px dashed var(--border-color)' }}>
+                <Box 
+                  sx={{ 
+                    pl: { xs: 2, sm: 4 }, 
+                    borderLeft: '2px dashed var(--border-color)',
+                    ml: 1,
+                    position: 'relative'
+                  }}
+                >
+                  {/* Vertical thread line */}
+                  <Box 
+                    sx={{ 
+                      position: 'absolute',
+                      left: '0px',
+                      top: 0,
+                      bottom: 0,
+                      width: '2px',
+                      bgcolor: 'rgba(var(--accent-color-rgb), 0.3)',
+                      display: { xs: 'none', sm: 'block' }
+                    }} 
+                  />
+
                   {replies.map((reply) => (
                     <ReplyItem 
                       key={reply.id} 
                       reply={reply} 
+                      topicId={comment.topicId}
+                      onReplyAdded={() => {
+                        // Increment reply count and reload replies when a nested reply is added
+                        setLocalReplyCount(prev => prev + 1);
+                        loadReplies(repliesPage);
+                      }}
                       onDelete={() => {
                         // Decrement reply count when a reply is deleted
                         setLocalReplyCount(prev => Math.max(0, prev - 1));
@@ -306,7 +332,7 @@ const Comment: React.FC<CommentProps> = ({ comment, onDelete }) => {
                   ))}
                   
                   {repliesPageCount > 1 && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 1 }}>
                       <Pagination 
                         count={repliesPageCount} 
                         page={repliesPage} 

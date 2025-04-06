@@ -43,8 +43,8 @@ class UserControllerTests {
         UUID secondCommentId = UUID.randomUUID();
 
         List<ParentCommentResponseDto> commentList = List.of(
-                new ParentCommentResponseDto(firstCommentId, "Test comment", LocalDateTime.now(), true, UUID.randomUUID(), UUID.randomUUID()),
-                new ParentCommentResponseDto(secondCommentId, "Another comment", LocalDateTime.now(), true, UUID.randomUUID(), UUID.randomUUID())
+                new ParentCommentResponseDto(firstCommentId, "Test comment", LocalDateTime.now(), true, UUID.randomUUID(), "test1", UUID.randomUUID()),
+                new ParentCommentResponseDto(secondCommentId, "Another comment", LocalDateTime.now(), true, UUID.randomUUID(), "test2", UUID.randomUUID())
         );
         Page<ParentCommentResponseDto> commentPage = new PageImpl<>(commentList);
 

@@ -13,6 +13,7 @@ import org.site.forum.domain.comment.dao.CommentDao;
 import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.entity.Comment;
 import org.site.forum.domain.comment.mapper.CommentMapper;
+import org.site.forum.domain.file.dao.FileDao;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.entity.Topic;
@@ -73,6 +74,9 @@ public class UserServiceTest {
 
     @InjectMocks
     private UserServiceImpl userService;
+
+    @Mock
+    private FileDao fileDao;
 
     private User user;
     private UUID userId;

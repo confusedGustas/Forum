@@ -67,7 +67,7 @@ class SearchServiceTest {
 
     @Test
     void searchTopics_WithValidCriteria_ReturnsPaginatedResponse() {
-        criteria.setSearch(null);
+        criteria.setSearch("");
         criteria.setSortDirection("ASC");
         criteria.setSortBy("rating");
 
