@@ -1,9 +1,3 @@
-## 🚀 Under Development
-
-*This README will be updated accordingly.*
-
----
-
 ## 📖 Table of Contents
 
 1. [🔗 Services & Access Information](#-services--access-information)
@@ -30,7 +24,7 @@
 | **MinIO UI**               | `Run "docker logs minio", find the WebUI link`                                                 | `admin`           | `adminadmin` |
 | **MinIO API**              | `http://localhost:9000`                                                                        | `admin`           | `adminadmin` |
 | **Swagger UI**             | [http://localhost:8080/swagger-ui/index.html#/](http://localhost:8080/swagger-ui/index.html#/) | -                 | -            |
- | **React**                  | [http://localhost:3000](http://localhost:3000)                                                 | -                 | -            |"
+| **React**                  | [http://localhost:3000](http://localhost:3000)                                                 | -                 | -            |
 
 ---
 
@@ -72,6 +66,9 @@ Before running the project, ensure you have the following installed:
 - **Docker**:
   - [Docker Desktop (Windows and Apple)](https://www.docker.com/products/docker-desktop/)
   - [OrbStack (Apple only, recommended)](https://orbstack.dev/download)
+- **Node.js 18+** (for React frontend)
+- **npm** or **yarn** (package manager for JavaScript)
+
 ---
 
 ## 🚀 Running the Services
@@ -82,11 +79,37 @@ Before running the project, ensure you have the following installed:
 docker compose up
 ```
 
-### 🚀 Start Spring Boot
+### 🚀 Start Spring Boot Backend
 
 ```sh
 ./mvnw spring-boot:run
 ```
+
+### 🚀 Start React Frontend
+
+Navigate to the React project directory:
+
+```sh
+cd frontend
+```
+
+Install dependencies:
+
+```sh
+npm install
+# or
+yarn install
+```
+
+Start the development server:
+
+```sh
+npm start
+# or
+yarn start
+```
+
+The React application will be available at [http://localhost:3000](http://localhost:3000)
 
 ---
 
