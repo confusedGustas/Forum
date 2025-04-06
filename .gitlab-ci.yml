@@ -1,0 +1,18 @@
+image: maven:3.9.6-eclipse-temurin-22-jammy
+
+variables:
+  IMAGE_TAG: $CI_PIPELINE_ID
+stages:
+  - build
+  - test
+build:
+  stage: build
+  script:
+    - mvn clean package
+  artifacts:
+    paths:
+      - ./service/target/service-0.0.1-SNAPSHOT.jar
+run_tests:
+  stage: test
+  script:
+    - mvn clean test
