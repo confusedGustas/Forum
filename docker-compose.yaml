@@ -24,6 +24,7 @@ services:
     command: start-dev --import-realm
     volumes:
       - ./keycloak:/opt/keycloak/data/import:ro
+      - ./themes:/opt/keycloak/themes:ro
 
   keycloak_postgres:
     container_name: keycloak_postgres
