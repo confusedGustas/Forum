@@ -9,7 +9,13 @@ import {
   TextField, 
   Divider, 
   Pagination,
-  Alert
+  Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { KeycloakContext } from '../context/KeycloakContext';
@@ -17,7 +23,7 @@ import { TopicResponseDto } from '../lib/topicService';
 import { ParentCommentResponseDto, CommentPage } from '../lib/commentService';
 import apiProxy from '../lib/apiProxy';
 import Comment from '../components/Comment';
-import { AccountCircle, AttachFile } from '@mui/icons-material';
+import { AccountCircle, AttachFile, Delete } from '@mui/icons-material';
 
 const topicAsciiArt = `
   ______                               
@@ -31,7 +37,7 @@ const topicAsciiArt = `
 const TopicPage = () => {
   const { topicId } = useParams<{ topicId: string }>();
   const navigate = useNavigate();
-  const { authenticated, login } = useContext(KeycloakContext);
+  const { authenticated, login, userDetails } = useContext(KeycloakContext);
   
   const [topic, setTopic] = useState<TopicResponseDto | null>(null);
   const [comments, setComments] = useState<ParentCommentResponseDto[]>([]);
@@ -42,6 +48,8 @@ const TopicPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [commentsPerPage] = useState(10);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deletingTopic, setDeletingTopic] = useState(false);
   
   const fetchTopic = useCallback(async () => {
     if (!topicId) return;
@@ -137,6 +145,33 @@ const TopicPage = () => {
     }
   };
 
+  const handleDeleteClick = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    if (deletingTopic) return;
+    setOpenDeleteDialog(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!topicId) return;
+    
+    setDeletingTopic(true);
+    try {
+      await apiProxy.topics.delete(topicId);
+      setOpenDeleteDialog(false);
+      navigate('/home');
+    } catch (err: any) {
+      setError(`Failed to delete topic: ${err.message}`);
+    } finally {
+      setDeletingTopic(false);
+      setOpenDeleteDialog(false);
+    }
+  };
+
+  const isTopicAuthor = userDetails?.id === topic?.authorId;
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       {error && (
@@ -175,9 +210,28 @@ const TopicPage = () => {
               p: 3, 
               mb: 4, 
               bgcolor: 'var(--bg-color)', 
-              border: '1px solid var(--border-color)'
+              border: '1px solid var(--border-color)',
+              position: 'relative'
             }}
           >
+            {isTopicAuthor && (
+              <IconButton
+                size="small"
+                color="error"
+                onClick={handleDeleteClick}
+                sx={{
+                  position: 'absolute',
+                  right: 16,
+                  top: 16,
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 0, 0, 0.1)'
+                  }
+                }}
+                aria-label="delete topic"
+              >
+                <Delete />
+              </IconButton>
+            )}
             <Typography 
               variant="h5" 
               sx={{ 
@@ -383,6 +437,75 @@ const TopicPage = () => {
           Topic not found or has been removed.
         </Typography>
       )}
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{
+          sx: {
+            backgroundColor: 'var(--card-bg, #fff)',
+            color: 'var(--text-color, #000)',
+            border: '2px solid var(--danger-color, red)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+            padding: '8px'
+          }
+        }}
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ fontFamily: "'VT323', monospace", fontSize: '1.5rem' }}>
+          Confirm Delete Topic
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: 'var(--text-color, #000)' }}>
+            <strong>Are you sure you want to delete this topic?</strong><br/>
+            <Box sx={{ 
+              mt: 1, 
+              p: 1, 
+              backgroundColor: 'rgba(0,0,0,0.05)',
+              borderLeft: '3px solid var(--accent-color, #1976d2)',
+              fontStyle: 'italic'
+            }}>
+              "{topic?.title}"
+            </Box>
+            <Box sx={{ mt: 1 }}>
+              This action cannot be undone. All comments and replies will also be deleted.
+            </Box>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={handleCloseDeleteDialog} 
+            disabled={deletingTopic}
+            sx={{ 
+              color: 'var(--text-color, #000)',
+              fontFamily: "'VT323', monospace",
+              fontWeight: 'bold'
+            }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleConfirmDelete} 
+            disabled={deletingTopic}
+            autoFocus
+            variant="contained"
+            sx={{ 
+              backgroundColor: 'var(--danger-color, red)',
+              fontFamily: "'VT323', monospace",
+              fontWeight: 'bold',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'darkred'
+              }
+            }}
+          >
+            {deletingTopic ? (
+              <CircularProgress size={20} sx={{ color: 'white' }} />
+            ) : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

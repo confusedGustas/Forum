@@ -42,7 +42,8 @@ const apiProxy = {
       return axios.post<TopicResponseDto>(config.api.endpoints.topics, formData, {
         headers
       });
-    }
+    },
+    delete: (id: string) => apiClient.delete(config.api.endpoints.topic(id))
   },
 
   search: {

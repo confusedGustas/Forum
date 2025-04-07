@@ -34,6 +34,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -41,6 +43,7 @@ import static org.mockito.Mockito.when;
 import static org.site.forum.constants.TestConstants.CONTENT;
 import static org.site.forum.constants.TestConstants.CREATED_AT;
 import static org.site.forum.constants.TestConstants.TITLE;
+import static org.site.forum.domain.user.integrity.UserDataIntegrityImpl.USER_CANNOT_BE_NULL;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -175,8 +178,9 @@ public class UserServiceTest {
     void getAuthenticatedUserTopics() {
         PageRequest pageable = PageRequest.of(0, 10);
 
-        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
-        when(topicDao.getAllTopicsByUserId(user.getId(), pageable)).thenReturn(new PageImpl<>(List.of(topic)));
+        when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
+
+        when(topicDao.getAllTopicsByUserId(userId, pageable)).thenReturn(new PageImpl<>(List.of(topic)));
         when(topicMapper.toDto(topic, List.of())).thenReturn(topicResponseDto);
 
         Page<TopicResponseDto> result = userService.getAuthenticatedUserTopics(pageable);
@@ -185,7 +189,7 @@ public class UserServiceTest {
         assertEquals(1, result.getTotalElements());
         assertEquals(topicResponseDto, result.getContent().get(0));
 
-        verify(topicDao).getAllTopicsByUserId(user.getId(), pageable);
+        verify(topicDao).getAllTopicsByUserId(userId, pageable);
         verify(topicMapper).toDto(topic, List.of());
     }
 
@@ -193,10 +197,14 @@ public class UserServiceTest {
     void getAuthenticatedUserTopics_WhenUserIsNull_ThrowsInvalidUserException() {
         PageRequest pageable = PageRequest.of(0, 10);
 
-        doThrow(InvalidUserException.class).when(authenticationService).getAuthenticatedUser();
+        when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(null);
+
+        doThrow(new InvalidUserException(USER_CANNOT_BE_NULL))
+                .when(userDataIntegrity).validateUser(null);
 
         assertThrows(InvalidUserException.class, () -> userService.getAuthenticatedUserTopics(pageable));
 
+        verify(userDataIntegrity).validateUser(null);
         verify(topicDao, never()).getAllTopicsByUserId(any(), any());
         verify(topicMapper, never()).toDto(any(), any());
     }

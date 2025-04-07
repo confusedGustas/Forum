@@ -11,7 +11,12 @@ import {
   Collapse,
   Divider,
   Pagination,
-  CircularProgress
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
 } from '@mui/material';
 import { Reply, Delete, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { ParentCommentResponseDto, ReplyResponseDto } from '../lib/commentService';
@@ -35,6 +40,8 @@ const Comment: React.FC<CommentProps> = ({ comment, onDelete }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [localReplyCount, setLocalReplyCount] = useState(comment.replyCount);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deletingComment, setDeletingComment] = useState(false);
 
   const isCommentAuthor = userDetails?.id === comment.authorId;
   const hasReplies = localReplyCount > 0;
@@ -118,12 +125,26 @@ const Comment: React.FC<CommentProps> = ({ comment, onDelete }) => {
     loadReplies(page);
   };
 
-  const handleDeleteComment = async () => {
+  const handleDeleteClick = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    if (deletingComment) return;
+    setOpenDeleteDialog(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    setDeletingComment(true);
     try {
       await apiProxy.comments.delete(comment.id);
+      setOpenDeleteDialog(false);
       onDelete(comment.id);
     } catch (err: any) {
       setError(`Failed to delete comment: ${err.message}`);
+    } finally {
+      setDeletingComment(false);
+      setOpenDeleteDialog(false);
     }
   };
 
@@ -138,226 +159,297 @@ const Comment: React.FC<CommentProps> = ({ comment, onDelete }) => {
   }, [comment.replyCount]);
 
   return (
-    <Card sx={{ 
-      mb: 2, 
-      bgcolor: 'var(--bg-color)', 
-      border: '1px solid var(--border-color)',
-      '&:hover': {
-        borderColor: 'var(--accent-color)',
-      } 
-    }}>
-      <CardContent>
-        {error && (
-          <Typography color="error" sx={{ mb: 2, fontFamily: "'Courier Prime', monospace" }}>
-            {error}
-          </Typography>
-        )}
-        
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
-          <Avatar sx={{ mr: 2, bgcolor: 'var(--accent-color)' }}>
-            {comment.authorName ? comment.authorName.charAt(0).toUpperCase() : 'U'}
-          </Avatar>
-          
-          <Box sx={{ flexGrow: 1 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="subtitle1" sx={{ 
-                fontWeight: 'bold',
-                fontFamily: "'VT323', monospace"
-              }}>
-                {comment.authorName || 'Unknown User'}
-              </Typography>
-              <Typography variant="caption" color="textSecondary" sx={{ 
-                fontFamily: "'Courier Prime', monospace" 
-              }}>
-                {formatDate(comment.createdAt)}
-              </Typography>
-            </Box>
-            
-            <Typography variant="body1" sx={{ 
-              mt: 1, 
-              mb: 2,
-              whiteSpace: 'pre-wrap',
-              fontFamily: "monospace" 
-            }}>
-              {comment.deleted ? <em>This comment has been deleted</em> : (comment.text || comment.content)}
+    <>
+      <Card sx={{ 
+        mb: 2, 
+        bgcolor: 'var(--bg-color)', 
+        border: '1px solid var(--border-color)',
+        '&:hover': {
+          borderColor: 'var(--accent-color)',
+        } 
+      }}>
+        <CardContent>
+          {error && (
+            <Typography color="error" sx={{ mb: 2, fontFamily: "'Courier Prime', monospace" }}>
+              {error}
             </Typography>
+          )}
+          
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 1 }}>
+            <Avatar sx={{ mr: 2, bgcolor: 'var(--accent-color)' }}>
+              {comment.authorName ? comment.authorName.charAt(0).toUpperCase() : 'U'}
+            </Avatar>
             
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button 
-                  startIcon={<Reply />} 
-                  size="small" 
-                  onClick={toggleReplyForm}
-                  disabled={comment.deleted}
-                  sx={{
+            <Box sx={{ flexGrow: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="subtitle1" sx={{ 
+                  fontWeight: 'bold',
+                  fontFamily: "'VT323', monospace"
+                }}>
+                  {comment.authorName || 'Unknown User'}
+                </Typography>
+                <Typography variant="caption" color="textSecondary" sx={{ 
+                  fontFamily: "'Courier Prime', monospace" 
+                }}>
+                  {formatDate(comment.createdAt)}
+                </Typography>
+              </Box>
+              
+              <Typography variant="body1" sx={{ 
+                mt: 1, 
+                mb: 2,
+                whiteSpace: 'pre-wrap',
+                fontFamily: "monospace" 
+              }}>
+                {comment.deleted ? <em>This comment has been deleted</em> : (comment.text || comment.content)}
+              </Typography>
+              
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button 
+                    startIcon={<Reply />} 
+                    size="small" 
+                    onClick={toggleReplyForm}
+                    disabled={comment.deleted}
+                    sx={{
+                      fontFamily: "'VT323', monospace",
+                      color: "var(--text-color)",
+                      '&:hover': {
+                        color: "var(--accent-color)",
+                      }
+                    }}
+                  >
+                    Reply
+                  </Button>
+                </Box>
+                
+                {isCommentAuthor && !comment.deleted && (
+                  <IconButton 
+                    size="small" 
+                    color="error" 
+                    onClick={handleDeleteClick}
+                    aria-label="delete comment"
+                  >
+                    <Delete fontSize="small" />
+                  </IconButton>
+                )}
+              </Box>
+              
+              <Box sx={{ mt: 2 }}>
+                <Button
+                  onClick={toggleReplies}
+                  size="medium"
+                  variant="contained"
+                  fullWidth
+                  startIcon={showReplies ? <ExpandLess /> : <ExpandMore />}
+                  sx={{ 
                     fontFamily: "'VT323', monospace",
-                    color: "var(--text-color)",
+                    bgcolor: "var(--secondary-color)",
+                    color: "var(--bg-color)",
+                    py: 1,
                     '&:hover': {
-                      color: "var(--accent-color)",
+                      backgroundColor: "var(--accent-color)",
+                      color: "var(--bg-color)",
+                    },
+                  }}
+                >
+                  {showReplies ? 'Hide Replies' : 'Show Replies'} {hasReplies ? `(${localReplyCount})` : ''}
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+          
+          <Collapse in={showReplyForm} sx={{ mt: 2 }}>
+            <form onSubmit={handleReplySubmit}>
+              <TextField
+                multiline
+                rows={3}
+                fullWidth
+                placeholder="Write your reply..."
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button 
+                  variant="outlined" 
+                  sx={{ 
+                    mr: 1,
+                    fontFamily: "'VT323', monospace" 
+                  }} 
+                  onClick={() => setShowReplyForm(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  variant="contained" 
+                  type="submit"
+                  sx={{ 
+                    fontFamily: "'VT323', monospace",
+                    bgcolor: "var(--accent-color)",
+                    color: "var(--bg-color)",
+                    '&:hover': {
+                      backgroundColor: "var(--accent-color-dark)",
                     }
                   }}
                 >
-                  Reply
+                  Submit
                 </Button>
               </Box>
-              
-              {isCommentAuthor && !comment.deleted && (
-                <IconButton 
-                  size="small" 
-                  color="error" 
-                  onClick={handleDeleteComment}
-                  aria-label="delete comment"
-                >
-                  <Delete fontSize="small" />
-                </IconButton>
-              )}
-            </Box>
-            
-            <Box sx={{ mt: 2 }}>
-              <Button
-                onClick={toggleReplies}
-                size="medium"
-                variant="contained"
-                fullWidth
-                startIcon={showReplies ? <ExpandLess /> : <ExpandMore />}
-                sx={{ 
-                  fontFamily: "'VT323', monospace",
-                  bgcolor: "var(--secondary-color)",
-                  color: "var(--bg-color)",
-                  py: 1,
-                  '&:hover': {
-                    backgroundColor: "var(--accent-color)",
-                    color: "var(--bg-color)",
-                  },
-                }}
-              >
-                {showReplies ? 'Hide Replies' : 'Show Replies'} {hasReplies ? `(${localReplyCount})` : ''}
-              </Button>
-            </Box>
-          </Box>
-        </Box>
-        
-        <Collapse in={showReplyForm} sx={{ mt: 2 }}>
-          <form onSubmit={handleReplySubmit}>
-            <TextField
-              multiline
-              rows={3}
-              fullWidth
-              placeholder="Write your reply..."
-              value={replyContent}
-              onChange={(e) => setReplyContent(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button 
-                variant="outlined" 
-                sx={{ 
-                  mr: 1,
-                  fontFamily: "'VT323', monospace" 
-                }} 
-                onClick={() => setShowReplyForm(false)}
-              >
-                Cancel
-              </Button>
-              <Button 
-                variant="contained" 
-                type="submit"
-                sx={{ 
-                  fontFamily: "'VT323', monospace",
-                  bgcolor: "var(--accent-color)",
-                  color: "var(--bg-color)",
-                  '&:hover': {
-                    backgroundColor: "var(--accent-color-dark)",
-                  }
-                }}
-              >
-                Submit
-              </Button>
-            </Box>
-          </form>
-        </Collapse>
-        
-        <Collapse in={showReplies} sx={{ mt: 2 }}>
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-              <CircularProgress size={24} sx={{ color: 'var(--accent-color)' }} />
-            </Box>
-          ) : (
-            <>
-              {replies.length > 0 ? (
-                <Box 
-                  sx={{ 
-                    pl: { xs: 2, sm: 4 }, 
-                    borderLeft: '2px dashed var(--border-color)',
-                    ml: 1,
-                    position: 'relative'
-                  }}
-                >
+            </form>
+          </Collapse>
+          
+          <Collapse in={showReplies} sx={{ mt: 2 }}>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                <CircularProgress size={24} sx={{ color: 'var(--accent-color)' }} />
+              </Box>
+            ) : (
+              <>
+                {replies.length > 0 ? (
                   <Box 
                     sx={{ 
-                      position: 'absolute',
-                      left: '0px',
-                      top: 0,
-                      bottom: 0,
-                      width: '2px',
-                      bgcolor: 'rgba(var(--accent-color-rgb), 0.3)',
-                      display: { xs: 'none', sm: 'block' }
-                    }} 
-                  />
-
-                  {replies.map((reply) => (
-                    <ReplyItem 
-                      key={reply.id} 
-                      reply={reply} 
-                      topicId={comment.topicId}
-                      onReplyAdded={() => {
-                        setLocalReplyCount(prev => prev + 1);
-                        loadReplies(repliesPage);
-                      }}
-                      onDelete={() => {
-                        setLocalReplyCount(prev => Math.max(0, prev - 1));
-                        loadReplies(repliesPage);
+                      pl: { xs: 2, sm: 4 }, 
+                      borderLeft: '2px dashed var(--border-color)',
+                      ml: 1,
+                      position: 'relative'
+                    }}
+                  >
+                    <Box 
+                      sx={{ 
+                        position: 'absolute',
+                        left: '0px',
+                        top: 0,
+                        bottom: 0,
+                        width: '2px',
+                        bgcolor: 'rgba(var(--accent-color-rgb), 0.3)',
+                        display: { xs: 'none', sm: 'block' }
                       }} 
                     />
-                  ))}
-                  
-                  {repliesPageCount > 1 && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 1 }}>
-                      <Pagination 
-                        count={repliesPageCount} 
-                        page={repliesPage} 
-                        onChange={handlePageChange}
-                        size="small"
-                        sx={{
-                          '& .MuiPaginationItem-root': {
-                            fontFamily: "'VT323', monospace",
-                            color: 'var(--text-color)'
-                          },
-                          '& .Mui-selected': {
-                            backgroundColor: 'var(--accent-color)',
-                            color: 'var(--bg-color)'
-                          }
+
+                    {replies.map((reply) => (
+                      <ReplyItem 
+                        key={reply.id} 
+                        reply={reply} 
+                        topicId={comment.topicId}
+                        onReplyAdded={() => {
+                          setLocalReplyCount(prev => prev + 1);
+                          loadReplies(repliesPage);
                         }}
+                        onDelete={() => {
+                          setLocalReplyCount(prev => Math.max(0, prev - 1));
+                          loadReplies(repliesPage);
+                        }} 
                       />
-                    </Box>
-                  )}
-                </Box>
-              ) : (
-                <Typography variant="body2" sx={{ 
-                  textAlign: 'center', 
-                  my: 2, 
-                  fontStyle: 'italic',
-                  fontFamily: "'Courier Prime', monospace",
-                  color: 'var(--text-secondary)'
-                }}>
-                  No replies to display
-                </Typography>
-              )}
-            </>
-          )}
-        </Collapse>
-      </CardContent>
-    </Card>
+                    ))}
+                    
+                    {repliesPageCount > 1 && (
+                      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, mb: 1 }}>
+                        <Pagination 
+                          count={repliesPageCount} 
+                          page={repliesPage} 
+                          onChange={handlePageChange}
+                          size="small"
+                          sx={{
+                            '& .MuiPaginationItem-root': {
+                              fontFamily: "'VT323', monospace",
+                              color: 'var(--text-color)'
+                            },
+                            '& .Mui-selected': {
+                              backgroundColor: 'var(--accent-color)',
+                              color: 'var(--bg-color)'
+                            }
+                          }}
+                        />
+                      </Box>
+                    )}
+                  </Box>
+                ) : (
+                  <Typography variant="body2" sx={{ 
+                    textAlign: 'center', 
+                    my: 2, 
+                    fontStyle: 'italic',
+                    fontFamily: "'Courier Prime', monospace",
+                    color: 'var(--text-secondary)'
+                  }}>
+                    No replies to display
+                  </Typography>
+                )}
+              </>
+            )}
+          </Collapse>
+        </CardContent>
+      </Card>
+
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{
+          sx: {
+            backgroundColor: 'var(--card-bg, #fff)',
+            color: 'var(--text-color, #000)',
+            border: '2px solid var(--danger-color, red)',
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+            padding: '8px'
+          }
+        }}
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ fontFamily: "'VT323', monospace", fontSize: '1.5rem' }}>
+          Confirm Delete Comment
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: 'var(--text-color, #000)' }}>
+            <strong>Are you sure you want to delete this comment?</strong><br/>
+            <Box sx={{ 
+              mt: 1, 
+              p: 1, 
+              backgroundColor: 'rgba(0,0,0,0.05)',
+              borderLeft: '3px solid var(--accent-color, #1976d2)',
+              fontStyle: 'italic'
+            }}>
+              "{comment.text?.length > 100 ? comment.text.substring(0, 100) + '...' : comment.text}"
+            </Box>
+            <Box sx={{ mt: 1 }}>
+              This action cannot be undone.
+            </Box>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={handleCloseDeleteDialog} 
+            disabled={deletingComment}
+            sx={{ 
+              color: 'var(--text-color, #000)',
+              fontFamily: "'VT323', monospace",
+              fontWeight: 'bold'
+            }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleConfirmDelete} 
+            disabled={deletingComment}
+            autoFocus
+            variant="contained"
+            sx={{ 
+              backgroundColor: 'var(--danger-color, red)',
+              fontFamily: "'VT323', monospace",
+              fontWeight: 'bold',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'darkred'
+              }
+            }}
+          >
+            {deletingComment ? (
+              <CircularProgress size={20} sx={{ color: 'white' }} />
+            ) : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
