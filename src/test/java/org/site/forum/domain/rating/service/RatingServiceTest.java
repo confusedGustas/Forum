@@ -6,6 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.site.forum.common.exception.UserNotFoundException;
 import org.site.forum.config.auth.AuthenticationService;
 import org.site.forum.domain.rating.dao.RatingDao;
 import org.site.forum.domain.rating.entity.Rating;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -109,5 +111,12 @@ class RatingServiceTest {
         verify(ratingDao, never()).save(any());
         verify(ratingDao, never()).delete(any());
         verify(topicDao, never()).saveTopic(any());
+    }
+
+    @Test
+    void rateTopic_UserNotAuthenticated_throwsUserNotFoundException() {
+        when(authenticationService.getAuthenticatedUser()).thenReturn(null);
+        doThrow(new UserNotFoundException("User must not be null")).when(ratingDataIntegrity).validateUserExists(null);
+        assertThrows(UserNotFoundException.class, () -> ratingService.rateTopic(topicId, 1));
     }
 }
