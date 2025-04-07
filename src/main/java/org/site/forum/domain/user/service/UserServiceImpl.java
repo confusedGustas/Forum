@@ -19,7 +19,6 @@ import org.site.forum.domain.user.mapper.UserMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import java.util.List;
 import java.util.UUID;
 
 import static org.site.forum.domain.user.integrity.UserDataIntegrityImpl.USER_CANNOT_BE_NULL;
@@ -56,7 +55,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<TopicResponseDto> getAuthenticatedUserTopics(PageRequest pageRequest) {
-        var user = authenticationService.getAuthenticatedUser();
+        var user = authenticationService.getAuthenticatedAndPersistedUser();
+
+        userDataIntegrity.validateUser(user);
 
         var topics = topicDao.getAllTopicsByUserId(user.getId(), pageRequest);
 

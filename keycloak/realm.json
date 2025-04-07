@@ -69,9 +69,17 @@
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
+          "realm": [
+            "offline_access",
+            "uma_authorization"
+          ],
           "client": {
             "client": [
               "client_user"
+            ],
+            "account": [
+              "view-profile",
+              "manage-account"
             ]
           }
         },
@@ -91,6 +99,24 @@
             ]
           }
         },
+        "clientRole": false,
+        "containerId": "ad04f9df-47a8-46de-80cd-b214a5690244",
+        "attributes": {}
+      },
+      {
+        "id": "490d26c7-0b48-48e8-9669-056e63061dd7",
+        "name": "uma_authorization",
+        "description": "${role_uma_authorization}",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "ad04f9df-47a8-46de-80cd-b214a5690244",
+        "attributes": {}
+      },
+      {
+        "id": "419ed24b-acdb-4649-8e92-0247a82f74a0",
+        "name": "offline_access",
+        "description": "${role_offline-access}",
+        "composite": false,
         "clientRole": false,
         "containerId": "ad04f9df-47a8-46de-80cd-b214a5690244",
         "attributes": {}
@@ -1081,8 +1107,9 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "clientAddress",
-            "id.token.claim": "true",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientAddress",
             "jsonType.label": "String"
@@ -1096,8 +1123,9 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "client_id",
-            "id.token.claim": "true",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "client_id",
             "jsonType.label": "String"
@@ -1111,8 +1139,9 @@
           "consentRequired": false,
           "config": {
             "user.session.note": "clientHost",
-            "id.token.claim": "true",
             "introspection.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
             "access.token.claim": "true",
             "claim.name": "clientHost",
             "jsonType.label": "String"
@@ -1637,14 +1666,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "saml-role-list-mapper",
-            "saml-user-attribute-mapper",
             "oidc-usermodel-attribute-mapper",
-            "saml-user-property-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
+            "saml-role-list-mapper",
             "oidc-full-name-mapper",
+            "oidc-usermodel-property-mapper",
+            "saml-user-attribute-mapper",
             "oidc-address-mapper",
-            "oidc-usermodel-property-mapper"
+            "saml-user-property-mapper",
+            "oidc-sha256-pairwise-sub-mapper"
           ]
         }
       },
@@ -1668,13 +1697,13 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
+            "oidc-address-mapper",
+            "oidc-usermodel-property-mapper",
             "saml-role-list-mapper",
+            "oidc-sha256-pairwise-sub-mapper",
+            "oidc-full-name-mapper",
             "saml-user-attribute-mapper",
             "saml-user-property-mapper",
-            "oidc-address-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
-            "oidc-usermodel-property-mapper",
-            "oidc-full-name-mapper",
             "oidc-usermodel-attribute-mapper"
           ]
         }
@@ -2487,7 +2516,7 @@
     "cibaInterval": "5",
     "realmReusableOtpCode": "false"
   },
-  "keycloakVersion": "26.1.0",
+  "keycloakVersion": "26.1.4",
   "userManagedAccessAllowed": false,
   "organizationsEnabled": false,
   "verifiableCredentialsEnabled": false,
