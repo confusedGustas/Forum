@@ -1,6 +1,10 @@
 spring:
   config:
     import: optional:file:.env[.properties]
+  cloud:
+    gcp:
+      credentials:
+        location: file:${GOOGLE_APPLICATION_CREDENTIALS}
   liquibase:
     change-log: db/changelog/db-changelog-master.xml
   datasource:

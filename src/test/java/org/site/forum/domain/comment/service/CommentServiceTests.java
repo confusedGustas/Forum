@@ -317,7 +317,7 @@ class CommentServiceTests {
 
     @Test
     void testMinCommentLength() {
-        String shortText = "abc";
+        String shortText = "abc4";
         commentRequestDto.setText(shortText);
 
         doThrow(new InvalidCommentRequestException("Comment text must be at least 5 characters long"))
@@ -330,7 +330,7 @@ class CommentServiceTests {
 
     @Test
     void testMaxCommentLength() {
-        String longText = "a".repeat(1001);
+        String longText = "a".repeat(601);
         commentRequestDto.setText(longText);
 
         doThrow(new InvalidCommentRequestException("Comment text must be at most 600 characters long"))
