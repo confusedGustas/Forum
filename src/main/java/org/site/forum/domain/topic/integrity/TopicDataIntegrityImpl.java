@@ -9,6 +9,8 @@ import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.common.exception.InvalidTopicRequestException;
 import org.site.forum.common.exception.InvalidTopicTitleException;
 import org.site.forum.domain.file.dao.FileDao;
+import org.site.forum.domain.file.integrity.FileDataIntegrityImpl;
+import org.site.forum.domain.file.service.ImageModerationService;
 import org.site.forum.domain.topic.dto.request.TopicRequestDto;
 import org.site.forum.domain.topic.entity.Topic;
 import org.springframework.stereotype.Service;
@@ -29,8 +31,10 @@ public class TopicDataIntegrityImpl implements TopicDataIntegrity {
     private static final String TOPIC_ID_NULL = "Topic ID cannot be null";
     private static final String FILE_EMPTY = "File cannot be null or empty";
     public static final String YOU_CAN_UPLOAD_ONLY_5_FILES_PER_TOPIC = "You can upload only 5 files per topic";
+    public static final String INVALID_FILE_CONTENT = "Image file contains restricted content";
 
     private final FileDao fileDao;
+    private final ImageModerationService imageModerationService;
 
     @Override
     public void validateTopicEntity(Topic topic) {
@@ -67,6 +71,9 @@ public class TopicDataIntegrityImpl implements TopicDataIntegrity {
         for (MultipartFile file : files) {
             if (file == null || file.isEmpty()) {
                 throw new InvalidFileException(FILE_EMPTY);
+            }
+            if(!imageModerationService.validateImageContent(file)){
+                throw new InvalidFileException(INVALID_FILE_CONTENT);
             }
         }
     }

@@ -83,6 +83,7 @@ public class FileServiceImpl implements FileService {
 
     private void saveFile(MultipartFile file, Topic topic, String generatedFileName) {
         fileDataIntegrity.validateFileTopicGeneratedFileName(file, topic, generatedFileName);
+//        fileDataIntegrity.validateFileContent(file);
         File fileEntity = fileMapper.toEntity(file, topic, generatedFileName);
         fileDao.saveFile(fileEntity);
     }
@@ -93,5 +94,4 @@ public class FileServiceImpl implements FileService {
         String extension = extensionIndex > 0 ? originalFilename.substring(extensionIndex) : "";
         return "file_" + UUID.randomUUID() + "_" + System.currentTimeMillis() + extension;
     }
-
 }

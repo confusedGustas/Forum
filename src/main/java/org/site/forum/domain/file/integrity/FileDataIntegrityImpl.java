@@ -7,6 +7,7 @@ import org.site.forum.common.exception.InvalidFileIdException;
 import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.domain.file.entity.File;
 import org.site.forum.domain.file.repository.FileRepository;
+import org.site.forum.domain.file.service.ImageModerationService;
 import org.site.forum.domain.topic.entity.Topic;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -30,8 +31,10 @@ public class FileDataIntegrityImpl implements FileDataIntegrity {
     private static final String ORIGINAL_FILE_NAME_CANNOT_BE_NULL_OR_EMPTY = "Original file name cannot be null or empty";
     public static final String FILE_CANNOT_BE_NULL = "File cannot be null";
     public static final String FILE_MUST_HAVE_AN_EXTENSION = "File must have an extension";
+//    public static final String INVALID_FILE_CONTENT = "File contains restricted content";
 
     private final FileRepository fileRepository;
+    private final ImageModerationService imageModerationService;
 
     public void validateMinioObjectName(String minioObjectName) {
         if (!StringUtils.hasText(minioObjectName)) {
@@ -109,4 +112,13 @@ public class FileDataIntegrityImpl implements FileDataIntegrity {
         }
     }
 
+//    public void validateFileContent(MultipartFile file) {
+//        String contentType = file.getContentType();
+//
+//        if(contentType != null && contentType.startsWith("image/")){
+//            if (!imageModerationService.validateImageContent(file)){
+//                throw new InvalidFileDataException(INVALID_FILE_CONTENT);
+//            }
+//        }
+//    }
 }
