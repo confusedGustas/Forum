@@ -31,7 +31,6 @@ public class FileDataIntegrityImpl implements FileDataIntegrity {
     private static final String ORIGINAL_FILE_NAME_CANNOT_BE_NULL_OR_EMPTY = "Original file name cannot be null or empty";
     public static final String FILE_CANNOT_BE_NULL = "File cannot be null";
     public static final String FILE_MUST_HAVE_AN_EXTENSION = "File must have an extension";
-//    public static final String INVALID_FILE_CONTENT = "File contains restricted content";
 
     private final FileRepository fileRepository;
     private final ImageModerationService imageModerationService;
@@ -111,14 +110,4 @@ public class FileDataIntegrityImpl implements FileDataIntegrity {
             throw new InvalidTopicIdException(TOPIC_CANNOT_BE_NULL);
         }
     }
-
-//    public void validateFileContent(MultipartFile file) {
-//        String contentType = file.getContentType();
-//
-//        if(contentType != null && contentType.startsWith("image/")){
-//            if (!imageModerationService.validateImageContent(file)){
-//                throw new InvalidFileDataException(INVALID_FILE_CONTENT);
-//            }
-//        }
-//    }
 }

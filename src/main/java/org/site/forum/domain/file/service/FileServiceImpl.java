@@ -83,7 +83,6 @@ public class FileServiceImpl implements FileService {
 
     private void saveFile(MultipartFile file, Topic topic, String generatedFileName) {
         fileDataIntegrity.validateFileTopicGeneratedFileName(file, topic, generatedFileName);
-//        fileDataIntegrity.validateFileContent(file);
         File fileEntity = fileMapper.toEntity(file, topic, generatedFileName);
         fileDao.saveFile(fileEntity);
     }

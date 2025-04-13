@@ -19,5 +19,4 @@ public interface FileDataIntegrity {
     void validateFileTopicGeneratedFileName(MultipartFile file, Topic topic, String generatedFileName);
     void validateOriginalFileName(String originalFilename);
     void validateTopicNotNull(Topic topic);
-//    void validateFileContent(MultipartFile file);
 }
