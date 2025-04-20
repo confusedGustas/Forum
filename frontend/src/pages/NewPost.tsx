@@ -99,7 +99,7 @@ const NewPost = () => {
             if (err.response) {
                 if (err.response.status === 401) {
                     errorMessage = "You must be logged in to create a post.";
-                } else if (err.response.data.error.includes("Image file contains restricted content")) {
+                } else if (err.response.data?.error?.includes("Image file contains restricted content")) {
                     errorMessage = "One or more uploaded images were rejected due to restricted content.";
                 }
                 else {
