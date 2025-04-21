@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.site.forum.common.exception.FileNotFoundException;
 import org.site.forum.domain.file.entity.File;
 import org.site.forum.domain.file.integrity.FileDataIntegrityImpl;
+import org.site.forum.domain.file.service.ImageModerationService;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.dao.TopicDaoImpl;
 import org.site.forum.domain.topic.entity.Topic;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -44,6 +46,9 @@ class FileDaoTests {
 
     @Mock
     private FileDaoImpl fileDaoImpl;
+
+    @MockitoBean
+    private ImageModerationService imageModerationService;
 
     private File file;
     private Topic topic;

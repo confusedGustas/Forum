@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.common.exception.InvalidTopicTitleException;
 import org.site.forum.domain.file.dao.FileDao;
+import org.site.forum.domain.file.service.ImageModerationService;
 import org.site.forum.domain.topic.entity.Topic;
+import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.site.forum.domain.topic.integrity.TopicDataIntegrityImpl;
 import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.dao.UserDaoImpl;
@@ -43,6 +45,9 @@ class TopicDaoTests {
 
     @Autowired
     private TestEntityManager entityManager;
+
+    @MockitoBean
+    private ImageModerationService imageModerationService;
 
     private User user;
 
