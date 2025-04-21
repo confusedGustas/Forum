@@ -39,6 +39,7 @@ jobs:
           echo "MINIO_PASSWORD=adminadmin" >> .env
           echo "MINIO_BUCKET=forum-bucket" >> .env
           echo "MINIO_SERVER_URL=http://localhost:9000" >> .env
+          echo "GOOGLE_APPLICATION_CREDENTIALS=src/main/resources/google.json" >> .env
 
       - name: Start Docker services
         run: docker compose up -d
