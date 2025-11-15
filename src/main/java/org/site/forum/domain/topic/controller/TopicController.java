@@ -62,10 +62,10 @@ public class TopicController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('client_user')")
+    @PreAuthorize("hasAnyRole('client_user', 'client_admin')")
     @Operation(
             summary = "Delete a topic",
-            description = "Deletes a topic by its UUID. Requires client_user role."
+            description = "Deletes a topic by its UUID. Requires client_user role. Only the topic owner or an admin can delete a topic."
     )
     public ResponseEntity<Void> deleteTopic(
             @Parameter(description = "UUID of the topic to delete", required = true)

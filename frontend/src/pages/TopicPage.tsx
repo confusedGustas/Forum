@@ -171,6 +171,16 @@ const TopicPage = () => {
   };
 
   const isTopicAuthor = userDetails?.id === topic?.authorId;
+  
+  const isAdmin = (): boolean => {
+    if (!userDetails) return false;
+    const realmRoles = userDetails.realm_access?.roles || [];
+    const resourceAccess = userDetails.resource_access || {};
+    const clientRoles = resourceAccess.client?.roles || [];
+    return realmRoles.includes('admin') || clientRoles.includes('client_admin');
+  };
+  
+  const canDeleteTopic = isTopicAuthor || isAdmin();
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
@@ -214,7 +224,7 @@ const TopicPage = () => {
               position: 'relative'
             }}
           >
-            {isTopicAuthor && (
+            {canDeleteTopic && (
               <IconButton
                 size="small"
                 color="error"
