@@ -51,13 +51,13 @@ KC_POSTGRES_PASSWORD=admin
 
 MINIO_USERNAME=admin
 MINIO_PASSWORD=adminadmin
-MINIO_BUCKET=forum-bucket
 MINIO_SERVER_URL=http://localhost:9000
 
 GOOGLE_APPLICATION_CREDENTIALS=src/main/resources/google.json
 GOOGLE_CLOUD_PROJECT_ID=forum-478311
 ```
 Make sure you paste in your Google Vision AI API key in the specified path and set the correct project ID.
+Go to localhost:9001, login with the default MinIO credentials, create a bucket named `forum`, set the bucket policy to `public` instead of `private`
 
 ---
 
