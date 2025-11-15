@@ -42,6 +42,8 @@ public class FileServiceImpl implements FileService {
         }
     }
 
+    // The method deleteFile could be broken down into smaller methods for better readability.
+    // Add logging to track file deletions.
     public void deleteFile(UUID fileId) {
         fileDataIntegrity.validateFileIdNotNull(fileId);
         fileDataIntegrity.validateFileExists(fileId);
@@ -53,6 +55,7 @@ public class FileServiceImpl implements FileService {
         fileDao.deleteFile(fileId);
     }
 
+    // The method checkAuthorization could be enhanced to include role-based access
     private void checkAuthorization(Topic topic) {
         if (topic.getAuthor() == null || authenticationService.getAuthenticatedUser() == null) {
             throw new UnauthorizedAccessException("Invalid topic or user authentication");
@@ -62,12 +65,14 @@ public class FileServiceImpl implements FileService {
         }
     }
 
+    // SneakyThrows is a cheat to avoid try-catch blocks for checked exceptions.
     @SneakyThrows
     private void removeFileFromMinio(String minioObjectName) {
         fileDataIntegrity.validateMinioObjectName(minioObjectName);
         minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucket).object(minioObjectName).build());
     }
 
+    // SneakyThrows is a cheat to avoid try-catch blocks for checked exceptions.
     @SneakyThrows
     private void uploadFile(MultipartFile file, String generatedFileName) {
         fileDataIntegrity.validateMultipartFile(file);

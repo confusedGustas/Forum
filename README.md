@@ -54,9 +54,10 @@ MINIO_PASSWORD=adminadmin
 MINIO_BUCKET=forum-bucket
 MINIO_SERVER_URL=http://localhost:9000
 
-GOOGLE_APPLICATION_CREDENTIALS: src/main/resources/google.json
+GOOGLE_APPLICATION_CREDENTIALS=src/main/resources/google.json
+GOOGLE_CLOUD_PROJECT_ID=forum-478311
 ```
-Make sure you paste in your Google Vision AI API key in the specified path.
+Make sure you paste in your Google Vision AI API key in the specified path and set the correct project ID.
 
 ---
 
