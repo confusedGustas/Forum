@@ -7,7 +7,6 @@ import org.site.forum.domain.rating.entity.Rating;
 import org.site.forum.domain.rating.integrity.RatingDataIntegrity;
 import org.site.forum.domain.rating.mapper.RatingMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
-import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.topic.entity.Topic;
 import org.site.forum.domain.topic.mapper.TopicMapper;
 import org.site.forum.domain.user.entity.User;

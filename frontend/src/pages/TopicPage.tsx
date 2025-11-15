@@ -287,7 +287,7 @@ const TopicPage = () => {
                   {topic.files.map((file, index) => {
                     const fileName = file.minioObjectName.split('/').pop() || '';
                     const fileExtension = fileName.split('.').pop() || '';
-                    const fileUrl = `http://localhost:9000/forum-bucket/${fileName}`;
+                    const fileUrl = `http://localhost:9000/forum/${fileName}`;
                     
                     return (
                       <Box
