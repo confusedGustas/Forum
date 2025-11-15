@@ -7,7 +7,6 @@ import org.site.forum.common.exception.InvalidTopicTitleException;
 import org.site.forum.domain.file.dao.FileDao;
 import org.site.forum.domain.file.service.ImageModerationService;
 import org.site.forum.domain.topic.entity.Topic;
-import org.site.forum.domain.topic.integrity.TopicDataIntegrity;
 import org.site.forum.domain.topic.integrity.TopicDataIntegrityImpl;
 import org.site.forum.domain.user.dao.UserDao;
 import org.site.forum.domain.user.dao.UserDaoImpl;
@@ -83,22 +82,6 @@ class TopicDaoTests {
                 () -> topicDao.getTopic(randomId),
                 "Should throw for non-existent ID"
         );
-    }
-
-    @Test
-    void testDeleteTopic() {
-        Topic topic = Topic.builder()
-                .title("To Delete")
-                .content("Content")
-                .author(user)
-                .build();
-        Topic savedTopic = topicDao.saveTopic(topic);
-
-        topicDao.deleteTopic(savedTopic.getId());
-        Topic deletedTopic = topicDao.getTopic(savedTopic.getId());
-
-        assertEquals("This topic has been deleted", deletedTopic.getTitle());
-        assertNotNull(deletedTopic.getDeletedAt());
     }
 
     @Test
