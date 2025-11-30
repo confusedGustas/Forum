@@ -120,14 +120,15 @@ class TopicServiceTests {
 
     @Test
     void shouldThrow_whenDeleteTopic_userIsNotOwnerAndNotAdmin() {
+        UUID topicId = UUID.fromString(UUID_CONSTANT);
         User authenticatedUser = User.builder().id(UUID.randomUUID()).build();
-        when(topicDao.getTopic(UUID.fromString(UUID_CONSTANT))).thenReturn(topic);
+        when(topicDao.getTopic(topicId)).thenReturn(topic);
         when(authenticationService.getAuthenticatedUser()).thenReturn(authenticatedUser);
         when(authenticationService.isAdmin()).thenReturn(false);
 
         UnauthorizedAccessException exception = assertThrows(
                 UnauthorizedAccessException.class,
-                () -> topicService.deleteTopic(UUID.fromString(UUID_CONSTANT))
+                () -> topicService.deleteTopic(topicId)
         );
 
         assertEquals("You are not authorized to delete this topic", exception.getMessage());
@@ -135,14 +136,19 @@ class TopicServiceTests {
     }
 
     @Test
-    void testDeleteTopicIfTopicNotFound(){
-        when(topicDao.getTopic(UUID.fromString(UUID_CONSTANT))).thenReturn(null);
+    void shouldThrow_whenDeleteTopicNotFound() {
+        UUID topicId = UUID.fromString(UUID_CONSTANT);
+        when(topicDao.getTopic(topicId)).thenReturn(null);
 
-        Exception exception = assertThrows(InvalidTopicIdException.class, () -> topicService.deleteTopic(UUID.fromString(UUID_CONSTANT)));
+        InvalidTopicIdException exception = assertThrows(
+                InvalidTopicIdException.class,
+                () -> topicService.deleteTopic(topicId)
+        );
+
         assertEquals("Topic not found", exception.getMessage());
 
-        verify(topicDao).getTopic(UUID.fromString(UUID_CONSTANT));
-        verify(topicDao, never()).deleteTopic(UUID.fromString(UUID_CONSTANT));
+        verify(topicDao).getTopic(topicId);
+        verify(topicDao, never()).deleteTopic(topicId);
     }
 
     @Test
@@ -221,14 +227,20 @@ class TopicServiceTests {
     }
 
     @Test
-    void testUpdateTopicWithInvalidId() {
+    void shouldThrow_whenUpdateTopicWithInvalidId() {
         UUID invalidId = UUID.randomUUID();
         when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
         when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(topic);
-        when(topicDao.updateTopic(invalidId, topic)).thenThrow(new InvalidTopicIdException("Not found"));
+        when(topicDao.updateTopic(invalidId, topic))
+                .thenThrow(new InvalidTopicIdException("Not found"));
 
-        assertThrows(InvalidTopicIdException.class, () ->
-                topicService.updateTopic(invalidId, topicRequestDto, Collections.emptyList()));
+        InvalidTopicIdException exception = assertThrows(
+                InvalidTopicIdException.class,
+                () -> topicService.updateTopic(invalidId, topicRequestDto, Collections.emptyList())
+        );
+
+        assertEquals("Not found", exception.getMessage());
     }
+
 
 }

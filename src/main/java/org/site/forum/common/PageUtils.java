@@ -1,10 +1,13 @@
 package org.site.forum.common;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.site.forum.common.constant.PageConstant;
 import org.site.forum.common.exception.InvalidPageException;
 import org.site.forum.common.exception.InvalidPageSizeException;
 import org.springframework.data.domain.PageRequest;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PageUtils {
 
     public static PageRequest createValidPageRequest(Integer page, Integer pageSize) {

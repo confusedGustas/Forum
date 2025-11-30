@@ -1,5 +1,8 @@
 package org.site.forum.config.auth;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,6 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RoleUtils {
 
     public static final String ROLES = "roles";
