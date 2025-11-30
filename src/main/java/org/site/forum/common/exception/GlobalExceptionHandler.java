@@ -13,6 +13,7 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    public static final String ERROR_KEY = "error";
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -29,7 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidSortFieldException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidSortFieldException(InvalidSortFieldException ex) {
         Map<String, Object> response = new HashMap<>();
-        response.put("error", "Invalid sort field: " + ex.getInvalidField());
+        response.put(ERROR_KEY, "Invalid sort field: " + ex.getInvalidField());
         response.put("message", "Please use one of the allowed sort fields");
         response.put("allowedFields", ex.getAllowedFields());
 
@@ -41,7 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidSortDirectionException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidSortDirectionException(InvalidSortDirectionException ex) {
         Map<String, Object> response = new HashMap<>();
-        response.put("error", "Invalid sort direction: " + ex.getInvalidDirection());
+        response.put(ERROR_KEY, "Invalid sort direction: " + ex.getInvalidDirection());
         response.put("message", "Please use one of the allowed sort directions");
         response.put("allowedDirections", ex.getAllowedDirections());
 
@@ -56,7 +57,7 @@ public class GlobalExceptionHandler {
             Map<String, Object> details) {
 
         Map<String, Object> response = new HashMap<>();
-        response.put("error", message);
+        response.put(ERROR_KEY, message);
         response.putAll(details);
 
         return ResponseEntity.status(status)
@@ -72,7 +73,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPageSizeException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidPageSizeException(InvalidPageSizeException ex) {
         Map<String, Object> response = new HashMap<>();
-        response.put("error", ex.getMessage());
+        response.put(ERROR_KEY, ex.getMessage());
         response.put("maxPageSize", ex.getMaxPageSize());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -182,7 +183,7 @@ public class GlobalExceptionHandler {
 
     private ResponseEntity<Map<String, String>> buildErrorResponse(HttpStatus status, String message) {
         Map<String, String> response = new HashMap<>();
-        response.put("error", message);
+        response.put(ERROR_KEY, message);
         return ResponseEntity.status(status)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
