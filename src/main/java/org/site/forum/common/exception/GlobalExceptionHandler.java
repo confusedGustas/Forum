@@ -51,20 +51,6 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    private ResponseEntity<Map<String, Object>> buildErrorResponseWithDetails(
-            HttpStatus status,
-            String message,
-            Map<String, Object> details) {
-
-        Map<String, Object> response = new HashMap<>();
-        response.put(ERROR_KEY, message);
-        response.putAll(details);
-
-        return ResponseEntity.status(status)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
-
     @ExceptionHandler(InvalidPageException.class)
     public ResponseEntity<Map<String, String>> handleInvalidPageException(InvalidPageException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
