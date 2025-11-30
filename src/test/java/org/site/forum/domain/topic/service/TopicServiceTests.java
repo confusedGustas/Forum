@@ -231,8 +231,7 @@ class TopicServiceTests {
         UUID invalidId = UUID.randomUUID();
         when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
         when(topicMapper.toEntity(topicRequestDto, user)).thenReturn(topic);
-        when(topicDao.updateTopic(invalidId, topic))
-                .thenThrow(new InvalidTopicIdException("Not found"));
+        when(topicDao.updateTopic(invalidId, topic)).thenThrow(new InvalidTopicIdException("Not found"));
 
         InvalidTopicIdException exception = assertThrows(
                 InvalidTopicIdException.class,
@@ -241,6 +240,5 @@ class TopicServiceTests {
 
         assertEquals("Not found", exception.getMessage());
     }
-
 
 }
