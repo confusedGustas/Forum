@@ -119,4 +119,97 @@ class RatingServiceTest {
         doThrow(new UserNotFoundException("User must not be null")).when(ratingDataIntegrity).validateUserExists(null);
         assertThrows(UserNotFoundException.class, () -> ratingService.rateTopic(topicId, 1));
     }
+
+    @Test
+    void rateTopic_invalidRating_throwsIllegalArgumentException() {
+        doThrow(new IllegalArgumentException("Rating must be one of: -1, 0, 1"))
+                .when(ratingDataIntegrity).validateRatingValue(5);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> ratingService.rateTopic(topicId, 5));
+    }
+
+    @Test
+    void rateTopic_topicIsFetchedTwice_andReturnsUpdatedTopic() {
+        Topic initial = Topic.builder().id(topicId).rating(0).build();
+        Topic updated = Topic.builder().id(topicId).rating(1).build();
+
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(ratingDao.findByPostIdAndUserId(topicId, user.getId())).thenReturn(Optional.empty());
+        when(topicDao.getTopic(topicId))
+                .thenReturn(initial)
+                .thenReturn(updated);
+
+        Rating newRating = Rating.builder().ratingValue(1).topic(initial).user(user).build();
+        when(ratingMapper.toEntity(initial, user, 1)).thenReturn(newRating);
+
+        Topic result = ratingService.rateTopic(topicId, 1);
+
+        assertEquals(1, result.getRating());
+    }
+
+    @Test
+    void rateTopic_updatesTopicDaoSaveTopicCalledForUpdate() {
+        Topic topic = Topic.builder().id(topicId).rating(2).build();
+        Rating existing = Rating.builder().ratingValue(2).topic(topic).user(user).build();
+
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(topicDao.getTopic(topicId)).thenReturn(topic);
+        when(ratingDao.findByPostIdAndUserId(topicId, user.getId()))
+                .thenReturn(Optional.of(existing));
+
+        ratingService.rateTopic(topicId, -1);
+
+        verify(topicDao).saveTopic(topic);
+    }
+
+    @Test
+    void rateTopic_changeFromNegativeToPositive_updatesDifferenceCorrectly() {
+        Topic topic = Topic.builder().id(topicId).rating(-1).build();
+        Rating existing = Rating.builder().ratingValue(-1).topic(topic).user(user).build();
+
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(topicDao.getTopic(topicId)).thenReturn(topic);
+        when(ratingDao.findByPostIdAndUserId(topicId, user.getId()))
+                .thenReturn(Optional.of(existing));
+
+        ratingService.rateTopic(topicId, 1);
+
+        verify(ratingDao).save(existing);
+        assertEquals(1, existing.getRatingValue());
+        assertEquals(1, topic.getRating());
+    }
+
+    @Test
+    void rateTopic_validateRatingValue_isAlwaysCalled() {
+        Topic topic = Topic.builder().id(topicId).rating(0).build();
+
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(topicDao.getTopic(topicId)).thenReturn(topic);
+        when(ratingDao.findByPostIdAndUserId(topicId, user.getId()))
+                .thenReturn(Optional.empty());
+
+        Rating newRating = Rating.builder().ratingValue(1).topic(topic).user(user).build();
+        when(ratingMapper.toEntity(topic, user, 1)).thenReturn(newRating);
+
+        ratingService.rateTopic(topicId, 1);
+
+        verify(ratingDataIntegrity).validateRatingValue(1);
+    }
+
+    @Test
+    void rateTopic_updateRatingValue_isAppliedBeforeSave() {
+        Topic topic = Topic.builder().id(topicId).rating(3).build();
+        Rating existing = Rating.builder().ratingValue(3).topic(topic).user(user).build();
+
+        when(authenticationService.getAuthenticatedUser()).thenReturn(user);
+        when(topicDao.getTopic(topicId)).thenReturn(topic);
+        when(ratingDao.findByPostIdAndUserId(topicId, user.getId()))
+                .thenReturn(Optional.of(existing));
+
+        ratingService.rateTopic(topicId, 1);
+
+        assertEquals(1, existing.getRatingValue());
+    }
+
 }

@@ -27,15 +27,15 @@ import org.site.forum.domain.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -293,6 +293,47 @@ public class UserServiceTest {
 
         verify(topicDao).getAllTopicsByUserId(nonExistentUserId, pageable);
         verify(topicMapper, never()).toDto(any(), any());
+    }
+
+    @Test
+    void getUserTopics_MapsTopicWithFiles() {
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        UUID topicId = UUID.randomUUID();
+        topic.setId(topicId);
+
+        when(topicDao.getAllTopicsByUserId(userId, pageable))
+                .thenReturn(new PageImpl<>(List.of(topic)));
+
+        when(fileDao.findFilesByTopicId(topicId)).thenReturn(List.of());
+        when(topicMapper.toDto(topic, List.of())).thenReturn(topicResponseDto);
+
+        Page<TopicResponseDto> result = userService.getUserTopics(userId, pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        verify(fileDao).findFilesByTopicId(topicId);
+        verify(topicMapper).toDto(topic, List.of());
+    }
+
+    @Test
+    void getAuthenticatedUserTopics_MapsTopicWithFiles() {
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        UUID topicId = UUID.randomUUID();
+        topic.setId(topicId);
+
+        when(authenticationService.getAuthenticatedAndPersistedUser()).thenReturn(user);
+        when(topicDao.getAllTopicsByUserId(userId, pageable))
+                .thenReturn(new PageImpl<>(List.of(topic)));
+
+        when(fileDao.findFilesByTopicId(topicId)).thenReturn(List.of());
+        when(topicMapper.toDto(topic, List.of())).thenReturn(topicResponseDto);
+
+        Page<TopicResponseDto> result = userService.getAuthenticatedUserTopics(pageable);
+
+        assertNotNull(result);
+        verify(fileDao).findFilesByTopicId(topicId);
     }
 
 }
