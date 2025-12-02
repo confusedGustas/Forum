@@ -8,9 +8,9 @@ import org.site.forum.domain.rating.integrity.RatingDataIntegrity;
 import org.site.forum.domain.rating.mapper.RatingMapper;
 import org.site.forum.domain.topic.dao.TopicDao;
 import org.site.forum.domain.topic.entity.Topic;
-import org.site.forum.domain.topic.mapper.TopicMapper;
 import org.site.forum.domain.user.entity.User;
 import org.springframework.stereotype.Service;
+
 import java.util.UUID;
 
 @Service
@@ -25,54 +25,63 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public Topic rateTopic(UUID topicId, Integer ratingValue) {
-        ratingDataIntegrity.validateRatingValue(ratingValue);
+        validateRequest(ratingValue);
 
         User user = authenticationService.getAuthenticatedUser();
-        ratingDataIntegrity.validateUserExists(user);
-
         Topic topic = topicDao.getTopic(topicId);
 
-        Rating rating = ratingDao.findByPostIdAndUserId(topicId, user.getId()).orElse(null);
+        Rating existing = ratingDao.findByPostIdAndUserId(topicId, user.getId()).orElse(null);
 
-        if (rating != null) {
-            handleExistingRating(rating, ratingValue);
-        } else if (ratingValue != 0) {
-            createNewRating(topic, user, ratingValue);
-        }
+        processRating(topic, user, existing, ratingValue);
 
         return topicDao.getTopic(topicId);
     }
 
-    private void handleExistingRating(Rating rating, Integer newValue) {
-        if (rating.getRatingValue() == newValue || newValue == 0) {
-            removeRating(rating);
-        } else {
-            updateRating(rating, newValue);
+    private void validateRequest(int ratingValue) {
+        ratingDataIntegrity.validateRatingValue(ratingValue);
+        ratingDataIntegrity.validateUserExists(authenticationService.getAuthenticatedUser());
+    }
+
+    private void processRating(Topic topic, User user, Rating existing, int newValue) {
+        if (existing == null) {
+            createIfNonZero(topic, user, newValue);
+            return;
         }
+
+        if (shouldRemove(existing, newValue)) {
+            remove(existing);
+            return;
+        }
+
+        update(existing, newValue);
     }
 
-    private void createNewRating(Topic topic, User user, Integer value) {
-        Rating newRating = ratingMapper.toEntity(topic, user, value);
-        ratingDao.save(newRating);
-        adjustTopicRating(topic, value);
+    private boolean shouldRemove(Rating rating, int newValue) {
+        return newValue == 0 || rating.getRatingValue() == newValue;
     }
 
-    private void updateRating(Rating rating, Integer newValue) {
+    private void createIfNonZero(Topic topic, User user, int newValue) {
+        if (newValue == 0) return;
+        Rating rating = ratingMapper.toEntity(topic, user, newValue);
+        ratingDao.save(rating);
+        adjust(topic, newValue);
+    }
+
+    private void update(Rating rating, int newValue) {
         int difference = newValue - rating.getRatingValue();
         rating.setRatingValue(newValue);
         ratingDao.save(rating);
-        adjustTopicRating(rating.getTopic(), difference);
+        adjust(rating.getTopic(), difference);
     }
 
-    private void removeRating(Rating rating) {
-        int currentValue = rating.getRatingValue();
+    private void remove(Rating rating) {
+        int old = rating.getRatingValue();
         ratingDao.delete(rating);
-        adjustTopicRating(rating.getTopic(), -currentValue);
+        adjust(rating.getTopic(), -old);
     }
 
-    private void adjustTopicRating(Topic topic, int change) {
+    private void adjust(Topic topic, int change) {
         topic.setRating(topic.getRating() + change);
         topicDao.saveTopic(topic);
     }
-
 }

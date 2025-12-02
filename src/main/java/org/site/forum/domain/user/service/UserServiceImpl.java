@@ -19,6 +19,7 @@ import org.site.forum.domain.user.mapper.UserMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
 import java.util.UUID;
 
 import static org.site.forum.domain.user.integrity.UserDataIntegrityImpl.USER_CANNOT_BE_NULL;
@@ -47,41 +48,43 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<ParentCommentResponseDto> getAuthenticatedUserComments(PageRequest pageRequest) {
         var user = authenticationService.getAuthenticatedUser();
-
-        var comments = commentDao.getAllCommentsByUserId(user.getId(), pageRequest);
-
-        return comments.map(commentMapper::toParentCommentDto);
+        return mapComments(user.getId(), pageRequest);
     }
 
     @Override
     public Page<TopicResponseDto> getAuthenticatedUserTopics(PageRequest pageRequest) {
         var user = authenticationService.getAuthenticatedAndPersistedUser();
-
         userDataIntegrity.validateUser(user);
-
-        var topics = topicDao.getAllTopicsByUserId(user.getId(), pageRequest);
-
-        return topics.map(topic -> topicMapper.toDto(topic, fileDao.findFilesByTopicId(topic.getId())));
+        return mapTopics(user.getId(), pageRequest);
     }
 
     @Override
     public UserResponseDto getUserById(UUID userId) {
-        var user = userDao.getUserById(userId)
-                .orElseThrow(() -> new InvalidUserException(USER_CANNOT_BE_NULL));
-
+        var user = userDao.getUserById(userId).orElseThrow(() -> new InvalidUserException(USER_CANNOT_BE_NULL));
         return userMapper.toUserResponseDto(user);
     }
 
     @Override
     public Page<ParentCommentResponseDto> getUserComments(UUID userId, PageRequest pageRequest) {
-        return commentDao.getAllCommentsByUserId(userId, pageRequest)
-                .map(commentMapper::toParentCommentDto);
+        return mapComments(userId, pageRequest);
     }
 
     @Override
     public Page<TopicResponseDto> getUserTopics(UUID userId, PageRequest pageRequest) {
-        return topicDao.getAllTopicsByUserId(userId, pageRequest)
-                .map(topic -> topicMapper.toDto(topic, fileDao.findFilesByTopicId(topic.getId())));
+        return mapTopics(userId, pageRequest);
     }
 
+    private Page<ParentCommentResponseDto> mapComments(UUID userId, PageRequest pageRequest) {
+        return commentDao.getAllCommentsByUserId(userId, pageRequest)
+                .map(commentMapper::toParentCommentDto);
+    }
+
+    private Page<TopicResponseDto> mapTopics(UUID userId, PageRequest pageRequest) {
+        return topicDao.getAllTopicsByUserId(userId, pageRequest)
+                .map(this::toTopicDto);
+    }
+
+    private TopicResponseDto toTopicDto(org.site.forum.domain.topic.entity.Topic topic) {
+        return topicMapper.toDto(topic, fileDao.findFilesByTopicId(topic.getId()));
+    }
 }
