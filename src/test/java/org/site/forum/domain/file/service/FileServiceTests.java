@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class FileServiceTests {
+class FileServiceTests {
 
     @Mock private MinioClient minioClient;
     @Mock private AuthenticationService authenticationService;

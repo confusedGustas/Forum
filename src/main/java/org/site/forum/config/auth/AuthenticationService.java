@@ -33,6 +33,10 @@ public class AuthenticationService {
         return user;
     }
 
+    public boolean isAdmin() {
+        return RoleUtils.isAdmin();
+    }
+
     private void checkUser(User user) {
         if (user == null) {
             throw new UserNotFoundException(USER_NOT_FOUND);

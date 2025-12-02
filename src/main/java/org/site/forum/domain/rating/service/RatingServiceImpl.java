@@ -22,20 +22,22 @@ public class RatingServiceImpl implements RatingService {
     private final TopicDao topicDao;
     private final RatingMapper ratingMapper;
     private final RatingDataIntegrity ratingDataIntegrity;
-    private final TopicMapper topicMapper;
 
     @Override
     public Topic rateTopic(UUID topicId, Integer ratingValue) {
         ratingDataIntegrity.validateRatingValue(ratingValue);
+
         User user = authenticationService.getAuthenticatedUser();
         ratingDataIntegrity.validateUserExists(user);
+
+        Topic topic = topicDao.getTopic(topicId);
 
         Rating rating = ratingDao.findByPostIdAndUserId(topicId, user.getId()).orElse(null);
 
         if (rating != null) {
             handleExistingRating(rating, ratingValue);
         } else if (ratingValue != 0) {
-            createNewRating(topicId, user, ratingValue);
+            createNewRating(topic, user, ratingValue);
         }
 
         return topicDao.getTopic(topicId);
@@ -49,27 +51,26 @@ public class RatingServiceImpl implements RatingService {
         }
     }
 
-    private void createNewRating(UUID topicId, User user, Integer value) {
-        Rating newRating = ratingMapper.toEntity(topicDao.getTopic(topicId), user, value);
+    private void createNewRating(Topic topic, User user, Integer value) {
+        Rating newRating = ratingMapper.toEntity(topic, user, value);
         ratingDao.save(newRating);
-        adjustTopicRating(topicId, value);
+        adjustTopicRating(topic, value);
     }
 
     private void updateRating(Rating rating, Integer newValue) {
         int difference = newValue - rating.getRatingValue();
         rating.setRatingValue(newValue);
         ratingDao.save(rating);
-        adjustTopicRating(rating.getTopic().getId(), difference);
+        adjustTopicRating(rating.getTopic(), difference);
     }
 
     private void removeRating(Rating rating) {
         int currentValue = rating.getRatingValue();
         ratingDao.delete(rating);
-        adjustTopicRating(rating.getTopic().getId(), -currentValue);
+        adjustTopicRating(rating.getTopic(), -currentValue);
     }
 
-    private void adjustTopicRating(UUID topicId, int change) {
-        Topic topic = topicDao.getTopic(topicId);
+    private void adjustTopicRating(Topic topic, int change) {
         topic.setRating(topic.getRating() + change);
         topicDao.saveTopic(topic);
     }
