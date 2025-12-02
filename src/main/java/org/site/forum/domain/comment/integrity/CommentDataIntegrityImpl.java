@@ -1,14 +1,10 @@
 package org.site.forum.domain.comment.integrity;
 
-import org.site.forum.common.constant.PageConstant;
 import org.site.forum.common.exception.InvalidCommentException;
 import org.site.forum.common.exception.InvalidCommentIdException;
 import org.site.forum.common.exception.InvalidCommentRequestException;
-import org.site.forum.common.exception.InvalidPageException;
-import org.site.forum.common.exception.InvalidPageSizeException;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
 import org.site.forum.domain.comment.entity.Comment;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import java.util.UUID;
@@ -59,31 +55,6 @@ public class CommentDataIntegrityImpl implements CommentDataIntegrity {
         if(commentRequestDto.getText().length() <= MIN_COMMENT_TEXT_SIZE){
             throw new InvalidCommentRequestException("Comment text must be at least " + MIN_COMMENT_TEXT_SIZE + " characters long");
         }
-    }
-
-    @Override
-    public int validatePage(Integer page) {
-        int normalizedPage = (page == null) ? PageConstant.DEFAULT_PAGE : page;
-        if (normalizedPage < 0) {
-            throw new InvalidPageException(PageConstant.ERROR_INVALID_PAGE);
-        }
-        return normalizedPage;
-    }
-
-    @Override
-    public int validatePageSize(Integer pageSize) {
-        int normalizedPageSize = (pageSize == null) ? PageConstant.DEFAULT_PAGE_SIZE : pageSize;
-        if (normalizedPageSize <= 0 || normalizedPageSize > PageConstant.MAX_PAGE_SIZE) {
-            throw new InvalidPageSizeException(PageConstant.ERROR_INVALID_PAGE_SIZE, PageConstant.MAX_PAGE_SIZE);
-        }
-        return normalizedPageSize;
-    }
-
-    @Override
-    public PageRequest createValidPageRequest(Integer page, Integer pageSize) {
-        int validatedPage = validatePage(page);
-        int validatedPageSize = validatePageSize(pageSize);
-        return PageRequest.of(validatedPage, validatedPageSize);
     }
 
 }

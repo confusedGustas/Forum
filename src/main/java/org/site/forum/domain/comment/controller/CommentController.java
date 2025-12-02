@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.site.forum.common.PageUtils;
 import org.site.forum.domain.comment.dto.request.CommentRequestDto;
 import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.comment.dto.response.ReplyResponseDto;
@@ -87,7 +88,7 @@ public class CommentController {
             @RequestParam(required = false) Integer pageSize) {
 
         topicDataIntegrity.validateTopicId(topicId);
-        PageRequest pageRequest = commentDataIntegrity.createValidPageRequest(page, pageSize);
+        PageRequest pageRequest = PageUtils.createValidPageRequest(page, pageSize);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(commentService.getAllParentCommentsByTopic(topicId, pageRequest));
     }
@@ -106,7 +107,7 @@ public class CommentController {
             @RequestParam(required = false) Integer pageSize) {
 
         commentDataIntegrity.validateCommentId(commentId);
-        PageRequest pageRequest = commentDataIntegrity.createValidPageRequest(page, pageSize);
+        PageRequest pageRequest = PageUtils.createValidPageRequest(page, pageSize);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(commentService.getAllRepliesByParent(commentId, pageRequest));
     }

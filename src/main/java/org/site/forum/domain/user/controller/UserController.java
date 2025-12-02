@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.site.forum.common.PageUtils;
 import org.site.forum.domain.comment.dto.response.ParentCommentResponseDto;
 import org.site.forum.domain.topic.dto.response.TopicResponseDto;
 import org.site.forum.domain.user.dto.UserResponseDto;
@@ -39,7 +40,7 @@ public class UserController {
             @Parameter(description = "Number of items per page")
             @RequestParam(required = false) Integer pageSize) {
 
-        PageRequest pageRequest = userDataIntegrity.createValidPageRequest(page, pageSize);
+        PageRequest pageRequest = PageUtils.createValidPageRequest(page, pageSize);
         return ResponseEntity.ok(userService.getAuthenticatedUserComments(pageRequest));
     }
 
@@ -54,7 +55,7 @@ public class UserController {
             @Parameter(description = "Number of items per page")
             @RequestParam(required = false) Integer pageSize) {
 
-        PageRequest pageRequest = userDataIntegrity.createValidPageRequest(page, pageSize);
+        PageRequest pageRequest = PageUtils.createValidPageRequest(page, pageSize);
         return ResponseEntity.ok(userService.getAuthenticatedUserTopics(pageRequest));
     }
 
@@ -85,7 +86,7 @@ public class UserController {
             @RequestParam(required = false) Integer pageSize) {
 
         userDataIntegrity.validateUserId(id);
-        PageRequest pageRequest = userDataIntegrity.createValidPageRequest(page, pageSize);
+        PageRequest pageRequest = PageUtils.createValidPageRequest(page, pageSize);
         return ResponseEntity.ok(userService.getUserComments(id, pageRequest));
     }
 
@@ -103,7 +104,7 @@ public class UserController {
             @RequestParam(required = false) Integer pageSize) {
 
         userDataIntegrity.validateUserId(id);
-        PageRequest pageRequest = userDataIntegrity.createValidPageRequest(page, pageSize);
+        PageRequest pageRequest = PageUtils.createValidPageRequest(page, pageSize);
         return ResponseEntity.ok(userService.getUserTopics(id, pageRequest));
     }
 
