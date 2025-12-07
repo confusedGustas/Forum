@@ -1,10 +1,8 @@
 package org.site.forum.domain.user.integrity;
 
 import lombok.RequiredArgsConstructor;
-import org.site.forum.common.constant.PageConstant;
 import org.site.forum.common.exception.*;
 import org.site.forum.domain.user.entity.User;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import java.util.UUID;
 
@@ -34,31 +32,6 @@ public class UserDataIntegrityImpl implements UserDataIntegrity {
         if (user == null) {
             throw new InvalidUserException(USER_CANNOT_BE_NULL);
         }
-    }
-
-    @Override
-    public int validatePage(Integer page) {
-        int normalizedPage = (page == null) ? PageConstant.DEFAULT_PAGE : page;
-        if (normalizedPage < 0) {
-            throw new InvalidPageException(PageConstant.ERROR_INVALID_PAGE);
-        }
-        return normalizedPage;
-    }
-
-    @Override
-    public int validatePageSize(Integer pageSize) {
-        int normalizedPageSize = (pageSize == null) ? PageConstant.DEFAULT_PAGE_SIZE : pageSize;
-        if (normalizedPageSize <= 0 || normalizedPageSize > PageConstant.MAX_PAGE_SIZE) {
-            throw new InvalidPageSizeException(PageConstant.ERROR_INVALID_PAGE_SIZE, PageConstant.MAX_PAGE_SIZE);
-        }
-        return normalizedPageSize;
-    }
-
-    @Override
-    public PageRequest createValidPageRequest(Integer page, Integer pageSize) {
-        int validatedPage = validatePage(page);
-        int validatedPageSize = validatePageSize(pageSize);
-        return PageRequest.of(validatedPage, validatedPageSize);
     }
 
 }
