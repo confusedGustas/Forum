@@ -29,6 +29,8 @@ class SearchControllerTest {
     @Mock
     private SearchDataIntegrity searchDataIntegrity;
 
+    private final String dummyCommunityId = "00000000-0000-0000-0000-000000000000";
+
     @BeforeEach
     void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(searchController)
@@ -38,17 +40,16 @@ class SearchControllerTest {
 
     @Test
     void testGetTopicsEmpty_Success() throws Exception {
-        mockMvc.perform(get("/search/topics"))
+        mockMvc.perform(get("/search/topics/" + dummyCommunityId))
                 .andExpect(status().isOk());
     }
 
     @Test
     void testGetTopicsFull_Success() throws Exception {
-        mockMvc.perform(get("/search/topics")
+        mockMvc.perform(get("/search/topics/" + dummyCommunityId)
                         .param("limit", "10")
                         .param("offset", "0")
                         .param("search", "topic"))
                 .andExpect(status().isOk());
     }
-
 }
