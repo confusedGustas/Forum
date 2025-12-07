@@ -7,6 +7,7 @@ import org.site.forum.domain.community.service.CommunityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,8 +19,8 @@ public class CommunityController {
 
     private final CommunityService communityService;
 
-    @PostMapping
-    public ResponseEntity<CommunityDto> createCommunity(@RequestBody CommunityRequestDto dto) {
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<CommunityDto> createCommunity(@RequestPart("data") CommunityRequestDto dto) {
         CommunityDto created = communityService.createCommunity(dto);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
@@ -36,7 +37,7 @@ public class CommunityController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CommunityDto> updateCommunity(@PathVariable UUID id,
-                                                        @RequestBody CommunityRequestDto dto) {
+                                                         @RequestBody CommunityRequestDto dto) {
         return ResponseEntity.ok(communityService.updateCommunity(id, dto));
     }
 
@@ -45,5 +46,4 @@ public class CommunityController {
         communityService.deleteCommunity(id);
         return ResponseEntity.noContent().build();
     }
-
 }

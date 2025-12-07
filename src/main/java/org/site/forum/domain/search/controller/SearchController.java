@@ -9,10 +9,9 @@ import org.site.forum.domain.search.entity.TopicSearchCriteria;
 import org.site.forum.domain.search.service.SearchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Tag(name = "Search Controller", description = "Operations related to searching forum topics")
 @RestController
@@ -23,12 +22,14 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @GetMapping("/topics")
+    @GetMapping("/topics/{communityId}")
     @Operation(
             summary = "Search for forum topics",
             description = "Search for forum topics based on the provided criteria, including optional filters like limit, offset, search term, sorting, etc."
     )
     public ResponseEntity<PaginatedResponseDto> getTopics(
+            @PathVariable String communityId,
+
             @Parameter(description = "Maximum number of results to return")
             @RequestParam(required = false) Integer limit,
 
@@ -43,8 +44,12 @@ public class SearchController {
 
             @Parameter(description = "Sorting order (asc/desc)")
             @RequestParam(required = false) String sortOrder) {
-
-        return ResponseEntity.ok(searchService.searchTopics(new TopicSearchCriteria(search, offset, limit, sortBy, sortOrder)));
+        try {
+            UUID communityUUID = UUID.fromString(communityId);
+            return ResponseEntity.ok(searchService.searchTopics(communityUUID, new TopicSearchCriteria(search, offset, limit, sortBy, sortOrder)));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
 }

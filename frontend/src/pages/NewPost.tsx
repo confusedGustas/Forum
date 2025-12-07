@@ -19,7 +19,7 @@ import {
     Send as SendIcon,
     ArrowBack as ArrowBackIcon
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import apiProxy from "../lib/apiProxy";
 import { KeycloakContext } from "../context/KeycloakContext";
 
@@ -42,6 +42,7 @@ const NewPost = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
     const { authenticated, login } = useContext(KeycloakContext);
+    const { communityId } = useParams<{ communityId: string }>();
 
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
@@ -78,7 +79,8 @@ const NewPost = () => {
             const formData = new FormData();
             formData.append('title', title.trim());
             formData.append('content', content.trim());
-            
+            formData.append('communityId', communityId);
+
             for (let i = 0; i < files.length; i++) {
                 formData.append('files', files[i]);
             }
@@ -91,7 +93,7 @@ const NewPost = () => {
             
             setIsLoading(false);
             setTimeout(() => {
-                navigate('/home');
+                navigate(`/communities/${communityId}`);
             }, 2000);
         } catch (err: any) {
             let errorMessage = "Failed to create post. Please try again.";

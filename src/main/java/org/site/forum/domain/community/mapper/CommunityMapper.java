@@ -11,6 +11,7 @@ public class CommunityMapper {
 
     public CommunityDto mapToDto(Community community) {
         return CommunityDto.builder()
+                .id(community.getId())
                 .title(community.getTitle())
                 .description(community.getDescription())
                 .isEnabled(community.getIsEnabled())
