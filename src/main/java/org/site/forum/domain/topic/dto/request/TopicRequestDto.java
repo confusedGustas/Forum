@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Builder
@@ -28,5 +30,7 @@ public class TopicRequestDto {
     @Size(min = 10, message = "Content must have at least 10 characters")
     @Schema(description = "Content of the topic", example = "Some content")
     private String content;
+
+    private UUID communityId;
 
 }

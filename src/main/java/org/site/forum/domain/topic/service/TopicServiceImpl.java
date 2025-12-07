@@ -1,10 +1,13 @@
 package org.site.forum.domain.topic.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.site.forum.common.exception.InvalidTopicIdException;
 import org.site.forum.common.exception.UnauthorizedAccessException;
 import org.site.forum.config.auth.AuthenticationService;
+import org.site.forum.domain.community.entity.Community;
+import org.site.forum.domain.community.repository.CommunityRepository;
 import org.site.forum.domain.file.dao.FileDao;
 import org.site.forum.domain.file.service.FileService;
 import org.site.forum.domain.topic.dao.TopicDao;
@@ -32,6 +35,7 @@ public class TopicServiceImpl implements TopicService {
     private final FileService fileService;
     private final FileDao fileDao;
     private final TopicDataIntegrity topicDataIntegrity;
+    private final CommunityRepository communityRepository;
 
     @Override
     public TopicResponseDto saveTopic(TopicRequestDto topicRequestDto, List<MultipartFile> files) {
@@ -39,8 +43,12 @@ public class TopicServiceImpl implements TopicService {
         topicDataIntegrity.validateFiles(files);
 
         User user = authenticationService.getAuthenticatedAndPersistedUser();
+        Community community = communityRepository.findById(topicRequestDto.getCommunityId())
+                .orElseThrow(() -> new EntityNotFoundException("Community not found"));
 
-        Topic topic = topicDao.saveTopic(topicMapper.toEntity(topicRequestDto, user));
+        Topic topic = topicMapper.toEntity(topicRequestDto, user);
+        topic.setCommunity(community);
+        topic = topicDao.saveTopic(topic);
 
         if (files != null && !files.isEmpty()) {
             fileService.uploadFiles(files, topic);

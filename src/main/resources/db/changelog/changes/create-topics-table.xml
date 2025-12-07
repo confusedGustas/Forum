@@ -28,4 +28,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="1765116245233-1" author="ugniusspokavicius">
+        <sql>
+            ALTER TABLE topics ADD COLUMN community_id UUID;
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

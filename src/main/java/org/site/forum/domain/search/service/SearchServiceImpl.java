@@ -15,6 +15,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class SearchServiceImpl implements SearchService {
@@ -24,7 +26,7 @@ public class SearchServiceImpl implements SearchService {
     private final SearchDataIntegrity searchDataIntegrity;
 
     @Override
-    public PaginatedResponseDto searchTopics(TopicSearchCriteria criteria) {
+    public PaginatedResponseDto searchTopics(UUID communityId, TopicSearchCriteria criteria) {
         criteria = searchDataIntegrity.validateAndNormalizeSearchCriteria(criteria);
 
         Pageable pageable = createPageable(
@@ -35,10 +37,17 @@ public class SearchServiceImpl implements SearchService {
         );
 
         Specification<Topic> specification = topicSpecification.withCriteria(criteria);
+
+        if (communityId != null) {
+            specification = specification.and((root, query, cb) ->
+                    cb.equal(root.get("community").get("id"), communityId));
+        }
+
         Page<Topic> topicPage = topicRepository.findAll(specification, pageable);
 
         return paginatedResponseMapper.toDto(topicPage);
     }
+
 
     private Pageable createPageable(int offset, int limit, String sortBy, String sortOrder) {
         Sort.Direction direction = Sort.Direction.fromString(sortOrder);

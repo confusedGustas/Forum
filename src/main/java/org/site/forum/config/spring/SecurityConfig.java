@@ -27,7 +27,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/actuator/**",
                                 "/topics/*",
-                                "/search/topics/**",
+                                "/communities",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html/**").permitAll()
