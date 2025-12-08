@@ -14,6 +14,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     public static final String ERROR_KEY = "error";
+    public static final String MESSAGE_KEY = "message";
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -31,7 +32,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleInvalidSortFieldException(InvalidSortFieldException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put(ERROR_KEY, "Invalid sort field: " + ex.getInvalidField());
-        response.put("message", "Please use one of the allowed sort fields");
+        response.put(MESSAGE_KEY, "Please use one of the allowed sort fields");
         response.put("allowedFields", ex.getAllowedFields());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -43,24 +44,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleInvalidSortDirectionException(InvalidSortDirectionException ex) {
         Map<String, Object> response = new HashMap<>();
         response.put(ERROR_KEY, "Invalid sort direction: " + ex.getInvalidDirection());
-        response.put("message", "Please use one of the allowed sort directions");
+        response.put(MESSAGE_KEY, "Please use one of the allowed sort directions");
         response.put("allowedDirections", ex.getAllowedDirections());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
-    }
-
-    private ResponseEntity<Map<String, Object>> buildErrorResponseWithDetails(
-            HttpStatus status,
-            String message,
-            Map<String, Object> details) {
-
-        Map<String, Object> response = new HashMap<>();
-        response.put(ERROR_KEY, message);
-        response.putAll(details);
-
-        return ResponseEntity.status(status)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }

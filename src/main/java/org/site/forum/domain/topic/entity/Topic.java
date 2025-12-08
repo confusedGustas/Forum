@@ -12,6 +12,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Comments;
+import org.site.forum.domain.community.entity.Community;
 import org.site.forum.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -40,5 +42,9 @@ public class Topic {
     @JsonBackReference
     @ManyToOne
     private User author;
+
+    @JsonBackReference
+    @ManyToOne
+    private Community community;
 
 }

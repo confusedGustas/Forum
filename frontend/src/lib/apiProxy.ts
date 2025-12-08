@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from './config';
 import { TopicResponseDto, PaginatedResponseDto } from './topicService';
+import { CommunityResponseDto } from './communityService';
 
 const apiClient = axios.create({
   headers: {
@@ -48,6 +49,7 @@ const apiProxy = {
 
   search: {
     topics: (params: {
+      communityId?: string;
       limit?: number;
       offset?: number;
       search?: string;
@@ -67,8 +69,11 @@ const apiProxy = {
       if (params.sortOrder && ['ASC', 'DESC'].includes(params.sortOrder)) {
         cleanParams.sortOrder = params.sortOrder;
       }
-      
-      return apiClient.get<PaginatedResponseDto>(config.api.endpoints.searchTopics, { params: cleanParams });
+
+      return apiClient.get<PaginatedResponseDto>(
+          config.api.endpoints.searchTopics(params.communityId!),
+          { params: cleanParams }
+      );
     }
   },
 
@@ -122,6 +127,22 @@ const apiProxy = {
         params: params
       });
     }
+  },
+
+  communities: {
+    getAll: () => apiClient.get<CommunityResponseDto[]>(config.api.endpoints.communities),
+    getById: (id: string) => apiClient.get<CommunityResponseDto>(config.api.endpoints.community(id)),
+    create: (formData: FormData) => {
+      const token = localStorage.getItem('keycloak_token');
+      const headers: Record<string, string> = {
+        'Accept': 'application/json, text/plain, */*',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      return axios.post<CommunityResponseDto>(config.api.endpoints.communities, formData, { headers });
+    },
+    delete: (id: string) => apiClient.delete(config.api.endpoints.community(id))
   }
 };
 

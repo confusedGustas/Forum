@@ -16,7 +16,7 @@ import {
     TextField,
     Grid
 } from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
+import {useNavigate, useLocation, useParams} from "react-router-dom";
 import Topic from "../components/Topic";
 import { TopicResponseDto } from "../lib/topicService";
 import apiProxy from "../lib/apiProxy";
@@ -35,6 +35,7 @@ const Home = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { authenticated, login } = useContext(KeycloakContext);
+    const { communityId } = useParams<{ communityId: string }>();
 
     const [topics, setTopics] = useState<TopicResponseDto[]>([]);
     const [loading, setLoading] = useState(false);
@@ -55,7 +56,6 @@ const Home = () => {
         const sortOrderParam = params.get('sortOrder');
         const pageParam = params.get('page');
         const pageSizeParam = params.get('pageSize');
-        
         if (searchParam) setSearchTerms(searchParam);
         if (searchParam) setSearchInput(searchParam);
         if (sortByParam && ['title', 'rating'].includes(sortByParam)) setSortBy(sortByParam);
@@ -68,6 +68,7 @@ const Home = () => {
         setLoading(true);
         try {
             const params: {
+                communityId?: string;
                 limit: number;
                 offset: number;
                 search?: string;
@@ -77,6 +78,8 @@ const Home = () => {
                 limit: pageSize,
                 offset: (currentPage - 1),
             };
+
+            params.communityId = communityId;
             
             if (sortBy !== "createdAt") {
                 params.sortBy = sortBy;
@@ -89,7 +92,7 @@ const Home = () => {
             if (searchTerms) {
                 params.search = searchTerms;
             }
-            
+
             const response = await apiProxy.search.topics(params);
             
             const data = response.data;
@@ -123,7 +126,7 @@ const Home = () => {
             }, 1500);
             return;
         }
-        navigate("/new-post");
+        navigate(`/new-post/${communityId}`);
     };
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {

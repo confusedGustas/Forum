@@ -6,15 +6,17 @@ const config = {
             topics: '/topics',
             topic: (id: string) => `/topics/${id}`,
             rating: '/ratings',
-            searchTopics: '/search/topics',
+            searchTopics: (id: string) => `/search/topics/${id}`,
             userTopics: '/users/me/topics',
             comments: '/comments',
             topicComments: (topicId: string) => `/comments/topics/${topicId}`,
             comment: (commentId: string) => `/comments/${commentId}`,
-            commentReplies: (commentId: string) => `/comments/${commentId}/replies`
+            commentReplies: (commentId: string) => `/comments/${commentId}/replies`,
+            communities: '/communities',
+            community: (id: string) => `/communities/${id}`
         }
     },
-    
+
     auth: {
         baseUrl: 'http://localhost:8181',
     },

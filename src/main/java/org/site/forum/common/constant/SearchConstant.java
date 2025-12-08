@@ -16,7 +16,6 @@ public class SearchConstant {
     public static final Set<String> ALLOWED_SORT_FIELDS = Set.of(DEFAULT_SORT_BY, "title");
     public static final Set<String> ALLOWED_SORT_DIRECTIONS = Set.of("ASC", "DESC");
 
-
     public static final String ERROR_INVALID_OFFSET = "Offset must be greater than or equal to 0";
     public static final String ERROR_INVALID_LIMIT = "Limit must be between 1 and " + MAX_LIMIT;
 

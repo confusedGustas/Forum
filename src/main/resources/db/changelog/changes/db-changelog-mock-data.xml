@@ -1,0 +1,581 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="insert-realistic-users" author="gustas">
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"/>
+            <column name="name" value="Alice"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12"/>
+            <column name="name" value="Bob"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13"/>
+            <column name="name" value="Charlie"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14"/>
+            <column name="name" value="Diana"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15"/>
+            <column name="name" value="Eve"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a16"/>
+            <column name="name" value="Frank"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a17"/>
+            <column name="name" value="Grace"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a18"/>
+            <column name="name" value="Heidi"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a19"/>
+            <column name="name" value="Ivan"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a20"/>
+            <column name="name" value="Judy"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-communities" author="gustas">
+        <insert tableName="communities">
+            <column name="id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a21"/>
+            <column name="title" value="Science and Technology"/>
+            <column name="description" value="Discussions on scientific discoveries, technological innovations, and their impact on society."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="communities">
+            <column name="id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"/>
+            <column name="title" value="Arts and Culture"/>
+            <column name="description" value="A place to discuss literature, film, music, and visual arts."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="communities">
+            <column name="id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a23"/>
+            <column name="title" value="Health and Wellness"/>
+            <column name="description" value="Share tips and advice on physical fitness, mental health, and nutrition."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="communities">
+            <column name="id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24"/>
+            <column name="title" value="Gaming"/>
+            <column name="description" value="For everything related to video games, from retro classics to the latest releases."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="communities">
+            <column name="id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25"/>
+            <column name="title" value="Travel"/>
+            <column name="description" value="Share your travel experiences, tips, and recommendations."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-topics" author="gustas">
+        <insert tableName="topics">
+            <column name="id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a31"/>
+            <column name="title" value="The Future of Artificial Intelligence"/>
+            <column name="content" value="What are your predictions for the future of AI? Will it lead to a utopian society or a dystopian one? Let's discuss the possibilities."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="rating" value="42"/>
+            <column name="author_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"/>
+            <column name="community_id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a21"/>
+        </insert>
+        <insert tableName="topics">
+            <column name="id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a32"/>
+            <column name="title" value="Best Films of 2025"/>
+            <column name="content" value="What are some of the best films you've seen this year? I'm looking for recommendations!"/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="rating" value="28"/>
+            <column name="author_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12"/>
+            <column name="community_id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"/>
+        </insert>
+        <insert tableName="topics">
+            <column name="id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33"/>
+            <column name="title" value="Tips for a Balanced Diet"/>
+            <column name="content" value="I'm trying to eat healthier. What are your go-to tips for maintaining a balanced diet?"/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="rating" value="35"/>
+            <column name="author_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13"/>
+            <column name="community_id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a23"/>
+        </insert>
+        <insert tableName="topics">
+            <column name="id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a34"/>
+            <column name="title" value="Upcoming Game Releases in 2026"/>
+            <column name="content" value="What games are you most excited for in the coming year? Let's compile a list!"/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="rating" value="50"/>
+            <column name="author_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14"/>
+            <column name="community_id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24"/>
+        </insert>
+        <insert tableName="topics">
+            <column name="id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a35"/>
+            <column name="title" value="Hidden Gems in Southeast Asia"/>
+            <column name="content" value="I'm planning a trip to Southeast Asia next year. What are some must-see places that are off the beaten path?"/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="rating" value="60"/>
+            <column name="author_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15"/>
+            <column name="community_id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-comments" author="gustas">
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a41"/>
+            <column name="text" value="I think AI will automate a lot of tedious jobs, freeing up people to pursue more creative endeavors."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a31"/>
+        </insert>
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a42"/>
+            <column name="text" value="That's an optimistic view. I'm more concerned about the potential for job displacement and the ethical implications of advanced AI."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a31"/>
+            <column name="parent_comment_id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a41"/>
+        </insert>
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a43"/>
+            <column name="text" value="I agree, there needs to be a robust ethical framework in place to guide AI development."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a31"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44"/>
+            <column name="text" value="'Starlight' was a masterpiece. The cinematography was breathtaking."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a32"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a45"/>
+            <column name="text" value="I'm really looking forward to 'Cybernetic Horizon'. The trailers look amazing!"/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a34"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-communities-extended" author="gustas">
+        <insert tableName="communities">
+            <column name="id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a26"/>
+            <column name="title" value="Food and Cooking"/>
+            <column name="description" value="A community for food lovers. Share recipes, cooking techniques, and your favorite dishes."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="communities">
+            <column name="id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a27"/>
+            <column name="title" value="Finance and Investing"/>
+            <column name="description" value="Discuss stocks, cryptocurrencies, real estate, and personal finance strategies."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="communities">
+            <column name="id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a28"/>
+            <column name="title" value="DIY and Home Improvement"/>
+            <column name="description" value="Share your DIY projects, home renovation tips, and gardening advice."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-topics-extended" author="gustas">
+        <insert tableName="topics">
+            <column name="id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a36"/>
+            <column name="title" value="The Ethics of Gene Editing"/>
+            <column name="content" value="CRISPR technology has advanced rapidly. What are the ethical boundaries we should consider when it comes to gene editing in humans?"/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="rating" value="152"/>
+            <column name="author_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a16"/>
+            <column name="community_id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a21"/>
+        </insert>
+        <insert tableName="topics">
+            <column name="id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a37"/>
+            <column name="title" value="Classic Literature that Everyone Should Read"/>
+            <column name="content" value="What are some timeless literary works that you believe everyone should experience? I'll start: 'One Hundred Years of Solitude' by Gabriel Garcia Marquez."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="rating" value="210"/>
+            <column name="author_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a17"/>
+            <column name="community_id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"/>
+        </insert>
+        <insert tableName="topics">
+            <column name="id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a38"/>
+            <column name="title" value="The Rise of Indie Games"/>
+            <column name="content" value="Indie games have been pushing the boundaries of creativity and storytelling. What are some of your favorite indie titles and why do you think they've become so popular?"/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="rating" value="340"/>
+            <column name="author_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a18"/>
+            <column name="community_id" value="b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-comments-extended" author="gustas">
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a46"/>
+            <column name="text" value="The key is to ensure that AI is developed transparently and with human oversight. We can't afford to create black-box systems that we don't understand."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a31"/>
+        </insert>
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a47"/>
+            <column name="text" value="I'm excited about AI's potential in healthcare. It could revolutionize diagnostics and personalized medicine."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a31"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a48"/>
+            <column name="text" value="I think we should strictly limit gene editing to therapeutic purposes, like curing genetic diseases. The idea of 'designer babies' is deeply unsettling."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a36"/>
+        </insert>
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a49"/>
+            <column name="text" value="But where do we draw the line between therapy and enhancement? Is correcting a predisposition to a disease an enhancement? It's a slippery slope."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a36"/>
+            <column name="parent_comment_id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a48"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a50"/>
+            <column name="text" value="Great choice! I'd add 'To Kill a Mockingbird' by Harper Lee. It's a powerful story about justice and morality."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a37"/>
+        </insert>
+        <insert tableName="comments">
+            <column name="id" value="d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a51"/>
+            <column name="text" value="I recently read 'The Brothers Karamazov' by Dostoevsky. It's a dense read, but the philosophical and psychological depth is incredible."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a19"/>
+            <column name="topic_id" value="c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a37"/>
+        </insert>
+    </changeSet>
+    <changeSet id="insert-realistic-users-extended-2" author="gustas">
+        <insert tableName="users">
+            <column name="id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b01"/>
+            <column name="name" value="Karen"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b02"/>
+            <column name="name" value="Leo"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b03"/>
+            <column name="name" value="Mira"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b04"/>
+            <column name="name" value="Nathan"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b05"/>
+            <column name="name" value="Olivia"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b06"/>
+            <column name="name" value="Paul"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-communities-extended-2" author="gustas">
+        <insert tableName="communities">
+            <column name="id" value="b1eebc99-9c0b-4ef8-bb6d-6bb9bd380b21"/>
+            <column name="title" value="Sports and Outdoors"/>
+            <column name="description" value="Talk about hiking, team sports, endurance training, and outdoor adventures."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="communities">
+            <column name="id" value="b1eebc99-9c0b-4ef8-bb6d-6bb9bd380b22"/>
+            <column name="title" value="Parenting"/>
+            <column name="description" value="Share tips, struggles, and stories about raising kids in a fast-changing world."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+        <insert tableName="communities">
+            <column name="id" value="b1eebc99-9c0b-4ef8-bb6d-6bb9bd380b23"/>
+            <column name="title" value="Pets and Animals"/>
+            <column name="description" value="A place for pet owners to share advice, photos, and stories about their furry friends."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-topics-extended-3" author="gustas">
+        <insert tableName="topics">
+            <column name="id" value="c1eebc99-9c0b-4ef8-bb6d-6bb9bd380b31"/>
+            <column name="title" value="Best Beginner Hiking Trails"/>
+            <column name="content" value="I'm new to hiking and looking for recommendations for beginner-friendly trails that still offer great views."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="rating" value="87"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="author_id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b03"/>
+            <column name="community_id" value="b1eebc99-9c0b-4ef8-bb6d-6bb9bd380b21"/>
+        </insert>
+
+        <insert tableName="topics">
+            <column name="id" value="c1eebc99-9c0b-4ef8-bb6d-6bb9bd380b32"/>
+            <column name="title" value="How Do You Manage Screen Time for Kids?"/>
+            <column name="content" value="Curious about how other parents handle screen time. Do you set limits, or let kids self-regulate? What works best?"/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="rating" value="54"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="author_id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b01"/>
+            <column name="community_id" value="b1eebc99-9c0b-4ef8-bb6d-6bb9bd380b22"/>
+        </insert>
+
+        <insert tableName="topics">
+            <column name="id" value="c1eebc99-9c0b-4ef8-bb6d-6bb9bd380b33"/>
+            <column name="title" value="Tips for Adopting a Rescue Dog"/>
+            <column name="content" value="I'm thinking about adopting a rescue dog. What should I know beforehand? Any advice from experienced dog owners?"/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="rating" value="121"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="author_id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b05"/>
+            <column name="community_id" value="b1eebc99-9c0b-4ef8-bb6d-6bb9bd380b23"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-comments-extended-3" author="gustas">
+        <insert tableName="comments">
+            <column name="id" value="d1eebc99-9c0b-4ef8-bb6d-6bb9bd380b41"/>
+            <column name="text" value="Check out Blue Ridge Trail. It’s easy but has an amazing overlook at the halfway point."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b02"/>
+            <column name="topic_id" value="c1eebc99-9c0b-4ef8-bb6d-6bb9bd380b31"/>
+        </insert>
+        <insert tableName="comments">
+            <column name="id" value="d1eebc99-9c0b-4ef8-bb6d-6bb9bd380b42"/>
+            <column name="text" value="Seconding this! Also, bring more water than you think you'll need—beginner mistake I made."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b04"/>
+            <column name="topic_id" value="c1eebc99-9c0b-4ef8-bb6d-6bb9bd380b31"/>
+            <column name="parent_comment_id" value="d1eebc99-9c0b-4ef8-bb6d-6bb9bd380b41"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="d1eebc99-9c0b-4ef8-bb6d-6bb9bd380b43"/>
+            <column name="text" value="We do 1 hour of screens on weekdays and 2 hours on weekends. It's worked pretty well so far."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b06"/>
+            <column name="topic_id" value="c1eebc99-9c0b-4ef8-bb6d-6bb9bd380b32"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="d1eebc99-9c0b-4ef8-bb6d-6bb9bd380b44"/>
+            <column name="text" value="Be patient the first few weeks—they need time to adjust. Routine and consistency make a huge difference."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a1eebc99-9c0b-4ef8-bb6d-6bb9bd380b03"/>
+            <column name="topic_id" value="c1eebc99-9c0b-4ef8-bb6d-6bb9bd380b33"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-users-extended-3" author="gustas">
+        <insert tableName="users">
+            <column name="id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c01"/>
+            <column name="name" value="Quentin"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c02"/>
+            <column name="name" value="Rita"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c03"/>
+            <column name="name" value="Samuel"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c04"/>
+            <column name="name" value="Tina"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c05"/>
+            <column name="name" value="Uri"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c06"/>
+            <column name="name" value="Vera"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-communities-extended-3" author="gustas">
+        <insert tableName="communities">
+            <column name="id" value="b2eebc99-9c0b-4ef8-bb6d-6bb9bd380c21"/>
+            <column name="title" value="Movies and TV Shows"/>
+            <column name="description" value="Chat about new releases, hidden gems, and binge-worthy series."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="communities">
+            <column name="id" value="b2eebc99-9c0b-4ef8-bb6d-6bb9bd380c22"/>
+            <column name="title" value="Sustainability and Environment"/>
+            <column name="description" value="Eco-friendly living, climate talk, and environmental science."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="communities">
+            <column name="id" value="b2eebc99-9c0b-4ef8-bb6d-6bb9bd380c23"/>
+            <column name="title" value="Entrepreneurship"/>
+            <column name="description" value="Startup ideas, business strategies, and founder stories."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="insert-realistic-topics-extended-4" author="gustas">
+        <insert tableName="topics">
+            <column name="id" value="c2eebc99-9c0b-4ef8-bb6d-6bb9bd380c31"/>
+            <column name="title" value="Underrated TV Shows Worth Watching"/>
+            <column name="content" value="What are some lesser-known yet amazing TV shows you've watched? Looking for new recommendations."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="rating" value="93"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="author_id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c01"/>
+            <column name="community_id" value="b2eebc99-9c0b-4ef8-bb6d-6bb9bd380c21"/>
+        </insert>
+
+        <insert tableName="topics">
+            <column name="id" value="c2eebc99-9c0b-4ef8-bb6d-6bb9bd380c32"/>
+            <column name="title" value="How Do You Reduce Plastic Waste Daily?"/>
+            <column name="content" value="I'm trying to reduce my daily waste footprint. What simple but effective habits do you follow?"/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="rating" value="134"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="author_id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c04"/>
+            <column name="community_id" value="b2eebc99-9c0b-4ef8-bb6d-6bb9bd380c22"/>
+        </insert>
+
+        <insert tableName="topics">
+            <column name="id" value="c2eebc99-9c0b-4ef8-bb6d-6bb9bd380c33"/>
+            <column name="title" value="Biggest Mistakes First-Time Founders Make"/>
+            <column name="content" value="What are the most common pitfalls new founders run into? Would love advice from experienced entrepreneurs."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="updated_at" valueComputed="NOW()"/>
+            <column name="rating" value="177"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="author_id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c06"/>
+            <column name="community_id" value="b2eebc99-9c0b-4ef8-bb6d-6bb9bd380c23"/>
+        </insert>
+    </changeSet>
+
+
+    <changeSet id="insert-realistic-comments-extended-4" author="gustas">
+        <insert tableName="comments">
+            <column name="id" value="d2eebc99-9c0b-4ef8-bb6d-6bb9bd380c41"/>
+            <column name="text" value="You should check out 'Patriot'. It’s hilarious and surprisingly deep."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c02"/>
+            <column name="topic_id" value="c2eebc99-9c0b-4ef8-bb6d-6bb9bd380c31"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="d2eebc99-9c0b-4ef8-bb6d-6bb9bd380c42"/>
+            <column name="text" value="A super easy habit: carry a foldable tote bag everywhere. It eliminated most of my single-use plastic."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c03"/>
+            <column name="topic_id" value="c2eebc99-9c0b-4ef8-bb6d-6bb9bd380c32"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="d2eebc99-9c0b-4ef8-bb6d-6bb9bd380c43"/>
+            <column name="text" value="Most founders try to ship too many features at launch. Focus beats breadth every time."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c05"/>
+            <column name="topic_id" value="c2eebc99-9c0b-4ef8-bb6d-6bb9bd380c33"/>
+        </insert>
+
+        <insert tableName="comments">
+            <column name="id" value="d2eebc99-9c0b-4ef8-bb6d-6bb9bd380c44"/>
+            <column name="text" value="Agree. Also — ignoring user interviews until it's too late is a killer mistake."/>
+            <column name="created_at" valueComputed="NOW()"/>
+            <column name="is_enabled" valueBoolean="true"/>
+            <column name="user_id" value="a2eebc99-9c0b-4ef8-bb6d-6bb9bd380c06"/>
+            <column name="topic_id" value="c2eebc99-9c0b-4ef8-bb6d-6bb9bd380c33"/>
+            <column name="parent_comment_id" value="d2eebc99-9c0b-4ef8-bb6d-6bb9bd380c43"/>
+        </insert>
+    </changeSet>
+
+
+
+
+</databaseChangeLog>
